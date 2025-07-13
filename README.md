@@ -14,18 +14,11 @@ This template helps development teams transform high-level ideas into executable
 
 ```
 .cursor/
-├── modes/                          # Workflow phase definitions
-│   ├── brainstorm.md              # Brainstorming phase instructions
-│   ├── plan.md                    # Planning phase instructions
-│   └── refine.md                  # Refining phase instructions
+├── modes/                          # Workflow phase definitions (brainstorm, plan, refine)
 └── context-engineering/
-    ├── brainstorming/
-    │   ├── PRD.md                 # Product Requirements Document
-    │   ├── TRD.md                 # Technical Requirements Document
-    │   ├── ContextGuide.md        # Context and documentation guide
-    │   └── diagrams/              # Visual diagrams and flowcharts
-    └── planning/
-        └── ImplementationPlan.md  # Detailed implementation roadmap
+    ├── brainstorming/              # Product and technical requirements, phase breakdowns
+    │   └── diagrams/               # Visual diagrams and flowcharts (optional)
+    └── planning/                   # Implementation planning and roadmap
 ```
 
 ## 🔄 Three-Phase Workflow

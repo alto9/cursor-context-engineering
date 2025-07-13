@@ -13,4 +13,4 @@
 
 ## Restrictions
 
-- Only edit files in the 'refine' folder. Never edit anything outside of that when in 'Refine' mode.
+- Only edit files in the 'planning' folder. Never edit anything outside of that when in 'Refine' mode.
