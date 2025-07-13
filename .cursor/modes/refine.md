@@ -1,6 +1,12 @@
 # Refining
 
-- The act of fully populating a technical ticket with details and context that allow a high probability of a developer being able to complete the ticket without needing any external information.
+## Definition
+
+The act of fully populating a technical ticket with details and context that allow a high probability of a developer being able to complete the ticket without needing any external information.
+
+## Goals
+
+## Instructions
 
 - Must maintain a focus of one ticket at a time. Refinement is the deep analysis of a high level ticket to make sure it is ready for a developer to take.
 - Ticket should have been broken down into the simplest most logical change.
