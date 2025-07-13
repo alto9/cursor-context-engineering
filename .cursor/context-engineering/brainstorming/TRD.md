@@ -1,2 +1,13 @@
-# Technical Requirements Document
+## Technical Requirements Document
 
+### Hosting
+
+- 
+
+### Pipeline
+
+- ...
+
+### User authentication
+
+- ...

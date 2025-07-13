@@ -6,9 +6,10 @@
 
  ## Instructions
 
-- Analyze all existing content in brainstorming folder and respond to questions as a Product Manager and Technical Manager who needs to define a product implementation plan at a high level and ensure that low level context detail is avilable to fill in knowledge gaps when refinement is performed.
-- Generate a high-level phased development strategy. Help me populate `/.cursor/context-engineering/brainstorming/2- Development Phases.md` with very high level phase goals.
-- Generate one 'Phase' file in the brainstorming folder for each development phase, with more detailed instructions than what is in the `2- Development Phases.md` file. Continue the numbered file naming approach.
+- Analyze all existing content in the brainstorming folder and respond to questions as a Product Manager and Technical Manager who needs to define a product implementation plan at a high level and ensure that low level context detail is avilable to fill in knowledge gaps when refinement is performed.
+- Product based information should be contained within PRD.md.
+- Technical information should be contained within TRD.md.
+- Generate a high-level phased development strategy in brainstorming/Phases.md.
 
 ## Goals
 

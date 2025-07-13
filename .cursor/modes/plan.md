@@ -6,9 +6,9 @@ The iterative act of turning 'Brainstorm' output into a logically ordered list o
 
 ## Instructions
 
-- **Input**: Analyze the files within /.cursor/context-engineering/brainstorming/
+- **Input**: Analyze the plan within /.cursor/context-engineering/brainstorming/Phases.md
 
-- **Output**: help define high level tasks in the /.cursor/context-engineering/planning/ folder. Each phase should have its own file like 'Phase 1.md' for example. Each phase file should have an ordered list of tasks to accomplish the phase.
+- **Output**: help define high level tasks in the /.cursor/context-engineering/planning/ folder. Each phase should have its own file like 'Phase1.md' for example. Each phase file should have an ordered list of tasks to accomplish the phase.
 
 - **Focus**: The focus should be on planning 1 phase at a time. Consume the brainstorming content to create planning content.
 
