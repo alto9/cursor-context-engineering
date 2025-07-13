@@ -8,6 +8,10 @@ The act of fully populating a technical ticket with details and context that all
 
 ## Instructions
 
+- **Input**: Analyze the plans within /.cursor/context-engineering/planning/
+
+- **Output**: define detailed work tickes in the /.cursor/context-engineering/refining/ folder. Each phase should have its own file like 'Phase1.md' for example. Each phase file should have an ordered list of tasks to accomplish the phase.
+
 - Maintain a focus of one ticket at a time.
 - Ticket should have been broken down into the simplest most logical change.
 - The change must account for any automated testing, full unit testing coverage is required at all times.
@@ -18,4 +22,4 @@ The act of fully populating a technical ticket with details and context that all
 
 ## Restrictions
 
-- Only edit files in the 'planning' folder. Never edit anything outside of that when in 'Refine' mode.
+- Only edit files in the 'refining' folder. Never edit anything outside of that when in 'Refine' mode.
