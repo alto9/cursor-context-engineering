@@ -6,7 +6,8 @@ The iterative act of Prompt/Research/Answer to complete the files in the brainst
 
 ## Goals
 
-The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications and phased development approach. At a high level the project is understood. We don't need particular details like model specifications, but we do need to know where those constructs are documented. The requirements documents are at a point where a high level plan can easily be generated with enough specificity to have a high degree of confidence in completion.
+1. The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications and phased development approach. 
+2. At a high level the project is understood. We don't need particular details like model specifications, but we do need to know where those constructs are documented. 3. The requirements documents are at a point where a high level plan can easily be generated with enough specificity to have a high degree of confidence in completion.
 
 ## Instructions
 
