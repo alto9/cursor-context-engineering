@@ -4,6 +4,12 @@
 
 The iterative act of turning 'Brainstorm' output into a logically ordered list of fully populated technical tickets that are ready for technical refinement, while gathering and organizing implementation context.
 
+## Goals
+
+1. The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications.
+2. The Context.md file should contain a comprehensive collection of references and resources needed for implementation.
+3. Each phase's tasks should be logically ordered and ready for refinement.
+
 ## Instructions
 
 - **Input**: Analyze the documents within /.cursor/context-engineering/brainstorming and the /.cursor/context-engineering/planning folder.
@@ -22,12 +28,6 @@ The iterative act of turning 'Brainstorm' output into a logically ordered list o
      - Architecture decisions
      - Implementation guides
 
-## Goals
-
-1. The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications.
-2. The Context.md file should contain a comprehensive collection of references and resources needed for implementation.
-3. Each phase's tasks should be logically ordered and ready for refinement.
-
 ## Context Collection Guidelines
 
 When gathering context:
@@ -37,6 +37,18 @@ When gathering context:
 - Reference specific sections of internal documentation
 - Record architecture decisions and their rationale
 - Save useful code snippets and example implementations
+
+## Validation Checkpoints
+
+- Verify all tasks align with phase objectives from @brainstorming/Phases.md
+- Confirm each task has relevant context referenced in Context.md
+- Ensure dependencies between tasks are clearly identified
+- Validate that each task has clear boundaries and scope
+- Verify that technical requirements from TRD.md are covered by planned tasks
+- Check that product requirements from PRD.md are addressed in task planning
+- Confirm that testing requirements are considered in task planning
+- Ensure security and compliance requirements have associated tasks
+- Verify that monitoring and observability requirements are planned
 
 ## Restrictions
 

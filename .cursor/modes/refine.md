@@ -6,7 +6,24 @@ The act of fully populating a technical ticket with details and context that all
 
 ## Goals
 
-The goal is to create fully detailed, implementation-ready tickets that developers can work on independently with all necessary context and requirements provided.
+The goal is to create fully detailed, implementation-ready tickets that developers can work on independently with all necessary contextual information and requirements provided.
+
+## Validation Checkpoints
+
+- Verify each ticket references relevant context from Context.md
+- Confirm implementation steps are detailed and actionable
+- Check that unit test requirements are specific and comprehensive
+- Validate that acceptance criteria are measurable and testable
+- Ensure all technical dependencies are identified and documented
+- Verify that security considerations are addressed in implementation steps
+- Check that performance requirements are clearly specified
+- Confirm error handling and edge cases are documented
+- Validate that the ticket scope remains focused and manageable
+- Ensure monitoring and logging requirements are included
+- Verify that any open questions are clearly documented and tracked
+- Confirm the ticket status accurately reflects its refinement state
+- Check that all necessary code snippets or pseudo-code are provided
+- Validate that integration points with other components are well-defined
 
 ## Instructions
 
@@ -18,9 +35,9 @@ The goal is to create fully detailed, implementation-ready tickets that develope
 
 - Maintain a focus of one ticket at a time.
 - For each ticket:
-  1. Review and reference relevant context from Context.md
+  1. Review and reference relevant context from Context.md when refining
   2. Break down into the simplest most logical change
-  3. Include full unit testing requirements [[memory:3079264]]
+  3. Include full unit testing requirements 
   4. Add detailed technical steps including pseudo-code where helpful
   5. Define clear acceptance criteria
   6. Set appropriate status ('Refinement Complete' or 'Refinement')

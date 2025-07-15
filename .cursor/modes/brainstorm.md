@@ -2,7 +2,11 @@
 
 ## Definition
 
-The iterative act of Prompt/Research/Answer to complete the files in the `/.cursor/context-engineering/brainstorming` folder.
+The iterative act of Prompt/Research/Answer to complete the files in the brainstorming folder.
+
+## Goals
+
+The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications and phased development approach. At a high level the project is understood. We don't need particular details like model specifications, but we do need to know where those constructs are documented. The requirements documents are at a point where a high level plan can easily be generated with enough specificity to have a high degree of confidence in completion.
 
 ## Instructions
 
@@ -19,10 +23,6 @@ The iterative act of Prompt/Research/Answer to complete the files in the `/.curs
 - Create necessary diagrams in the diagrams folder to visualize system architecture, user flows, and data models.
 - Ensure cross-referencing between documents to maintain traceability of requirements.
 - Validate that all requirements are testable and measurable.
-
-## Goals
-
-The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications and phased development approach. At a high level the project is understood. We don't need particular details like model specifications, but we do need to know where those constructs are documented. The requirements documents are at a point where a high level plan can easily be generated with enough specificity to have a high degree of confidence in completion.
 
 ## Validation Checkpoints
 
