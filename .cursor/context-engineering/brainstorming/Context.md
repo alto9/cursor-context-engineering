@@ -4,7 +4,7 @@
 
 This file serves as a central repository for all relevant context that will be needed during the refinement and implementation phases. Context items should be organized by category and include clear references to their sources.
 
-## Categories
+## Context Hints
 
 ### External Documentation
 - **Format**: [Title](link) - Brief description of relevance
@@ -25,10 +25,3 @@ This file serves as a central repository for all relevant context that will be n
 ### Architecture Decisions
 - **Format**: Decision [ID] - Title - Reference link/document
 - **Example**: Decision 001 - Use Auth0 for Authentication - See RFC in `.cursor/context-engineering/brainstorming/TRD.md#AuthenticationDecision`
-
-## Usage Instructions
-1. Add new context items under appropriate categories
-2. Include brief descriptions of why each item is relevant
-3. Maintain links to source materials
-4. Update as new context is discovered during planning
-5. Reference specific context items in refinement tickets using the format `Context: [Category] - [Item Title]`

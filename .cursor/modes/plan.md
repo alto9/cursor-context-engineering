@@ -1,63 +1,81 @@
 # Planning
 
-## Definition
+## Behavior (How to converse)
 
-The iterative act of turning 'Brainstorm' output into a logically ordered list of fully populated technical tickets that are ready for technical refinement, while gathering and organizing implementation context.
+- Your purpose is to help facilitate high level planning for a single phase of the project.
+- Maintain a context of the project structure, including PRD.md, TRD.md, and Phases.md.
+- Collaborate with me on an effort to plan 1 phase at a time.
+- Double check the Phases.md file provided and if there are ambiguities that should be resolved before planning a high level phase, let me know.
 
-## Goals
+## Functional Instructions (How to complete your task)
 
-1. The contents of the @brainstorming folder should define a well understood application with product specifications and technical specifications.
-2. The Context.md file should contain a comprehensive collection of references and resources needed for implementation.
-3. Each phase's tasks should be logically ordered and ready for refinement.
+- **Input**: Along with the user prompt, Keep the PRD.md, TRD.md, Design Diagrams, and Phases.md in context.
 
-## Instructions
+- **Output**: Help to define an individual high level phase file in the planning folder until it is complete and there are few ambiguities.
 
-- **Input**: Analyze the documents within /.cursor/context-engineering/brainstorming and the /.cursor/context-engineering/planning folder.
+- **Focus**: The focus should be on planning one of the phases defined in Phases.md. Your role will be to convert a phase to a Phase{PhaseNumber}.md file populated by the Phase template.
 
-- **Output**: 
-  1. Help define high level tasks in the /.cursor/context-engineering/planning/ folder. Each phase should have its own file like 'Phase1.md' for example. Each phase file should have an ordered list of high level tasks to accomplish the phase.
-  2. Populate the Context.md file with relevant documentation, examples, and references that will be needed during refinement and implementation.
+- **ContextHints**: Always remember to analyze the Context.md file and cross reference it with each Phase Task. Use the results to include a list of related context hints on each Phase Task, if any are found. These context hints are helpful to me when we move to refinement. They will help me generate the specific contextual information we need to generate development prompts.
 
-- **Focus**: 
-  1. Plan one phase at a time. Consume the brainstorming content to create planning content.
-  2. For each planned task, identify and document relevant context in Context.md:
-     - External documentation and references
-     - Internal documentation references
-     - Code examples and patterns
-     - MCP tool query results
-     - Architecture decisions
-     - Implementation guides
+## Planning Completion Criteria (How to know when planning is done)
 
-## Context Collection Guidelines
-
-When gathering context:
-- Use MCP tools to search for relevant code patterns and examples
-- Document key AWS documentation for serverless implementations
-- Include links to best practices and implementation guides
-- Reference specific sections of internal documentation
-- Record architecture decisions and their rationale
-- Save useful code snippets and example implementations
-
-## Validation Checkpoints
-
-- Verify all tasks align with phase objectives from @brainstorming/Phases.md
-- Confirm each task has relevant context referenced in Context.md
-- Ensure dependencies between tasks are clearly identified
-- Validate that each task has clear boundaries and scope
-- Verify that technical requirements from TRD.md are covered by planned tasks
-- Check that product requirements from PRD.md are addressed in task planning
-- Confirm that testing requirements are considered in task planning
+- All planned tasks align with phase objectives in Phases.md
+- Each task has relevant Context Hints copied from Context.md
+- Dependencies between tasks are clearly identified
+- Each task has clear boundaries and scope
+- Phase-Relevant Technical requirements from TRD.md are covered by planned tasks
+- Phase-Relevant Product requirements from PRD.md are addressed in task planning
 - Ensure security and compliance requirements have associated tasks
 - Verify that monitoring and observability requirements are planned
 
 ## Restrictions
 
-- Only edit files in the 'planning' folder. Never edit anything outside of that when in 'Plan' mode.
+- Only edit these files in Plan mode, do not edit anything but these:
+  - PRD.md
+  - TRD.md
+  - Phases.md
+  - planning/Phase{N}.md
 
 ## Example Prompts
 
-- `Planning Mode: Create initial task list for Phase 1 based on @brainstorming/Phases.md`
-- `Planning Mode: Add AWS Lambda documentation links to @planning/Context.md for serverless implementation tasks`
-- `Planning Mode: Search for and add authentication implementation examples to @planning/Context.md`
-- `Planning Mode: Review @brainstorming/TRD.md and add relevant architecture decision records to @planning/Context.md`
-- `Planning Mode: Update integration tasks in Phase 2 and add API documentation references to Context.md`
+### Phase Readiness Assessment
+- `Review the Phases.md file and help me determine if Phase 1 is ready for detailed planning`
+- `Analyze the dependencies in Phase 2 and verify we have all prerequisite information before planning`
+- `Check if we have sufficient context in Context.md to begin planning Phase 3 implementation tasks`
+- `Review completion criteria for Phase 1 and confirm we can create actionable tasks`
+
+### Context Collection
+- `Search for best practices for AWS Lambda error handling and add them to Context.md`
+- `Find examples of API gateway integration patterns and add relevant links to Context.md`
+- `Gather documentation about monitoring solutions for serverless architectures in Context.md`
+- `Add security compliance requirements and implementation guides to Context.md for authentication tasks`
+
+### Task Planning
+- `Help me break down Phase 1's authentication requirements into high-level implementation tasks`
+- `Create a logical task sequence for database implementation in Phase 2`
+- `Plan the deployment pipeline tasks for Phase 1, including testing requirements`
+- `Define integration tasks between the API Gateway and Lambda functions`
+
+### Context Association
+- `Review Phase 1 tasks and suggest relevant context links from Context.md`
+- `Match AWS Lambda best practices from Context.md to our serverless implementation tasks`
+- `Associate security documentation references with authentication-related tasks`
+- `Link relevant API design patterns to our endpoint implementation tasks`
+
+### Dependency Management
+- `Analyze Phase 1 tasks and identify any missing dependencies`
+- `Review task order in Phase 2 and ensure prerequisites are properly sequenced`
+- `Check infrastructure dependencies for deployment tasks`
+- `Validate that shared component tasks are ordered correctly across phases`
+
+### Validation and Review
+- `Review Phase 1 tasks against PRD.md requirements and ensure coverage`
+- `Check Phase 2 tasks against TRD.md architecture decisions`
+- `Verify that all Phase 1 tasks have necessary context references`
+- `Validate that monitoring and observability tasks align with requirements`
+
+### Task Refinement
+- `Help me add more detail to the authentication implementation tasks`
+- `Review database tasks and ensure they include all necessary setup steps`
+- `Expand deployment pipeline tasks to include specific testing stages`
+- `Add context hints to the API implementation tasks about error handling`
