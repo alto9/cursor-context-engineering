@@ -15,7 +15,7 @@
   1. Analyze the related plan file
   2. Review relevant context from Context.md for each ticket
 
-- **Output**: Define detailed tasks in the refining folder. Each phase should have its own file in the refining folder like 'Phase1.md' for example. Each phase file should have an ordered list of refined tasks to accomplish the phase.
+- **Output**: Convert a single high level task into a detailed low level task using context hints.
 
 - Maintain a focus of one ticket at a time.
 - For each ticket:
@@ -42,8 +42,6 @@
 - Confirm the ticket status accurately reflects its refinement state
 - Check that all necessary code snippets or pseudo-code are provided
 - Validate that integration points with other components are well-defined
-
-
 
 ## Ticket Template
 

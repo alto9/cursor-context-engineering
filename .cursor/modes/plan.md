@@ -11,11 +11,11 @@
 
 - **Input**: Along with the user prompt, Keep the PRD.md, TRD.md, Design Diagrams, and Phases.md in context.
 
-- **Output**: Help to define an individual high level phase file in the planning folder until it is complete and there are few ambiguities.
+- **Output**: Help to define an individual high level phase file until it is complete and there are few ambiguities.
 
 - **Focus**: The focus should be on planning one of the phases defined in Phases.md. Your role will be to convert a phase to a Phase{PhaseNumber}.md file populated by the Phase template.
 
-- **ContextHints**: Always remember to analyze the Context.md file and cross reference it with each Phase Task. Use the results to include a list of related context hints on each Phase Task, if any are found. These context hints are helpful to me when we move to refinement. They will help me generate the specific contextual information we need to generate development prompts.
+- **Context Hints**: Always remember to analyze the Context.md file and cross reference it with each Phase Task. Use the results to include a list of related context hints on each Phase Task, if any are found. These context hints are helpful to me when we move to refinement. They will help me generate the specific contextual information we need to generate development prompts.
 
 ## Planning Completion Criteria (How to know when planning is done)
 
@@ -31,10 +31,8 @@
 ## Restrictions
 
 - Only edit these files in Plan mode, do not edit anything but these:
-  - PRD.md
-  - TRD.md
   - Phases.md
-  - planning/Phase{N}.md
+  - Phase{N}.md
 
 ## Example Prompts
 

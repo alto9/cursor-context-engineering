@@ -19,16 +19,10 @@ This template helps development teams transform high-level ideas into executable
 │   ├── brainstorm.md              # Brainstorming mode guidelines
 │   ├── plan.md                    # Planning mode guidelines
 │   └── refine.md                  # Refinement mode guidelines
-└── context-engineering/
-    ├── brainstorming/             # Requirements and phase definitions
-    │   ├── PRD.md                 # Product Requirements Document
-    │   ├── TRD.md                 # Technical Requirements Document
-    │   └── Phases.md              # Phase definitions and dependencies
-    ├── planning/                  # Implementation planning
-    │   ├── Context.md            # Implementation context and references
-    │   └── Phase{N}.md           # High-level tasks for each phase
-    └── refining/                  # Detailed implementation tickets
-        └── Phase{N}.md           # Refined tickets for each phase
+└── context-engineering/           # Project documentation and planning
+    ├── brainstorming/            # Requirements and phase definitions
+    ├── planning/                 # Implementation planning and context
+    └── refining/                 # Detailed implementation tickets
 ```
 
 ## 🔄 Three-Phase Workflow
@@ -36,11 +30,6 @@ This template helps development teams transform high-level ideas into executable
 ### Phase 1: Brainstorming 🧠
 
 **Purpose**: Iterative process of research and analysis to complete requirements documentation.
-
-**Key Files**:
-- `PRD.md`: Product requirements, user stories, market analysis
-- `TRD.md`: Technical architecture, security, testing strategy
-- `Phases.md`: High-level phase definitions and dependencies
 
 **Key Activities**:
 - Define product requirements and success metrics
@@ -50,18 +39,14 @@ This template helps development teams transform high-level ideas into executable
 - Generate supporting diagrams and documentation
 
 **Completion Criteria**:
-- Complete PRD with no open questions
-- Complete TRD with no open questions
+- Complete product requirements with no open questions
+- Complete technical requirements with no open questions
 - Defined phases with clear objectives and dependencies
 - Validated requirements against business goals
 
 ### Phase 2: Planning 📋
 
 **Purpose**: Transform brainstorming output into logically ordered implementation tasks with relevant context.
-
-**Key Files**:
-- `Context.md`: Implementation references and resources
-- `Phase{N}.md`: High-level tasks for each phase
 
 **Key Activities**:
 - Collect and organize implementation context
@@ -80,9 +65,6 @@ This template helps development teams transform high-level ideas into executable
 ### Phase 3: Refining 🔍
 
 **Purpose**: Create detailed, implementation-ready tickets with all necessary context.
-
-**Key Files**:
-- `refining/Phase{N}.md`: Detailed implementation tickets
 
 **Key Activities**:
 - Break down tasks into detailed steps
@@ -104,12 +86,12 @@ This template helps development teams transform high-level ideas into executable
 1. **Use this template** to create a new repository
 2. **Review the mode files** in `.cursor/modes/` to understand each phase
 3. **Start Brainstorming**:
-   - Begin with product requirements in PRD.md
-   - Document technical decisions in TRD.md
-   - Define phases in Phases.md
+   - Document product requirements
+   - Define technical architecture
+   - Establish project phases
 4. **Move to Planning**:
-   - Gather implementation context in Context.md
-   - Create phase-specific task files
+   - Gather implementation context
+   - Create phase-specific tasks
    - Associate context with tasks
 5. **Begin Refinement**:
    - Create detailed implementation tickets
@@ -119,14 +101,14 @@ This template helps development teams transform high-level ideas into executable
 ## 📋 Usage Guidelines
 
 ### For Product Managers
-- Focus on completing the PRD.md first
+- Focus on product requirements first
 - Define clear success metrics
 - Ensure user stories are comprehensive
 - Validate market analysis
 - Review phase dependencies
 
 ### For Technical Leads
-- Document architecture decisions in TRD.md
+- Document architecture decisions
 - Define clear technical boundaries
 - Establish testing strategy
 - Review security requirements
