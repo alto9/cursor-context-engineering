@@ -1,4 +1,4 @@
-# Context Collection
+# Contextual Requirements Document
 
 ## Purpose
 
@@ -12,7 +12,7 @@ This file serves as a central repository for all relevant context that will be n
 
 ### Internal References
 - **Format**: `path/to/file.md` - Specific section/content reference
-- **Example**: `.cursor/context-engineering/brainstorming/TRD.md#Authentication` - Details of the authentication implementation requirements
+- **Example**: `ai/brainstorm/TRD.md#Authentication` - Details of the authentication implementation requirements
 
 ### Code Examples
 - **Format**: [Title](link) - Language/Framework - Relevance
@@ -21,7 +21,3 @@ This file serves as a central repository for all relevant context that will be n
 ### MCP Tool Results
 - **Format**: `Tool: [tool_name]` - Query/Purpose - Key findings
 - **Example**: `Tool: codebase_search` - "auth implementation patterns" - Found existing auth patterns in related projects at `examples/auth/patterns.ts`
-
-### Architecture Decisions
-- **Format**: Decision [ID] - Title - Reference link/document
-- **Example**: Decision 001 - Use Auth0 for Authentication - See RFC in `.cursor/context-engineering/brainstorming/TRD.md#AuthenticationDecision`
