@@ -12,10 +12,10 @@
 ## Functional Instructions (How to complete your task)
 
 - **Input**: 
-  1. Analyze the related plan file
-  2. Review relevant context from Context.md for each ticket
+  1. Analyze the related plan file (Phase{N}.md)
+  2. Review relevant context from Context.md for each task
 
-- **Output**: Convert a single high level task into a detailed low level task using context hints.
+- **Output**: Convert a single high level task into a detailed low level ticket using context hints. Each ticket should follow the Ticket.md format from tools/formats/Ticket.md.
 
 - Maintain a focus of one ticket at a time.
 - For each ticket:
@@ -43,70 +43,36 @@
 - Check that all necessary code snippets or pseudo-code are provided
 - Validate that integration points with other components are well-defined
 
-## Ticket Template
 
-```markdown
-### Ticket [Phase].[Number]: [Title]
-
-**Status**: [Refinement Complete|Refinement]
-
-#### Description
-[Detailed description of the task]
-
-#### Context Hints
-- [List relevant items from Context.md using the format: Category - Item Title]
-
-#### Technical Details
-- Implementation Steps:
-  1. [Step-by-step implementation instructions]
-  2. [Include code snippets or pseudo-code where helpful]
-
-#### Dependencies
-- [List any ticket dependencies]
-
-#### Testing Requirements
-- Unit Tests:
-  - [Specific test scenarios]
-  - [Expected coverage requirements]
-- Integration Tests:
-  - [Integration test scenarios if applicable]
-
-#### Acceptance Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] All unit tests pass
-- [ ] Code review completed
-
-#### Open Questions
-- [List any unresolved questions if status is 'Refinement']
-```
 
 ## Restrictions
 
-- Only edit files in the 'refining' folder. Never edit anything outside of that when in 'Refine' mode.
+- Only edit files in the 'tickets' folder. Never edit anything outside of that when in 'Refine' mode.
+- Each ticket file should follow the Ticket.md format from tools/formats/Ticket.md
+- Ticket files should be named as Phase{N}Task{M}.md (e.g., Phase1Task1.md)
 
 ## Example Prompts
 
 ### Initial Ticket Creation
-- `Create a new implementation ticket in refining/Phase1.md for the authentication setup task`
-- `Convert the database schema task from planning/Phase1.md into a detailed ticket using our template`
+- `Create a new implementation ticket in tickets/Phase1Task1.md for the authentication setup task using the Ticket.md format`
+- `Convert the database schema task from plan/Phase1.md into a detailed ticket using the Ticket.md format`
 - `Take the API endpoint task from Phase 2 and create an implementation ticket with context from the API documentation`
 - `Generate a detailed deployment pipeline ticket based on the CI/CD requirements`
 
 ### Technical Detail Enhancement
-- `Add step-by-step Lambda function implementation details to ticket P1.3 using the AWS examples from Context.md`
+- `Add step-by-step Lambda function implementation details to ticket Phase1Task3.md using the AWS examples from Context.md`
 - `Enhance the database migration ticket with specific schema changes and rollback procedures`
-- `Detail the exact authentication flow steps in ticket P1.1 using the Auth0 integration guide`
+- `Detail the exact authentication flow steps in ticket Phase1Task1.md using the Auth0 integration guide`
 - `Add error handling specifications to the API endpoint ticket using our standard patterns`
 
 ### Testing Requirements
-- `Define unit test scenarios for the user registration endpoint in ticket P1.2`
+- `Define unit test scenarios for the user registration endpoint in ticket Phase1Task2.md`
 - `Add integration test requirements for the payment processing workflow`
 - `Specify test coverage requirements for the authentication middleware ticket`
 - `Detail the performance test criteria for the database optimization ticket`
 
 ### Dependency Resolution
-- `Review ticket P2.1 and document all prerequisite tickets needed`
+- `Review ticket Phase2Task1.md and document all prerequisite tickets needed`
 - `Add infrastructure dependency details to the deployment automation ticket`
 - `Identify and list service dependencies for the notification system ticket`
 - `Document third-party API dependencies in the payment integration ticket`
@@ -124,13 +90,13 @@
 - `Include relevant monitoring guidelines in the observability ticket`
 
 ### Refinement Review
-- `Review ticket P1.2 for any missing technical details or unclear steps`
+- `Review ticket Phase1Task2.md for any missing technical details or unclear steps`
 - `Validate the completeness of testing requirements in the database ticket`
 - `Check if the deployment ticket has sufficient context references`
-- `Verify that all acceptance criteria are measurable in ticket P2.3`
+- `Verify that all acceptance criteria are measurable in ticket Phase2Task3.md`
 
 ### Status Updates
-- `Update the status of P1.1 after completing the implementation details`
-- `Review open questions in ticket P2.2 and update its refinement status`
-- `Mark ticket P1.3 as 'Refinement Complete' after adding all required sections`
-- `Document remaining open questions in ticket P2.4 and set appropriate status`
+- `Update the status of Phase1Task1.md after completing the implementation details`
+- `Review open questions in ticket Phase2Task2.md and update its refinement status`
+- `Mark ticket Phase1Task3.md as 'Refinement Complete' after adding all required sections`
+- `Document remaining open questions in ticket Phase2Task4.md and set appropriate status`

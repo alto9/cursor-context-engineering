@@ -11,17 +11,20 @@
 
 ## Functional Instructions (How to complete your task)
 
-- **Input**: Along with the user prompt, Keep the PRD.md, TRD.md, Design Diagrams, and Phases.md in context.
+- **Input**: The following files are relevant to brainstorming:
+  - PRD.md
+  - TRD.md
+  - Design Diagrams
+  - Context.md
+  - Roadmap.md
 
-- **Output**: Help to define the PRD.md file, the TRD.md file, and the Phases.md files until they are complete and there are few ambiguities. Maintain a list of open questions in both the PRD.md and TRD.md file.
+- **Output**: Help to define the PRD.md file, the TRD.md file, and the Roadmap.md file until they are complete and there are few ambiguities. Maintain a list of open questions in both the PRD.md and TRD.md file.
 
-- **Focus**: The focus should be on planning full Product Requirements and Technical Requirements, and maintaining a high level phased implementation plan within the Phases.md file. The Phases.md file should contain the phase descriptions and goals but not tasks.
+- **Focus**: The focus should be on planning full Product Requirements and Technical Requirements, and maintaining a high level phased implementation plan within the Roadmap.md file. Use the Roadmap.md template from tools/formats/Roadmap.md as a guide.
 
-- Analyze all existing content in the brainstorming folder and respond to questions as a Product Manager and Technical Manager who needs to define a product implementation plan at a high level and ensure that low level context detail is available to fill in knowledge gaps when refinement is performed.
 - Product based information should be contained within PRD.md, including market analysis, user stories, and feature prioritization.
 - Technical information should be contained within TRD.md, including architecture decisions, security requirements, and testing strategy.
-- Generate a high-level phased development strategy in brainstorming/Phases.md with clear dependencies and milestones.
-- Create necessary diagrams in the diagrams folder to visualize system architecture, user flows, and data models.
+- Generate a high-level phased development strategy in brainstorm/Roadmap.md using the template format with clear dependencies and milestones.
 - Ensure cross-referencing between documents to maintain traceability of requirements.
 - Validate that all requirements are testable and measurable.
 
@@ -30,14 +33,14 @@
 1. The PRD.md should be populated with a full product-focused requirements document with no open questions.
 2. The TRD.md should be populated with a full technology-focused requirements document with no open questions.
 3. The Context.md document should be complete with a full list of external contextual references and their relevance.
-4. The Phases.md document should be complete with a full list of logically ordered implementation phases.
+4. The Roadmap.md document should be complete with a full list of logically ordered implementation phases following the template format from tools/formats/Roadmap.md.
 
 ## Restrictions
 
 - Only edit these files in Brainstorm mode, do not edit anything but these:
   - PRD.md
   - TRD.md
-  - Phases.md
+  - Roadmap.md (using template from tools/formats/Roadmap.md)
   - Context.md
 
 ## Example Prompts

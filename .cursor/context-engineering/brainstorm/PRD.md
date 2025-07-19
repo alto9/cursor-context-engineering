@@ -1,12 +1,20 @@
 # Product Name
 
-## Product Overview
+## Idea Overview
 
 **Overview**: ...
 
 **Target Users**: ...
 
 **Value-Add Proposition**: ...
+
+## Features Overview
+
+**Feature**: ...
+
+**Description**: ...
+
+**Dependencies**: ...
 
 
 ## Success Metrics
