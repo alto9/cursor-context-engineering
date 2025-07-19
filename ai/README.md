@@ -18,7 +18,7 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 **Outputs**:
 - `PRD.md` - Product Requirements Document
 - `TRD.md` - Technical Requirements Document  
-- `Context.md` - External references and best practices
+- `CRD.md` - Contextual Requirements Document (external references and best practices)
 - `Roadmap.md` - High-level project roadmap with phases
 
 **Key Activities**:
@@ -27,6 +27,7 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 - Phase identification and dependencies
 - Risk assessment and mitigation strategies
 - Success metrics and KPI definition
+- External context gathering and documentation
 
 ### 📋 Plan Mode
 **Purpose**: Convert roadmap phases into detailed implementation plans with task arrays.
@@ -37,9 +38,10 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 **Key Activities**:
 - Phase-level planning using the Phase.md template
 - Task breakdown following the Task.md format
-- Context hint integration from Context.md
+- Context hint integration from CRD.md
 - Dependency mapping between tasks
 - Effort estimation and prioritization
+- Cross-referencing with PRD and TRD requirements
 
 ### 🔧 Refine Mode
 **Purpose**: Convert high-level tasks into detailed implementation tickets.
@@ -53,17 +55,20 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 - Comprehensive testing requirements
 - Acceptance criteria definition
 - Implementation step documentation
+- Security and performance considerations
 
 ## File Structure
 
 ```
-.cursor/context-engineering/
+ai/
 ├── README.md                    # This file
 ├── brainstorm/                  # Brainstorm mode outputs
 │   ├── PRD.md                  # Product Requirements Document
 │   ├── TRD.md                  # Technical Requirements Document
-│   ├── Context.md              # External references and best practices
-│   └── Roadmap.md              # High-level project roadmap
+│   ├── CRD.md                  # Contextual Requirements Document
+│   ├── Roadmap.md              # High-level project roadmap
+│   └── diagrams/               # Supporting diagrams and visuals
+│       └── README.md           # Diagram documentation
 ├── plan/                       # Plan mode outputs
 │   ├── Phase1.md               # Detailed phase 1 with tasks
 │   ├── Phase2.md               # Detailed phase 2 with tasks
@@ -78,11 +83,18 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
     │   ├── Roadmap.md          # Roadmap template
     │   ├── Phase.md            # Phase template
     │   ├── Task.md             # Task template
-    │   └── Ticket.md           # Ticket template
-    └── modes/                  # Mode definitions
-        ├── brainstorm.md       # Brainstorm mode instructions
-        ├── plan.md             # Plan mode instructions
-        └── refine.md           # Refine mode instructions
+    │   ├── Ticket.md           # Ticket template
+    │   ├── PRD.md              # Product Requirements Document template
+    │   ├── TRD.md              # Technical Requirements Document template
+    │   └── CRD.md              # Contextual Requirements Document template
+    ├── modes/                  # Mode definitions
+    │   ├── brainstorm.md       # Brainstorm mode instructions
+    │   ├── plan.md             # Plan mode instructions
+    │   └── refine.md           # Refine mode instructions
+    └── prompts/                # AI prompts for each mode
+        ├── brainstorm.md       # Brainstorm mode prompts
+        ├── plan.md             # Plan mode prompts
+        └── refine.md           # Refine mode prompts
 ```
 
 ## Getting Started
@@ -90,27 +102,29 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 ### 1. Initialize Your Project
 Start by creating the basic folder structure:
 ```bash
-mkdir -p brainstorm plan tickets
+mkdir -p ai/brainstorm ai/plan ai/tickets
 ```
 
 ### 2. Begin with Brainstorm Mode
 Use brainstorm mode to create your initial project documentation:
-- Define your product requirements in `PRD.md`
-- Document technical requirements in `TRD.md`
-- Gather external references in `Context.md`
-- Create your project roadmap in `Roadmap.md`
+- Define your product requirements in `brainstorm/PRD.md`
+- Document technical requirements in `brainstorm/TRD.md`
+- Gather external references in `brainstorm/CRD.md`
+- Create your project roadmap in `brainstorm/Roadmap.md`
 
 ### 3. Move to Plan Mode
 For each phase in your roadmap:
 - Create detailed phase files in `plan/Phase{N}.md`
 - Break down phases into tasks using the Task.md format
 - Include context hints and dependencies
+- Cross-reference with PRD and TRD requirements
 
 ### 4. Complete with Refine Mode
 For each task in your phases:
 - Create detailed tickets in `tickets/Phase{N}Task{M}.md`
 - Add comprehensive technical specifications
 - Define testing requirements and acceptance criteria
+- Include security and performance considerations
 
 ## Key Principles
 
@@ -118,16 +132,19 @@ For each task in your phases:
 - All planning incorporates relevant context from external sources
 - Best practices and implementation guides are integrated throughout
 - Cross-referencing maintains traceability between requirements and implementation
+- CRD.md serves as the central repository for external references
 
 ### Quality-First Approach
 - Comprehensive testing requirements at every level
 - Clear acceptance criteria and success metrics
 - Security and performance considerations built-in
+- Unit testing requirements included in all tickets
 
 ### Iterative Refinement
 - Each mode builds upon the previous one
 - Ambiguities are resolved progressively
 - Continuous validation and review processes
+- Clear completion criteria for each mode
 
 ## Template System
 
@@ -137,6 +154,9 @@ The workflow uses standardized templates to ensure consistency:
 - **Phase.md** - Phase planning template with task arrays
 - **Task.md** - High-level task planning template
 - **Ticket.md** - Detailed implementation ticket template
+- **PRD.md** - Product Requirements Document template
+- **TRD.md** - Technical Requirements Document template
+- **CRD.md** - Contextual Requirements Document template
 
 Each template includes sections for:
 - Context hints and external references
@@ -144,12 +164,33 @@ Each template includes sections for:
 - Quality assurance requirements
 - Success criteria and acceptance criteria
 
+## Mode-Specific Features
+
+### Brainstorm Mode
+- **Creative Collaboration**: Acts as a personal idea generation tool
+- **Iterative Refinement**: Seeks input to make ideas more relevant
+- **Comprehensive Documentation**: Ensures all requirements are captured
+- **External Context**: Gathers and documents relevant external references
+
+### Plan Mode
+- **Phase Focus**: Works on one phase at a time from the roadmap
+- **Context Integration**: Analyzes CRD.md and incorporates relevant context
+- **Task Breakdown**: Converts phase objectives into actionable tasks
+- **Dependency Mapping**: Identifies and documents task relationships
+
+### Refine Mode
+- **Task-to-Ticket Conversion**: Transforms high-level tasks into detailed tickets
+- **Technical Specification**: Provides comprehensive implementation details
+- **Testing Requirements**: Includes unit, integration, and performance testing
+- **Acceptance Criteria**: Defines measurable success criteria
+
 ## Best Practices
 
 ### Context Management
-- Keep Context.md updated with relevant external references
+- Keep CRD.md updated with relevant external references
 - Use consistent formatting for context hints: "Category - Item Title"
 - Cross-reference context items throughout the planning process
+- Include API documents, MCP tools, web pages, and internal documents
 
 ### File Naming
 - Use consistent naming conventions: `Phase{N}.md` and `Phase{N}Task{M}.md`
@@ -171,17 +212,40 @@ The context engineering workflow integrates seamlessly with development processe
 - **Monitoring**: Observability requirements are built into tickets
 - **Documentation**: Each level includes documentation requirements
 
+## Completion Criteria
+
+### Brainstorm Mode
+- Complete PRD with no open questions
+- Complete TRD with no open questions
+- Complete CRD with full list of external references
+- Complete roadmap with logically ordered implementation phases
+
+### Plan Mode
+- Tasks align with phase objectives
+- Context hints are properly referenced from CRD
+- Dependencies are clearly identified
+- Clear task boundaries and scope
+- Security and compliance tasks included
+
+### Refine Mode
+- Detailed implementation steps
+- Complete test requirements
+- Clear acceptance criteria
+- Documented dependencies
+- Referenced context guides
+- Status reflects refinement state
+
 ## Troubleshooting
 
 ### Common Issues
-- **Missing Context**: Ensure Context.md is populated with relevant references
+- **Missing Context**: Ensure CRD.md is populated with relevant references
 - **Incomplete Templates**: Follow the full template structure for each format
 - **Ambiguous Requirements**: Use brainstorm mode to clarify before planning
 - **Dependency Gaps**: Review phase dependencies before creating tickets
 
 ### Validation Checklist
 - [ ] All templates follow the format specifications
-- [ ] Context hints are properly referenced
+- [ ] Context hints are properly referenced from CRD
 - [ ] Dependencies are clearly identified
 - [ ] Testing requirements are comprehensive
 - [ ] Acceptance criteria are measurable
@@ -192,7 +256,7 @@ The context engineering workflow integrates seamlessly with development processe
 To improve the context engineering workflow:
 1. Update templates in `tools/formats/`
 2. Enhance mode instructions in `tools/modes/`
-3. Add new context categories to Context.md
+3. Add new context categories to CRD.md
 4. Improve documentation and examples
 
 ## License
