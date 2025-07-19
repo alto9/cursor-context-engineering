@@ -13,12 +13,14 @@ A planned but unrefined task within a phase. Tasks include context hints from co
 [High-level description of the task and its purpose within the phase]
 
 #### Context Hints
-- [List relevant items from Context.md using the format: Category - Item Title]
-- [Include any external references, best practices, or implementation guides]
+- [List relevant items from [CRD](/ai/brainstorm/CRD.md)]
 
 #### Objectives
 - [Primary goal of this task]
 - [Secondary objectives if applicable]
+
+#### Testing Strategy
+- [Description of the test strategies required]
 
 #### Scope
 - **In Scope**:
