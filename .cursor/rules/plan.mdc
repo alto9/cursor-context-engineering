@@ -22,5 +22,6 @@
 - Each task has clear boundaries and scope
 - Phase-Relevant Technical requirements from [Technical Requirements Document](/ai/brainstorm/TRD.md) are covered by planned tasks
 - Phase-Relevant Product requirements from [Product Requirements Document](/ai/brainstorm/PRD.md) are addressed in task planning
+- Phase-Relevant Quality requirements from [Quality Requirements Document](/ai/brainstorm/QRD.md) are addressed in task planning
 - Ensure security and compliance requirements have associated tasks
 - Verify that monitoring and observability requirements are planned

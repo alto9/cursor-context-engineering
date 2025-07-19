@@ -18,12 +18,14 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 **Outputs**:
 - `PRD.md` - Product Requirements Document
 - `TRD.md` - Technical Requirements Document  
+- `QRD.md` - Quality Requirements Document (testing strategy and quality assurance)
 - `CRD.md` - Contextual Requirements Document (external references and best practices)
 - `Roadmap.md` - High-level project roadmap with phases
 
 **Key Activities**:
 - Market analysis and user story development
 - Technical architecture decisions
+- Quality strategy and testing approach
 - Phase identification and dependencies
 - Risk assessment and mitigation strategies
 - Success metrics and KPI definition
@@ -41,7 +43,7 @@ Context Engineering is a methodology that leverages AI to systematically plan, o
 - Context hint integration from CRD.md
 - Dependency mapping between tasks
 - Effort estimation and prioritization
-- Cross-referencing with PRD and TRD requirements
+- Cross-referencing with PRD, TRD, and QRD requirements
 
 ### 🔧 Refine Mode
 **Purpose**: Convert high-level tasks into detailed implementation tickets.
@@ -65,6 +67,7 @@ ai/
 ├── brainstorm/                  # Brainstorm mode outputs
 │   ├── PRD.md                  # Product Requirements Document
 │   ├── TRD.md                  # Technical Requirements Document
+│   ├── QRD.md                  # Quality Requirements Document
 │   ├── CRD.md                  # Contextual Requirements Document
 │   ├── Roadmap.md              # High-level project roadmap
 │   └── diagrams/               # Supporting diagrams and visuals
@@ -109,6 +112,7 @@ mkdir -p ai/brainstorm ai/plan ai/tickets
 Use brainstorm mode to create your initial project documentation:
 - Define your product requirements in `brainstorm/PRD.md`
 - Document technical requirements in `brainstorm/TRD.md`
+- Define quality strategy in `brainstorm/QRD.md`
 - Gather external references in `brainstorm/CRD.md`
 - Create your project roadmap in `brainstorm/Roadmap.md`
 
@@ -156,6 +160,7 @@ The workflow uses standardized templates to ensure consistency:
 - **Ticket.md** - Detailed implementation ticket template
 - **PRD.md** - Product Requirements Document template
 - **TRD.md** - Technical Requirements Document template
+- **QRD.md** - Quality Requirements Document template
 - **CRD.md** - Contextual Requirements Document template
 
 Each template includes sections for:
@@ -169,7 +174,7 @@ Each template includes sections for:
 ### Brainstorm Mode
 - **Creative Collaboration**: Acts as a personal idea generation tool
 - **Iterative Refinement**: Seeks input to make ideas more relevant
-- **Comprehensive Documentation**: Ensures all requirements are captured
+- **Comprehensive Documentation**: Ensures all requirements are captured (Product, Technical, Quality, Context)
 - **External Context**: Gathers and documents relevant external references
 
 ### Plan Mode
@@ -217,6 +222,7 @@ The context engineering workflow integrates seamlessly with development processe
 ### Brainstorm Mode
 - Complete PRD with no open questions
 - Complete TRD with no open questions
+- Complete QRD with no open questions
 - Complete CRD with full list of external references
 - Complete roadmap with logically ordered implementation phases
 

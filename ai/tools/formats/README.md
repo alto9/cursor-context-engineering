@@ -16,6 +16,21 @@ This directory contains the format templates used by the different modes in the 
 - Risk Assessment and Mitigation
 - Success Metrics and KPIs
 
+### QRD.md
+**Used by**: Brainstorm mode
+**Purpose**: Template for creating quality requirements documents that define testing strategies, quality tools, and quality assurance requirements.
+
+**Key Sections**:
+- Quality Engineering Overview
+- Testing Strategy (Testing Pyramid, Testing Types)
+- Quality Tools and Infrastructure
+- Test Data Management
+- Quality Gates and Criteria
+- Quality Metrics and KPIs
+- Risk-Based Testing
+- Compliance and Standards
+- Continuous Quality Improvement
+
 ### Phase.md
 **Used by**: Plan mode
 **Purpose**: Template for detailed phase planning with an array of tasks.
@@ -50,10 +65,11 @@ This directory contains the format templates used by the different modes in the 
 
 ## Workflow Integration
 
-### Brainstorm Mode → Roadmap.md
+### Brainstorm Mode → Roadmap.md, QRD.md
 - Creates high-level project planning
 - Defines phases and strategic objectives
 - Establishes dependencies and success metrics
+- Defines quality strategy and testing requirements
 
 ### Plan Mode → Phase.md (with Task.md)
 - Converts roadmap phases into detailed phase files
@@ -70,6 +86,7 @@ This directory contains the format templates used by the different modes in the 
 ## File Naming Conventions
 
 - **Roadmap**: `brainstorm/Roadmap.md`
+- **QRD**: `brainstorm/QRD.md`
 - **Phases**: `plan/Phase{N}.md` (e.g., `plan/Phase1.md`)
 - **Tickets**: `tickets/Phase{N}Task{M}.md` (e.g., `tickets/Phase1Task1.md`)
 
