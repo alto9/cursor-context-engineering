@@ -6,11 +6,11 @@ This directory contains the format templates used by the different modes in the 
 
 ### Roadmap.md
 **Used by**: Brainstorm mode
-**Purpose**: Template for creating high-level project roadmaps with strategic planning, phase overviews, and dependencies.
+**Purpose**: Template for creating high-level project roadmaps with strategic planning, epic overviews, and dependencies.
 
 **Key Sections**:
 - Project Overview and Strategic Context
-- Phase Overview (multiple phases)
+- Epic Overview (multiple epics)
 - Technical Architecture Overview
 - Security and Compliance
 - Risk Assessment and Mitigation
@@ -31,20 +31,20 @@ This directory contains the format templates used by the different modes in the 
 - Compliance and Standards
 - Continuous Quality Improvement
 
-### Phase.md
+### Epic.md
 **Used by**: Plan mode
-**Purpose**: Template for detailed phase planning with an array of tasks.
+**Purpose**: Template for detailed epic planning with an array of tasks.
 
 **Key Sections**:
-- Phase Details and Overview
+- Epic Details and Overview
 - Business Context and Technical Scope
 - Implementation Strategy and Quality Assurance
 - Risk Management and Exit Criteria
 - **Tasks Array** (following Task.md format)
 
 ### Task.md
-**Used by**: Plan mode (within Phase.md)
-**Purpose**: Template for high-level task planning within a phase.
+**Used by**: Plan mode (within Epic.md)
+**Purpose**: Template for high-level task planning within an epic.
 
 **Key Sections**:
 - Task Description and Context Hints
@@ -67,28 +67,30 @@ This directory contains the format templates used by the different modes in the 
 
 ### Brainstorm Mode → Roadmap.md, QRD.md
 - Creates high-level project planning
-- Defines phases and strategic objectives
+- Defines epics and strategic objectives
 - Establishes dependencies and success metrics
 - Defines quality strategy and testing requirements
 
-### Plan Mode → Phase.md (with Task.md)
-- Converts roadmap phases into detailed phase files
-- Populates each phase with an array of tasks
+### Plan Mode → Epic.md (with Task.md)
+- Converts roadmap epics into detailed epic files
+- Populates each epic with an array of tasks
 - Each task follows the Task.md format
 - Includes context hints from Context.md
 
 ### Refine Mode → Ticket.md
 - Converts tasks into detailed implementation tickets
 - Each ticket follows the Ticket.md format
-- Files named as Phase{N}Task{M}.md (e.g., Phase1Task1.md)
+- Files named as Epic{N}Task{M}.md (e.g., Epic1Task1.md)
 - Includes comprehensive technical specifications
 
 ## File Naming Conventions
 
 - **Roadmap**: `brainstorm/Roadmap.md`
 - **QRD**: `brainstorm/QRD.md`
-- **Phases**: `plan/Phase{N}.md` (e.g., `plan/Phase1.md`)
-- **Tickets**: `tickets/Phase{N}Task{M}.md` (e.g., `tickets/Phase1Task1.md`)
+- **TRD**: `brainstorm/TRD.md`
+- **CRD**: `brainstorm/CRD.md`
+- **Epics**: `plan/Epic{N}.md` (e.g., `plan/Epic1.md`)
+- **Tickets**: `tickets/Epic{N}Ticket{M}.md` (e.g., `tickets/Epic1Task1.md`)
 
 ## Context Integration
 

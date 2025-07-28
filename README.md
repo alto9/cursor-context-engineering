@@ -8,7 +8,7 @@ This template helps development teams transform high-level ideas into executable
 - A systematic approach to requirement gathering and analysis
 - Structured documentation templates for technical specifications
 - A proven workflow for planning and refining implementation details
-- Clear completion criteria and validation checkpoints for each phase
+- Clear completion criteria and validation checkpoints for each epic
 - Context-driven development with traceable documentation
 
 ## 🏗️ Repository Structure
@@ -20,7 +20,7 @@ This template helps development teams transform high-level ideas into executable
 │   ├── plan.md                    # Planning mode guidelines
 │   └── refine.md                  # Refinement mode guidelines
 └── context-engineering/           # Project documentation and planning
-    ├── brainstorming/            # Requirements and phase definitions
+    ├── brainstorming/            # Requirements and epic definitions
     ├── planning/                 # Implementation planning and context
     └── refining/                 # Detailed implementation tickets
 ```
@@ -34,14 +34,14 @@ This template helps development teams transform high-level ideas into executable
 **Key Activities**:
 - Define product requirements and success metrics
 - Document technical architecture decisions
-- Create phase structure with clear objectives
+- Create epic structure with clear objectives
 - Establish dependencies and milestones
 - Generate supporting diagrams and documentation
 
 **Completion Criteria**:
 - Complete product requirements with no open questions
 - Complete technical requirements with no open questions
-- Defined phases with clear objectives and dependencies
+- Defined epics with clear objectives and dependencies
 - Validated requirements against business goals
 
 ### Phase 2: Planning 📋
@@ -50,13 +50,13 @@ This template helps development teams transform high-level ideas into executable
 
 **Key Activities**:
 - Collect and organize implementation context
-- Break down phase objectives into tasks
+- Break down epic objectives into tasks
 - Associate relevant context with each task
 - Establish task dependencies and order
 - Validate coverage of requirements
 
 **Completion Criteria**:
-- Tasks align with phase objectives
+- Tasks align with epic objectives
 - Context references are documented
 - Dependencies are identified
 - Clear task boundaries and scope
@@ -88,10 +88,10 @@ This template helps development teams transform high-level ideas into executable
 3. **Start Brainstorming**:
    - Document product requirements
    - Define technical architecture
-   - Establish project phases
+   - Establish project epics
 4. **Move to Planning**:
    - Gather implementation context
-   - Create phase-specific tasks
+   - Create epic-specific tasks
    - Associate context with tasks
 5. **Begin Refinement**:
    - Create detailed implementation tickets
@@ -105,7 +105,7 @@ This template helps development teams transform high-level ideas into executable
 - Define clear success metrics
 - Ensure user stories are comprehensive
 - Validate market analysis
-- Review phase dependencies
+- Review epic dependencies
 
 ### For Technical Leads
 - Document architecture decisions
@@ -126,7 +126,7 @@ This template helps development teams transform high-level ideas into executable
 1. **Follow the Mode Guidelines**
    - Use appropriate prompts for each mode
    - Complete validation checkpoints
-   - Maintain focus on current phase
+   - Maintain focus on current epic
 
 2. **Document Everything**
    - Keep context references up to date
@@ -139,7 +139,7 @@ This template helps development teams transform high-level ideas into executable
    - Verify requirement coverage
 
 4. **Maintain Focus**
-   - Work on one phase at a time
+   - Work on one epic at a time
    - Complete current mode before switching
    - Keep scope manageable
 

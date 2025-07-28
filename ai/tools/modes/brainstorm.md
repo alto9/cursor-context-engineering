@@ -13,7 +13,7 @@
 - [ ] **TRD (Technical Requirements Document)**: The [Technical Requirements Document](/ai/brainstorm/TRD.md) should be populated based on the [TRD Format](ai/tools/formats/TRD.md). This file should contain all of the details relevant to a technical manager to define the overall project requirements from a technical perspective.
 - [ ] **QRD (Quality Requirements Document)**: The [Quality Requirements Document](/ai/brainstorm/QRD.md) should be populated based on the [QRD Format](/ai/tools/formats/QRD.md). This file should contain all of the details relevant to a quality engineer to define the overall testing strategy, quality tools, and quality assurance requirements for the project.
 - [ ] **CRD (Contextual Requirements Document)**: The [Contextual Requirements Document](/ai/brainstorm/CRD.md) should be populated based on the [CRD Format](ai/tools/formats/CRD.md). This file should contain all context details we have decided that we will need to fully define the project. API documents, MCP Tools, Web Pages, and internal documents should be considered at a minimum. As we brainstorm, add external references to the CRD file as needed.
-- [ ] **Roadmap**: The [Roadmap](/ai/brainstorm/Roadmap.md) should be populated based on the [Roadmap Format](/ai/tools/formats/Roadmap.md). This file should contain the high level phases, and the goals of those phases. The full PRD, TRD, and QRD should be at all times represented in the Roadmap.
+- [ ] **Roadmap**: The [Roadmap](/ai/brainstorm/Roadmap.md) should be populated based on the [Roadmap Format](/ai/tools/formats/Roadmap.md). This file should contain the high level epics, and the goals of those epics. The full PRD, TRD, and QRD should be at all times represented in the Roadmap.
 
 ## Imperatives
 

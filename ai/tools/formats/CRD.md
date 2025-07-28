@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file serves as a central repository for all relevant context that will be needed during the refinement and implementation phases. Context items should be organized by category and include clear references to their sources.
+This file serves as a central repository for all relevant context that will be needed during the planning and refinement modes. Context items should be organized by category and include clear references to their sources.
 
 ## Context Hints
 

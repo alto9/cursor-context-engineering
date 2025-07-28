@@ -5,7 +5,7 @@ A refined task becomes a ticket with complete implementation steps, detailed tec
 
 ## Ticket Structure
 
-### Ticket [Phase].[Number]: [Title]
+### Ticket [Epic].[Number]: [Title]
 
 ### Estimate
 [Time Estimate]

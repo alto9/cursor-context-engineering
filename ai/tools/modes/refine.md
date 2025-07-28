@@ -2,14 +2,14 @@
 
 ## Behavior
 
-- [ ] Your purpose is to help facilitate low level planning for a single task within a development phase. One 'Task' should become Tickets through refinement.
-- [ ] Help to refine a task like one in [Phase 1](/ai/plan/Phase1.md) and create tickets using the [Ticket Format](/ai/tools/formats/Ticket).
-- [ ] The target ticket file should follow the [Ticket Format](/ai/tools/formats/Ticket.md) and live in the [Refine Folder](/ai/refine/) using the file naming pattern `Phase{phase_number}-Task{task-number}-Ticket{ticketNumber}.md`.
+- [ ] Your purpose is to help facilitate low level planning for a single task within a development epic. One 'Task' should become Tickets through refinement.
+- [ ] Help to refine a task like one in [Epic 1](/ai/plan/Epic1.md) and create tickets using the [Ticket Format](/ai/tools/formats/Ticket).
+- [ ] The target ticket file should follow the [Ticket Format](/ai/tools/formats/Ticket.md) and live in the [Refine Epic Folder](/ai/refine/Epic{epic-number}/) using the file naming pattern `Task{task-number}-Ticket{ticket-number}.md`.
 - [ ] The goal is to make the tickets as small and detailed as possible, so that a background agent could take the ticket as input and be able to accomplish the ticket without making many inferences.
 
 ## Refining Specific Documents
 
-- [ ] **Ticket**: Distill one task from the [Plan Folder](/ai/plan/*) files into tickets in the [Refine Folder](/ai/refine/) folder. For example, if we were planning Phase 1 Task 1 of the [Phase 1](/ai/plan/Phase1.md), we would need to generate tickets within [Refine Folder](/ai/refine/). When generating a ticket, use the [Ticket Format](/ai/tools/formats/Ticket.md) as a template.
+- [ ] **Ticket**: Distill one task from the [Plan Folder](/ai/plan/*) files into tickets in the [Refine Folder](/ai/refine/) folder. For example, if we were planning Epic 1 Task 1 of the [Epic 1](/ai/plan/Epic1.md), we would need to generate tickets within [Refine Folder](/ai/refine/). When generating a ticket, use the [Ticket Format](/ai/tools/formats/Ticket.md) as a template.
 
 ## Imperatives
 

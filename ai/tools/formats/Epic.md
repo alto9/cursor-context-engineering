@@ -1,40 +1,40 @@
-# Phase Format
+# Epic Format
 
 ## Format Description
-A phase template for detailed planning of implementation phases. Each phase contains an array of tasks that follow the Task.md format.
+An epic template for detailed planning of implementation epics. Each epic contains an array of tasks that follow the Task.md format.
 
-## Phase Structure
+## Epic Structure
 
-# Phase [Phase Number]: [Phase Name]
+# Epic [Epic Number]: [Epic Name]
 
-## Phase Estimate [Aggregate Time Estimate]
+## Epic Estimate [Aggregate Time Estimate]
 
-## Phase Details
-- **Name**: [Phase Name]
+## Epic Details
+- **Name**: [Epic Name]
 - **Duration**: [Estimated time in weeks/months]
 - **Priority**: [Critical/High/Medium/Low]
 - **Status**: [Not Started/In Progress/Completed]
 
-## Phase Overview
-[High-level description of what this phase accomplishes and its role in the overall project]
+## Epic Overview
+[High-level description of what this epic accomplishes and its role in the overall project]
 
 ## Business Context
-- **Business Value**: [Description of value delivered by this phase]
-- **Success Metrics**: [Quantifiable metrics to measure phase success]
+- **Business Value**: [Description of value delivered by this epic]
+- **Success Metrics**: [Quantifiable metrics to measure epic success]
 
 ## Technical Scope
-- **Components**: [Key system components involved in this phase]
+- **Components**: [Key system components involved in this epic]
 - **Technical Dependencies**: [Required technical prerequisites]
-- **Architecture Changes**: [Major architectural modifications in this phase]
+- **Architecture Changes**: [Major architectural modifications in this epic]
 
 ## Implementation Strategy
-- **Key Deliverables**: [Concrete outputs expected from this phase]
+- **Key Deliverables**: [Concrete outputs expected from this epic]
 - **Technical Constraints**: [Technical limitations/requirements]
 - **Integration Points**: [Systems/services to integrate with]
 
 ## Quality Assurance
 - **Testing Requirements**:
-  - Unit Testing: [Coverage requirements for this phase]
+  - Unit Testing: [Coverage requirements for this epic]
   - Integration Testing: [Scope and requirements]
   - Performance Testing: [Benchmarks and targets]
 - **Security Requirements**:
@@ -50,8 +50,8 @@ A phase template for detailed planning of implementation phases. Each phase cont
 - **Contingency Plans**: [Backup strategies]
 
 ## Exit Criteria
-- **Technical Criteria**: [Technical requirements to complete this phase]
-- **Business Criteria**: [Business requirements to complete this phase]
+- **Technical Criteria**: [Technical requirements to complete this epic]
+- **Business Criteria**: [Business requirements to complete this epic]
 - **Documentation**: [Required documentation updates]
 - **Performance Metrics**: [Required performance achievements]
 
@@ -60,11 +60,11 @@ A phase template for detailed planning of implementation phases. Each phase cont
 ### Task Array
 [Array of tasks following the Task.md format]
 
-#### Task [Phase].[1]: [First Task Title]
+#### Task [Epic].[1]: [First Task Title]
 **Status**: [Not Started/In Progress/Completed]
 
 ##### Description
-[High-level description of the task and its purpose within the phase]
+[High-level description of the task and its purpose within the epic]
 
 ##### Context Hints
 - [List relevant items from Context.md using the format: Category - Item Title]
@@ -93,12 +93,12 @@ A phase template for detailed planning of implementation phases. Each phase cont
 - [ ] [High-level success criterion 1]
 - [ ] [High-level success criterion 2]
 
-#### Task [Phase].[2]: [Second Task Title]
+#### Task [Epic].[2]: [Second Task Title]
 [Continue with additional tasks following the same format...]
 
-## Phase Dependencies
-- **Depends on**: [Previous phases that must be completed]
-- **Enables**: [Subsequent phases that depend on this one]
+## Epic Dependencies
+- **Depends on**: [Previous epics that must be completed]
+- **Enables**: [Subsequent epics that depend on this one]
 
 ## Monitoring and Success Metrics
 

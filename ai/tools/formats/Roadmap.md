@@ -1,7 +1,7 @@
 # Roadmap Format
 
 ## Format Description
-A comprehensive project roadmap template for brainstorm mode. This template guides the creation of a high-level project plan with phases, dependencies, and strategic objectives.
+A comprehensive project roadmap template for brainstorm mode. This template guides the creation of a high-level project plan with epics, dependencies, and strategic objectives.
 
 ## Roadmap Structure
 
@@ -15,10 +15,10 @@ A comprehensive project roadmap template for brainstorm mode. This template guid
 - **Success Metrics**: [Key performance indicators for project success]
 - **Timeline**: [Overall project timeline and major milestones]
 
-## Phase Overview
+## Epic Overview
 
-### Phase 1: Foundation
-- **Name**: [Phase Name]
+### Epic 1: Foundation
+- **Name**: [Epic Name]
 - **Duration**: [Estimated time in weeks/months]
 - **Priority**: [Critical/High/Medium/Low]
 - **Status**: [Not Started/In Progress/Completed]
@@ -60,15 +60,15 @@ A comprehensive project roadmap template for brainstorm mode. This template guid
 - **Documentation**: [Required documentation updates]
 - **Performance Metrics**: [Required performance achievements]
 
-### Phase 2: Core Features
-[Continue with additional phases following the same format...]
+### Epic 2: Core Features
+[Continue with additional epics following the same format...]
 
-## Phase Dependencies
+## Epic Dependencies
 ```mermaid
 graph TD
-    P1[Phase 1: Foundation] --> P2[Phase 2: Core Features]
-    P2 --> P3[Phase 3: Integration]
-    P3 --> P4[Phase 4: Enhancement]
+    P1[Epic 1: Foundation] --> P2[Epic 2: Core Features]
+    P2 --> P3[Epic 3: Integration]
+    P3 --> P4[Epic 4: Enhancement]
     
     subgraph "Critical Path"
     P1 --> P2 --> P3

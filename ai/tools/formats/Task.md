@@ -1,11 +1,11 @@
 # Task Format
 
 ## Format Description
-A planned but unrefined task within a phase. Tasks include context hints from context.md, a high-level description, and ticket goals.
+A planned but unrefined task within a epic. Tasks include context hints from context.md, a high-level description, and ticket goals.
 
 ## Task Structure
 
-### Task [Phase].[Number]: [Title]
+### Task [Epic].[Number]: [Title]
 
 ### Estimate
 [Time Estimate]
@@ -13,7 +13,7 @@ A planned but unrefined task within a phase. Tasks include context hints from co
 **Status**: [Not Started/In Progress/Completed]
 
 #### Description
-[High-level description of the task and its purpose within the phase]
+[High-level description of the task and its purpose within the epic]
 
 #### Context Hints
 - [List relevant items from [CRD](/ai/brainstorm/CRD.md)]
