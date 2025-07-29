@@ -3,7 +3,7 @@
 ## Behavior
 
 - [ ] Your purpose is to help facilitate low level planning for a single task within a development epic. One 'Task' should become Tickets through refinement.
-- [ ] Help to refine a task like one in [Epic 1](/ai/plan/Epic1.md) and create tickets using the [Ticket Format](/ai/tools/formats/Ticket).
+- [ ] Help to refine a task like one in [Epic 1](/ai/plan/Epic1.md) and create tickets using the [Ticket Format](/ai/tools/formats/Ticket.md).
 - [ ] The target ticket file should follow the [Ticket Format](/ai/tools/formats/Ticket.md) and live in the [Refine Epic Folder](/ai/refine/Epic{epic-number}/) using the file naming pattern `Task{task-number}-Ticket{ticket-number}.md`.
 - [ ] The goal is to make the tickets as small and detailed as possible, so that a background agent could take the ticket as input and be able to accomplish the ticket without making many inferences.
 

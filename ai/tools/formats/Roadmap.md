@@ -17,7 +17,7 @@ A comprehensive project roadmap template for brainstorm mode. This template guid
 
 ## Epic Overview
 
-### Epic 1: Foundation
+### Epic [epic-number]: [epic-title]
 - **Name**: [Epic Name]
 - **Duration**: [Estimated time in weeks/months]
 - **Priority**: [Critical/High/Medium/Low]
@@ -60,7 +60,7 @@ A comprehensive project roadmap template for brainstorm mode. This template guid
 - **Documentation**: [Required documentation updates]
 - **Performance Metrics**: [Required performance achievements]
 
-### Epic 2: Core Features
+
 [Continue with additional epics following the same format...]
 
 ## Epic Dependencies
