@@ -6,33 +6,59 @@ The documents below that have formats associated should contain content that sho
 
 - **Product Requirements Document(PRD)**:
     - Link: [PRD](/ai/brainstorm/PRD.md)
-    - Description: Isolated idea details relevant to a product manager to define the overall project requirements from a business perspective.
     - Format: [PRD Format](/ai/tools/formats/PRD.md)
+    - **PRD Population Objectives**:
+        - Business objectives and value propositions
+        - User personas and use cases
+        - Feature requirements and priorities
+        - Success metrics and KPIs
+        - Integration requirements with external systems
 - **Technical Requirements Document(TRD)**:
     - Link: [TRD](/ai/brainstorm/TRD.md)
-    - Description: Isolated idea details relevant to a technical manager to define the overall project requirements from a technical perspective.
     - Format: [TRD Format](/ai/tools/formats/TRD.md)
+    - **TRD Population Objectives**:
+        - Technical architecture decisions
+        - Technology stack choices
+        - API specifications and data models
+        - Security and compliance requirements
+        - Infrastructure and deployment strategies
 - **Quality Requirements Document(QRD)**:
     - Link: [QRD](/ai/brainstorm/QRD.md)
-    - Description: Isolated idea details relevant to a quality assurance manager to define the overall project requirements from a quality assurance perspective.
     - Format: [QRD Format](/ai/tools/formats/QRD.md)
+    - **QRD Population Objectives**:
+        - Testing strategies and quality gates
+        - Performance and reliability requirements
+        - Security testing approaches
+        - Monitoring and observability needs
+        - Quality metrics and standards
 - **Context Requirements Document(CRD)**:
     - Link: [CRD](/ai/brainstorm/CRD.md)
-    - Description: All contextual details we have decided we will need to fully refine the project. API Documents, MCP Tools, Web Pages, internal documents and Brainstorming content should be considered 'context'.
     - Format: [CRD Format](/ai/tools/formats/CRD.md)
+    - **CRD Population Objectives**:
+        - External dependencies and APIs
+        - Documentation requirements
+        - Tool integrations and MCP tools
+        - Context sources and references
 - **Roadmap**:
     - Link: [Roadmap](/ai/brainstorm/Roadmap.md)
-    - Description: List of Epics that make up the full plan, their objectives, and their estimates.
     - Format: [Roadmap Format](/ai/tools/formats/Roadmap.md)
+    - **Roadmap Population Objectives**:
+        - Epic breakdown and sequencing
+        - Dependencies between epics
+        - Resource allocation and timelines
+        - Risk mitigation strategies
+        - Success criteria for each epic
 
 ## Planning Documents
 
 - **Epic{epic_number}.md**:
-    - Link: [Epic {epic_number}](/ai/plan/Epic{epic_number}.md)
+    - Link Format: `/ai/plan/Epic{epic_number}.md`
+    - Link Example: [Epic 1](/ai/plan/Epic1.md)
     - Description: This file should contain the populated epic, along with a list of Stories ready for refinement. The Stories will be pollenated with Context Hints that will assist the developer during Refinement.
     - Format: [Epic Format](/ai/tools/formats/Epic.md)
 
 ## Refinement Documents
 
 - **Ticket{ticket-number}.md**:
-    - Link: [Ticket-{ticket-number}](/ai/refine/Epic{epic-number}/Story{story-number}/Ticket{ticket-number}.md)
+    - Link Format: `/ai/plan/refine/Epic{epic-number}/`
+    - Link Example: [Ticket 1.1.1](/ai/refine/Epic1/Story1/Task1-Ticket1.md)
