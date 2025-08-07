@@ -1,103 +1,63 @@
 # Brainstorm Mode
 
-## Core Purpose
+## Brainstorm Mode Goals
 
-Transform natural conversation into structured project documentation by actively engaging in brainstorming discussions and systematically populating the project documents listed in the Index.
+- Help me brainstorm a high level idea so it can be broken down into a Roadmap of ordered epics.
+- Do not write actual code, only exhibit the brainstorming behavior defined below.
 
-## Active Engagement Behavior
+**You are now in brainstorm mode**
 
-### Conversation Approach
-- **Ask probing questions** to uncover requirements, constraints, and goals
-- **Present multiple options** when decisions need to be made
-- **Challenge assumptions** to ensure thorough exploration
-- **Connect ideas** across different aspects of the project
-- **Summarize progress** regularly to maintain focus
+## Brainstorm Mode Behavior
 
-### Question Types to Use
-- **Clarifying**: "What do you mean by...?" "Can you elaborate on...?"
-- **Exploratory**: "What if we...?" "How might we...?" "What are the alternatives to...?"
-- **Decision-focused**: "Which approach do you prefer?" "What are the trade-offs between...?"
-- **Constraint-based**: "What are the limitations?" "What can't we change?"
-- **Success-oriented**: "How will we know this is working?" "What does success look like?"
+- [ ] **Understand the Index**
+    *Given* a prompt has been provided in brainstorm mode
+    *When* formulating a response to the user
+    *Then* analyze the [Index](/ai/Index.md#brainstorm-documents) to understand brainstorm document structure
 
-## Document Population Strategy
+- [ ] **Populate the PRD**
+    *Given* a feature specific decision has been made
+    *When* formulating a response to the user
+    *Then* update the [PRD](/ai/brainstorm/PRD.md) document
+    *And* verify the PRD follows the [PRD Format](/ai/tools/formats/PRD.md)
 
-### Real-time Updates
-- **Immediately capture** decisions and insights as they emerge in conversation
-- **Cross-reference** information across documents to maintain consistency
-- **Flag inconsistencies** and ask for clarification when needed
-- **Update multiple documents** simultaneously when a decision affects multiple areas
+- [ ] **Populate the TRD**
+    *Given* an architecture specific decision has been made
+    *When* formulating a response to the user
+    *Then* update the [TRD](/ai/brainstorm/TRD.md) document
+    *And* verify the TRD follows the [TRD Format](/ai/tools/formats/TRD.md)
 
-### Document-Specific Focus Areas
+- [ ] **Populate the QRD**
+    *Given* a testing specific decision has been made
+    *When* formulating a response to the user
+    *Then* update the [QRD](/ai/brainstorm/QRD.md) document
+    *And* verify the QRD follows the [QRD Format](/ai/tools/formats/QRD.md)
 
-Read the [Brainstorming Documents Index](/ai/Index.md#brainstorm-documents) to understand the document population objectives for Brainstorming Mode.
+- [ ] **Populate the Roadmap**
+    *Given* a testing specific decision has been made
+    *When* formulating a response to the user
+    *Then* update the [Roadmap](/ai/brainstorm/Roadmap.md) document
+    *And* verify the Roadmap follows the [Roadmap Format](/ai/tools/formats/Roadmap.md)
 
-## Workflow Process
+- [ ] **Manage New Questions**
+    *Given* there is an ambiguity or decision that needs to be made in order to complete brainstorming
+    *When* formulating a response to the user
+    *Then* update the [Open Questions](/ai/brainstorm/OpenQuestions.md) document to include/update this question
 
-### 1. Conversation Analysis
-- **Listen actively** for requirements, constraints, and decisions
-- **Identify document impact** of each piece of information
-- **Ask follow-up questions** to fill gaps in understanding
+- [ ] **Resolving Questions**
+    *Given* an answer to an open question has been provided within the prompt
+    *When* formulating a response to the user
+    *Then* update the [Open Questions](/ai/brainstorm/OpenQuestions.md) document to mark this question resolved
+    *And* make sure that the answer is represented by clarity in the existing [Brainstorming Documents](/ai/Index.md#brainstorm-documents)
 
-### 2. Information Capture
-- **Immediately update** relevant documents with new information
-- **Cross-reference** across documents to ensure consistency
-- **Flag areas** that need more detail or clarification
+- [ ] **Ensure Brainstorm Plan Cohesion**
+    *Given* any change to the plan has been requested by the user
+    *When* updating brainstorming documents in the Index
+    *Then* scan *all* [Brainstorming Documents](/ai/Index.md#brainstorm-documents) for potential updates to maintain plan cohesion
 
-### 3. Decision Documentation
-- **Record the decision** and its rationale
-- **Update all affected documents** simultaneously
-- **Note any open questions** that arise from the decision
-
-### 4. Progress Validation
-- **Regularly summarize** what has been captured
-- **Identify gaps** in the documentation
-- **Propose next steps** for areas that need more exploration
-
-## Quality Assurance
-
-### Consistency Checks
-- **Cross-validate** information across PRD, TRD, and QRD
-- **Ensure roadmap** accurately reflects all requirements
-- **Verify technical decisions** align with business goals
-- **Check that quality requirements** support technical implementation
-
-### Completeness Validation
-- **Identify missing sections** in each document
-- **Flag incomplete requirements** that need more detail
-- **Ensure all open questions** are documented and prioritized
-- **Validate that success criteria** are measurable and achievable
-
-## Open Questions Management
-
-### Active Tracking
-- **Immediately capture** questions that arise during conversation
-- **Categorize questions** by impact and urgency
-- **Prioritize questions** that block progress
-- **Propose approaches** for resolving each question
-
-### Resolution Process
-- **Suggest investigation approaches** for each open question
-- **Identify stakeholders** who need to be consulted
-- **Propose decision frameworks** for complex choices
-- **Track resolution progress** and update documents accordingly
-
-## Success Indicators
-
-### Conversation Quality
-- **Engaging dialogue** that uncovers deeper insights
-- **Systematic exploration** of all project aspects
-- **Clear decision-making** with documented rationale
-- **Progressive refinement** of requirements and plans
-
-### Documentation Quality
-- **Comprehensive coverage** of all project aspects
-- **Consistent information** across all documents
-- **Actionable requirements** with clear success criteria
-- **Traceable decisions** with rationale and alternatives
-
-### Project Readiness
-- **All major decisions** documented and justified
-- **Clear roadmap** with realistic estimates
-- **Identified risks** with mitigation strategies
-- **Quality gates** and success criteria defined
+- [ ] **Work Towards Checklist Completion**
+    *Given* brainstorming work is being performed
+    *When* making progress on any brainstorming activity
+    *Then* reference the [Brainstorm Checklist](/ai/brainstorm/Checklist.md) to ensure all required items are being addressed
+    *And* proactively identify which checklist items can be completed based on current progress
+    *And* guide the user toward completing incomplete items
+    *And* validate that brainstorming phase requirements are met before transitioning to planning

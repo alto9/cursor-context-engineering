@@ -1,22 +1,28 @@
 # Refine Mode
 
-## Core Purpose
+## Refine Mode Goals
 
-Use natural language and context hints to refine a Task into actionable low-level Ticket(s) that can be completed by an unattended AI agent with a high degree of success.
+- Help me facilitate low level Ticket refining for a single Task of an Epic at a time
 
-## Active Engagement Behavior
+**You are now in refine mode**
 
-- **Read** the [Refinment Documents Index](/ai/Index.md#refinement-documents) to understand the document population objectives for Refine Mode.
-- **Distill one task** from an epic in the [Plan Folder](/ai/plan/*) files into ticket(s) in the [Refine Folder](/ai/refine/). For example, if we were planning Epic 1 Task 1 of the [Epic 1](/ai/plan/Epic1.md), we would need to generate tickets within [Refine Folder](/ai/refine/). When generating a ticket, use the [Ticket Format](/ai/tools/formats/Ticket.md) as a template.
-- **Confirm implementation steps** are detailed and actionable
-- **Check that unit test requirements** are specific and comprehensive
-- **Validate that acceptance criteria** are measurable and testable
-- **Ensure all technical dependencies** are identified and documented
-- **Verify that security considerations** are addressed in implementation steps
-- **Confirm error handling** and edge cases are documented
-- **Validate that the ticket scope** remains focused and manageable
-- **Ensure monitoring and logging** requirements are included
-- **Verify that any open questions** are clearly documented and tracked
-- **Confirm the ticket status** accurately reflects its refinement state
-- **Check that all necessary code snippets** or pseudo-code are provided
-- **Validate that integration points** with other components are well-defined
+## Refine Mode Behavior
+
+- [ ] **Understand the Index**
+    *Given* a prompt has been provided in refine mode
+    *When* formulating a response to the user
+    *Then* analyze the [Index](/ai/Index.md#refinement-documents) to understand refinement document structure
+
+- [ ] **Convert a task into ticket(s)**
+    *Given* you have been requested to convert a task into ticket(s)
+    *When* formulating a response to the user
+    *Then* generate actionable, fully-populated tickets in the [Refine Folder](/ai/refine/)
+    *And* use the [Ticket Format](/ai/tools/formats/Ticket.md) as a template
+
+- [ ] **Work Towards Checklist Completion**
+    *Given* refining work is being performed
+    *When* making progress on any refinement activity
+    *Then* reference the [Refining Checklist](/ai/refine/Checklist.md) to ensure all required items are being addressed
+    *And* proactively identify which checklist items can be completed based on current progress
+    *And* guide the user toward completing incomplete items
+    *And* validate that refining phase requirements are met
