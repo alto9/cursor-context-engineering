@@ -14,15 +14,40 @@ This template helps development teams transform high-level ideas into executable
 ## 🏗️ Repository Structure
 
 ```
-.cursor/
-├── modes/                          # Mode definitions and instructions
-│   ├── brainstorm.md              # Brainstorming mode guidelines
-│   ├── plan.md                    # Planning mode guidelines
-│   └── refine.md                  # Refinement mode guidelines
-└── context-engineering/           # Project documentation and planning
-    ├── brainstorming/            # Requirements and epic definitions
-    ├── planning/                 # Implementation planning and context
-    └── refining/                 # Detailed implementation tickets
+ai/
+├── tools/                          # Templates, modes, and guidelines
+│   ├── modes/                     # Mode definitions and instructions
+│   │   ├── brainstorm.md          # Brainstorming mode guidelines
+│   │   ├── plan.md                # Planning mode guidelines
+│   │   └── refine.md              # Refinement mode guidelines
+│   ├── formats/                   # Document format templates
+│   │   ├── PRD.md                 # Product Requirements Document format
+│   │   ├── TRD.md                 # Technical Requirements Document format
+│   │   ├── QRD.md                 # Quality Requirements Document format
+│   │   ├── CRD.md                 # Context Requirements Document format
+│   │   ├── Roadmap.md             # Roadmap format
+│   │   ├── Epic.md                # Epic format
+│   │   ├── Task.md                # Task format
+│   │   └── Ticket.md              # Ticket format
+│   ├── prompts/                   # Mode-specific prompts
+│   └── SizingGuidelines.md        # Sizing and estimation guidelines
+├── brainstorm/                    # Requirements and epic definitions
+│   ├── PRD.md                     # Product Requirements Document
+│   ├── TRD.md                     # Technical Requirements Document
+│   ├── QRD.md                     # Quality Requirements Document
+│   ├── CRD.md                     # Context Requirements Document
+│   ├── Roadmap.md                 # Project roadmap and epics
+│   ├── OpenQuestions.md           # Unresolved questions
+│   ├── Checklist.md               # Brainstorm completion checklist
+│   └── diagrams/                  # Supporting diagrams and visuals
+├── plan/                          # Implementation planning and context
+│   ├── Epic{number}.md            # Epic implementation plans
+│   └── Checklist.md               # Plan completion checklist
+├── refine/                        # Detailed implementation tickets
+│   ├── Epic{number}/              # Epic-specific refinement folders
+│   └── Checklist.md               # Refine completion checklist
+├── Index.md                       # Complete documentation index
+└── README.md                      # AI folder documentation
 ```
 
 ## 🔄 Three-Phase Workflow
@@ -43,6 +68,7 @@ This template helps development teams transform high-level ideas into executable
 - Complete technical requirements with no open questions
 - Defined epics with clear objectives and dependencies
 - Validated requirements against business goals
+- All items in the Brainstorm Completion Checklist are completed
 
 ### Phase 2: Planning 📋
 
@@ -61,6 +87,7 @@ This template helps development teams transform high-level ideas into executable
 - Dependencies are identified
 - Clear task boundaries and scope
 - Security and compliance tasks included
+- All items in the Plan Completion Checklist are completed
 
 ### Phase 3: Refining 🔍
 
@@ -80,23 +107,55 @@ This template helps development teams transform high-level ideas into executable
 - Documented dependencies
 - Referenced context guides
 - Status reflects refinement state
+- All items in the Refine Completion Checklist are completed
+
+## 🛠️ Tools and Resources
+
+The `ai/tools/` folder provides comprehensive resources to support the three-phase workflow:
+
+### Mode Guidelines (`ai/tools/modes/`)
+- **brainstorm.md**: Detailed guidelines for the brainstorming phase
+- **plan.md**: Instructions for the planning phase  
+- **refine.md**: Guidelines for the refinement phase
+
+### Document Format Templates (`ai/tools/formats/`)
+- **PRD.md**: Product Requirements Document template
+- **TRD.md**: Technical Requirements Document template
+- **QRD.md**: Quality Requirements Document template
+- **CRD.md**: Context Requirements Document template
+- **Roadmap.md**: Project roadmap template
+- **Epic.md**: Epic documentation template
+- **Task.md**: Task definition template
+- **Ticket.md**: Implementation ticket template
+
+### Prompts and Guidelines
+- **prompts/**: Mode-specific prompts for AI assistance
+- **SizingGuidelines.md**: Estimation and sizing guidelines
+
+### Navigation and Index
+- **ai/Index.md**: Complete index of all documents with objectives and links
+- **ai/README.md**: Detailed documentation about the AI folder structure
 
 ## 🚀 Getting Started
 
 1. **Use this template** to create a new repository
-2. **Review the mode files** in `.cursor/modes/` to understand each phase
-3. **Start Brainstorming**:
-   - Document product requirements
-   - Define technical architecture
-   - Establish project epics
-4. **Move to Planning**:
+2. **Review the mode files** in `ai/tools/modes/` to understand each phase
+3. **Check the Index** at `ai/Index.md` for complete documentation overview
+4. **Start Brainstorming**:
+   - Document product requirements using format templates
+   - Define technical architecture and quality requirements
+   - Establish project epics and roadmap
+   - Complete the Brainstorm Completion Checklist
+5. **Move to Planning**:
    - Gather implementation context
-   - Create epic-specific tasks
+   - Create epic-specific tasks using Epic format
    - Associate context with tasks
-5. **Begin Refinement**:
+   - Complete the Plan Completion Checklist
+6. **Begin Refinement**:
    - Create detailed implementation tickets
    - Include all necessary technical details
    - Define comprehensive test requirements
+   - Complete the Refine Completion Checklist
 
 ## 📋 Usage Guidelines
 
