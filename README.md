@@ -1,218 +1,201 @@
-# Context Engineering with Cursor
+# Glam - Context Engineering for Agentic Development
 
-A comprehensive template repository designed for systematic development with Cursor IDE. This template provides a structured framework to convert human-assembled requirements and context into logical implementation plans through a three-phase workflow: Brainstorming, Planning, and Refinement.
+A VSCode extension that helps engineers use proper context engineering to build and maintain software using Agentic development practices. Glam provides a structured approach to creating decisions, features, specs, and tasks with intelligent prompt generation for AI-assisted development.
 
-## 🎯 Purpose
+## 🎯 What is Glam?
 
-This template helps development teams transform high-level ideas into executable technical implementations by providing:
-- A systematic approach to requirement gathering and analysis
-- Structured documentation templates for technical specifications
-- A proven workflow for planning and refining implementation details
-- Clear completion criteria and validation checkpoints for each epic
-- Context-driven development with traceable documentation
+Glam is a workflow tool designed to help developers create well-structured, context-rich prompts for AI agents. Rather than executing tasks directly, Glam generates intelligent prompts that include all necessary context, making it easy to work with AI assistants like Cursor Agent.
 
-## 🏗️ Repository Structure
+**Key Benefits:**
+- Build comprehensive context systematically
+- Maintain consistency with standardized formats
+- Improve AI accuracy with complete context
+- Create traceable documentation linking decisions to implementation
+- Reduce rework by getting it right the first time
+
+## 🏗️ Project Structure
+
+When you use Glam in a project, it helps you manage files in the following structure:
 
 ```
-ai/
-├── tools/                          # Templates, modes, and guidelines
-│   ├── modes/                     # Mode definitions and instructions
-│   │   ├── brainstorm.md          # Brainstorming mode guidelines
-│   │   ├── plan.md                # Planning mode guidelines
-│   │   └── refine.md              # Refinement mode guidelines
-│   ├── formats/                   # Document format templates
-│   │   ├── PRD.md                 # Product Requirements Document format
-│   │   ├── TRD.md                 # Technical Requirements Document format
-│   │   ├── QRD.md                 # Quality Requirements Document format
-│   │   ├── CRD.md                 # Context Requirements Document format
-│   │   ├── Roadmap.md             # Roadmap format
-│   │   ├── Epic.md                # Epic format
-│   │   ├── Task.md                # Task format
-│   │   └── Ticket.md              # Ticket format
-│   ├── prompts/                   # Mode-specific prompts
-│   └── SizingGuidelines.md        # Sizing and estimation guidelines
-├── brainstorm/                    # Requirements and epic definitions
-│   ├── PRD.md                     # Product Requirements Document
-│   ├── TRD.md                     # Technical Requirements Document
-│   ├── QRD.md                     # Quality Requirements Document
-│   ├── CRD.md                     # Context Requirements Document
-│   ├── Roadmap.md                 # Project roadmap and epics
-│   ├── OpenQuestions.md           # Unresolved questions
-│   ├── Checklist.md               # Brainstorm completion checklist
-│   └── diagrams/                  # Supporting diagrams and visuals
-├── plan/                          # Implementation planning and context
-│   ├── Epic{number}.md            # Epic implementation plans
-│   └── Checklist.md               # Plan completion checklist
-├── refine/                        # Detailed implementation tickets
-│   ├── Epic{number}/              # Epic-specific refinement folders
-│   └── Checklist.md               # Refine completion checklist
-├── Index.md                       # Complete documentation index
-└── README.md                      # AI folder documentation
+your-project/
+└── ai/
+    ├── decisions/     # Architecture Decision Records (ADRs)
+    ├── features/      # Feature definitions with Gherkin scenarios
+    ├── specs/         # Technical specifications with Mermaid diagrams
+    ├── contexts/      # Context references and guidance
+    ├── tasks/         # Implementation tasks
+    └── docs/          # Supporting documentation
 ```
 
-## 🔄 Three-Phase Workflow
+## 📋 File Formats
 
-### Phase 1: Brainstorming 🧠
+### Decision Files (*.decision.md)
+```markdown
+---
+decision_id: add-user-authentication
+date: 2025-10-01
+status: proposed
+---
 
-**Purpose**: Iterative process of research and analysis to complete requirements documentation.
+# Add User Authentication
 
-**Key Activities**:
-- Define product requirements and success metrics
-- Document technical architecture decisions
-- Create epic structure with clear objectives
-- Establish dependencies and milestones
-- Generate supporting diagrams and documentation
+[ADR content with context, decision, alternatives, and consequences]
+```
 
-**Completion Criteria**:
-- Complete product requirements with no open questions
-- Complete technical requirements with no open questions
-- Defined epics with clear objectives and dependencies
-- Validated requirements against business goals
-- All items in the Brainstorm Completion Checklist are completed
+### Feature Files (*.feature.md)
+```markdown
+---
+feature_id: user-login
+spec_id: [authentication-spec, session-management-spec]
+---
 
-### Phase 2: Planning 📋
+# User Login Feature
 
-**Purpose**: Transform brainstorming output into logically ordered implementation tasks with relevant context.
+GIVEN a registered user
+WHEN they enter valid credentials
+THEN they should be logged into the system
+AND receive a session token
+```
 
-**Key Activities**:
-- Collect and organize implementation context
-- Break down epic objectives into tasks
-- Associate relevant context with each task
-- Establish task dependencies and order
-- Validate coverage of requirements
+### Spec Files (*.spec.md)
+```markdown
+---
+spec_id: authentication-spec
+feature_id: [user-login, password-reset]
+---
 
-**Completion Criteria**:
-- Tasks align with epic objectives
-- Context references are documented
-- Dependencies are identified
-- Clear task boundaries and scope
-- Security and compliance tasks included
-- All items in the Plan Completion Checklist are completed
+# Authentication Specification
 
-### Phase 3: Refining 🔍
+[Technical details and Mermaid diagrams]
+```
 
-**Purpose**: Create detailed, implementation-ready tickets with all necessary context.
+### Context Files (*.context.md)
+```markdown
+---
+context_id: typescript-guidance
+---
 
-**Key Activities**:
-- Break down tasks into detailed steps
-- Include specific technical requirements
-- Define comprehensive test criteria
-- Document acceptance requirements
-- Link relevant implementation context
+GIVEN we are working within Glam files
+WHEN information is needed about TypeScript implementation
+THEN read the document at `ai/docs/typescript_guidance.md`
+AND use that information to help inform decisions
+```
 
-**Completion Criteria**:
-- Detailed implementation steps
-- Complete test requirements
-- Clear acceptance criteria
-- Documented dependencies
-- Referenced context guides
-- Status reflects refinement state
-- All items in the Refine Completion Checklist are completed
+## 🚀 Commands
 
-## 🛠️ Tools and Resources
+Glam provides three main commands accessible from the Command Palette (`Cmd/Ctrl+Shift+P`) or via right-click context menus:
 
-The `ai/tools/` folder provides comprehensive resources to support the three-phase workflow:
+### 1. Glam: New Decision
+Creates a prompt for a new decision document.
 
-### Mode Guidelines (`ai/tools/modes/`)
-- **brainstorm.md**: Detailed guidelines for the brainstorming phase
-- **plan.md**: Instructions for the planning phase  
-- **refine.md**: Guidelines for the refinement phase
+**How to use:**
+- Open Command Palette and select "Glam: New Decision"
+- OR right-click on the `ai/decisions` folder and select "Glam: New Decision"
+- Fill out the form with decision details
+- Copy the generated prompt from the Glam output panel
+- Paste into Cursor Agent to create the decision file
 
-### Document Format Templates (`ai/tools/formats/`)
-- **PRD.md**: Product Requirements Document template
-- **TRD.md**: Technical Requirements Document template
-- **QRD.md**: Quality Requirements Document template
-- **CRD.md**: Context Requirements Document template
-- **Roadmap.md**: Project roadmap template
-- **Epic.md**: Epic documentation template
-- **Task.md**: Task definition template
-- **Ticket.md**: Implementation ticket template
+### 2. Glam: Distill Decision into Features and Specs
+Generates a prompt to convert a decision into features and specs.
 
-### Prompts and Guidelines
-- **prompts/**: Mode-specific prompts for AI assistance
-- **SizingGuidelines.md**: Estimation and sizing guidelines
+**How to use:**
+- Right-click on a `.decision.md` file and select the command
+- OR use Command Palette and select the decision file
+- Copy the generated prompt from the Glam output panel
+- Paste into Cursor Agent to create/update features and specs
 
-### Navigation and Index
-- **ai/Index.md**: Complete index of all documents with objectives and links
-- **ai/README.md**: Detailed documentation about the AI folder structure
+### 3. Glam: Convert Decision to Tasks
+Generates a prompt to break down a decision into implementation tasks.
 
-## 🚀 Getting Started
+**How to use:**
+- Right-click on a `.decision.md` file and select the command
+- OR use Command Palette and select the decision file
+- Copy the generated prompt from the Glam output panel
+- Paste into Cursor Agent to generate task files
 
-1. **Use this template** to create a new repository
-2. **Review the mode files** in `ai/tools/modes/` to understand each phase
-3. **Check the Index** at `ai/Index.md` for complete documentation overview
-4. **Start Brainstorming**:
-   - Document product requirements using format templates
-   - Define technical architecture and quality requirements
-   - Establish project epics and roadmap
-   - Complete the Brainstorm Completion Checklist
-5. **Move to Planning**:
-   - Gather implementation context
-   - Create epic-specific tasks using Epic format
-   - Associate context with tasks
-   - Complete the Plan Completion Checklist
-6. **Begin Refinement**:
-   - Create detailed implementation tickets
-   - Include all necessary technical details
-   - Define comprehensive test requirements
-   - Complete the Refine Completion Checklist
+## 🔄 The Glam Workflow
 
-## 📋 Usage Guidelines
+1. **Create Context** - Set up context files that define how to handle specific scenarios
+2. **Make Decisions** - Use "New Decision" to create ADRs for significant changes
+3. **Distill to Features & Specs** - Convert decisions into user-facing features and technical specs
+4. **Generate Tasks** - Break down the work into specific, actionable tasks with full context
 
-### For Product Managers
-- Focus on product requirements first
-- Define clear success metrics
-- Ensure user stories are comprehensive
-- Validate market analysis
-- Review epic dependencies
+Each step builds on the previous one, creating a comprehensive knowledge graph that ensures your AI agent has all the context it needs for accurate implementation.
 
-### For Technical Leads
-- Document architecture decisions
-- Define clear technical boundaries
-- Establish testing strategy
-- Review security requirements
-- Validate implementation approach
+## 💡 Why Glam?
 
-### For Developers
-- Review context documentation thoroughly
-- Follow ticket implementation steps
-- Ensure test coverage requirements
-- Use provided context references
-- Update ticket status appropriately
+Traditional prompting can be ad-hoc and miss important context. Glam helps you:
+
+- **Build Comprehensive Context** - Systematically gather all relevant information
+- **Maintain Consistency** - Use standardized formats across your project
+- **Improve AI Accuracy** - Provide complete context for better AI-generated code
+- **Create Traceable Documentation** - Link decisions, features, specs, and tasks
+- **Reduce Rework** - Get it right the first time with well-structured prompts
+
+## 🛠️ Installation
+
+### From Source (Development)
+1. Clone this repository
+2. Run `npm install`
+3. Run `npm run compile`
+4. Press F5 to open a new VSCode window with the extension loaded
+
+### From VSIX (When Published)
+```bash
+code --install-extension glam-0.1.0.vsix
+```
+
+## 📖 Getting Started
+
+1. Open or create a project in VSCode
+2. Open the Command Palette (`Cmd/Ctrl+Shift+P`)
+3. Type "Glam: New Decision" to start your first decision
+4. Follow the three-step workflow: Decision → Features/Specs → Tasks
+
+## 🎨 Features
+
+- **Beautiful Webview Forms** - Modern UI for data entry
+- **Intelligent Prompt Generation** - Context-aware prompts that include related files
+- **Automatic File Discovery** - Finds and links related decisions, features, specs, and contexts
+- **Frontmatter Parsing** - Extracts metadata from markdown files
+- **Right-Click Integration** - Context menu support for quick access
+- **Output Panel Display** - Clean, formatted prompts ready to copy
 
 ## 🎯 Best Practices
 
-1. **Follow the Mode Guidelines**
-   - Use appropriate prompts for each mode
-   - Complete validation checkpoints
-   - Maintain focus on current epic
+1. **Start with Context** - Define context files early to guide decision-making
+2. **One Decision at a Time** - Focus on completing each decision fully before starting another
+3. **Link Everything** - Use IDs to create relationships between files
+4. **Be Specific** - Provide detailed information in decisions to get better features and specs
+5. **Review Before Distilling** - Ensure decisions are complete before converting to features/specs
+6. **Iterate** - Refine features and specs before generating tasks
 
-2. **Document Everything**
-   - Keep context references up to date
-   - Include rationale for decisions
-   - Document dependencies clearly
+## 🔮 Future Plans
 
-3. **Validate Continuously**
-   - Check completion criteria
-   - Review cross-document references
-   - Verify requirement coverage
-
-4. **Maintain Focus**
-   - Work on one epic at a time
-   - Complete current mode before switching
-   - Keep scope manageable
+- Direct integration with Cursor Agent CLI (when stable)
+- Template customization for different project types
+- Prompt history and versioning
+- Validation and linting for file formats
+- Visualization of decision/feature/spec relationships
+- Export to various documentation formats
 
 ## 🤝 Contributing
 
-We welcome contributions to improve this template:
-- Submit issues for suggestions or problems
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+- Submit issues for bugs or feature requests
 - Create pull requests with improvements
-- Share your customizations and adaptations
+- Share your experiences and use cases
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🙏 Credits
 
-Created by alto9 to provide a structured approach to context engineering with Cursor IDE. This template aims to bridge the gap between high-level requirements and detailed implementation through systematic context management.
+Created by alto9 to provide structured context engineering for AI-assisted development with Cursor IDE.
+
+---
+
+**Note**: Glam generates prompts for AI agents rather than executing tasks directly. This gives you full control and visibility into what's being requested, ensuring quality and allowing for customization before execution.

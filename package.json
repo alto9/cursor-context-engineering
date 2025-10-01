@@ -1,0 +1,82 @@
+{
+  "name": "glam",
+  "displayName": "Glam - Context Engineering for Agentic Development",
+  "description": "Helps engineers use proper context engineering to build and maintain software using Agentic development practices",
+  "version": "0.1.0",
+  "publisher": "alto9",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alto9/cursor-context-engineering"
+  },
+  "bugs": {
+    "url": "https://github.com/alto9/cursor-context-engineering/issues"
+  },
+  "homepage": "https://github.com/alto9/cursor-context-engineering#readme",
+  "engines": {
+    "vscode": "^1.80.0",
+    "node": ">=22.14.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:glam.newDecision",
+    "onCommand:glam.distillDecision",
+    "onCommand:glam.convertToTasks"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "glam.newDecision",
+        "title": "Glam: New Decision"
+      },
+      {
+        "command": "glam.distillDecision",
+        "title": "Glam: Distill Decision into Features and Specs"
+      },
+      {
+        "command": "glam.convertToTasks",
+        "title": "Glam: Convert Decision to Tasks"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder && resourceFilename == decisions",
+          "command": "glam.newDecision",
+          "group": "glam@1"
+        },
+        {
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
+          "command": "glam.distillDecision",
+          "group": "glam@1"
+        },
+        {
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
+          "command": "glam.convertToTasks",
+          "group": "glam@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  }
+}
+

@@ -1,0 +1,120 @@
+---
+alwaysApply: true
+---
+
+# Glam
+
+You are helping me build a vscode-extension called "Glam". 
+
+## What it is
+
+Glam helps engineers use proper context engineering to build and maintain software using Agentic development practices. Glam includes a set of file formats that are used to build context windows in methodical ways, and vscode commands that assist the developer in building prompts.
+
+## The big picture
+
+A developer would install Glam at the start of a project. Using Glam, a set of files in a folder named 'ai' in the root of the project would get managed. The folders are:
+
+    - ai/decisions
+    - ai/docs
+    - ai/features
+    - ai/specs
+    - ai/contexts
+    - ai/tasks
+
+Each file in those folders would have a name respective of the file type. For example, a decision would be in the ai/decisions folder and have a name that was like *.decision.md.
+
+The first thing an engineer should do is fill out their context files. Accurate context without overloading is key here. What specifically would an agent or person need to know to complete the job accurately.
+
+A decision is made by using the command `Glam: New Decision`. Once the file is created and the users completes it, they execute a command `Glam: Distill Decision into Features and Specs` which will make sure that the features and specs files in their respecitive folders fully account for the change that has been decided upon, and reflect the desired state of the infrastructure. Once that is completed, the user will run the command `Glam: Convert Decision to Tasks` which has a very important job. It will first ask which decision to convert, and once that is provided, it will:
+    - Examine the decision
+    - Examine the features and specs related to that decision
+    - Examine the context files related to the features/specs
+    - Determine specific implementation steps and write out a group of fully populated Task objects containing specific implementation steps.
+
+## File Format
+
+We will need to define a schema for each type of file, and it might be ok to use a simple 'frontmatter'+ markdown support for a file format called 'glam-decision' for example.
+
+We want to support Gherkin scenarios in the features, and we want to support mermaid diagrams in the specs. More details:
+
+### Context
+---
+context_id: (kebab-case file name matches context_id minus ".context.md")
+
+---
+
+[ Gherkin scenarios ]
+
+example: 
+GIVEN we are working within Glam files
+WHEN information is needed about javascript implementation
+THEN read the document at `ai/docs/typescript_guidance.md`
+AND use that information to help inform decisions regarding javascript implementation
+
+-or-
+
+GIVEN we are working within Glam files
+WHEN information is needed about AWS CDK implementation
+THEN use the `aws_cdk_guidance` tool
+AND use that information to help inform decisions regarding CDK implementation
+
+### Decision
+---
+decision_id: (kebab-case file name matches decision_id minus ".decision.md")
+
+---
+
+[ sections relating to an ADR ]
+
+### Feature
+---
+feature_id: (kebab-case file name matches feature_id minus ".decision.md")
+spec_id: (array of references to spec IDs in project)
+---
+
+[ Gherkin scenarios ]
+
+example: 
+GIVEN a user has done X
+WHEN scenario involves Y
+THEN this should happen
+AND also this should happen
+
+### Spec
+---
+spec_id: (kebab-case file name matches spec_id minus ".spec.md")
+feature_id: (array of references to feature IDs in project)
+---
+
+[ sections relating to a spec + mermaid diagrams ]
+
+## How it works
+
+The extension will add a set of commands that are available from the command palette and conditionally available on right click of folders in the file explorer. The commmands are as follows:
+
+- Glam: New Decision
+    - Accessible from the command palette and also on right click of any folder named 'decisions'.
+    - Shows a new vscode web-view with a form on it that asks the following information:
+        - What is changing?
+        - Why is it changing?
+        - Summary of the proposed change?
+        - Options considered?
+    - Once that form is submitted, a function runs that builds a custom prompt text that includes their input. That prompt text is outputted to the 'Output' pane along with instructions for the user to copy/paste it into their agent.
+
+- Glam: Distill Decision into Features and Specs
+    - Accessible from the command palette and also on right click of any decision file.
+    - If opened from the command palette, a selector should show asking the user to choose the decision file to work with.
+    - Once the decision is known, a custom prompt text is generated that includes the user's decision selection.
+
+- Glam: Convert Decision to Tasks
+    - Accessible from the command palette and also on right click of any decision file.
+    - If opened from the command palette, a selector should show asking the user to choose the decision file to work with.
+    - Once the decision is known, a custom prompt text is generated that includes the user's decision selection.
+
+Every command literally does one thing, it generates a prompt that the user is meant to add to their Agent window. Every command mentioned above so far should do this. For example, when I add a new decision, the extension does not make a new decision file, what it does is constructs a prompt that would do exactly what I want and send that text to the 'output' panel. The user should copy/paste that text into the Agent window to get the result they want.
+
+In a future version, we will consider calling the cursor-agent cli automatically instead of just outputting the prompt, but right now that is too buggy, we need the user to do it at this time.
+
+## The overall goal
+
+Glam should help users design good prompts with proper context by going through this 3 phase workflow. The prompts that are generated should be intelligent, and should find the required linkages and follow their context document links when appropriate. The idea is that when you create a set of tasks after a decision has been distilled, those tasks have ALL the information they need. They are specific but not verbose, and highly accurate. This is possible if the prompts are built artfully, the magic of Glam is in that construction of the custom prompts and how the document linkages are used to generate them.
