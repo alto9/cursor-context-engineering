@@ -7,6 +7,11 @@ src/**
 webpack.config.js
 tsconfig.json
 **/*.ts
+!dist/**/*.ts
 node_modules/**
 .eslintrc.json
-
+**/node_modules/**
+**/.git/**
+**/.vscode/**
+../../**
+!../../LICENSE

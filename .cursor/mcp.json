@@ -18,6 +18,12 @@
       },
       "disabled": false,
       "autoApprove": []
+    },
+    "glam": {
+      "command": "node",
+      "args": ["packages/mcp-server/dist/index.js"],
+      "disabled": false,
+      "autoApprove": []
     }
   }
 }

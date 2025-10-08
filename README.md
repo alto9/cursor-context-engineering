@@ -1,17 +1,31 @@
 # Glam - Context Engineering for Agentic Development
 
-A VSCode extension that helps engineers use proper context engineering to build and maintain software using Agentic development practices. Glam provides a structured approach to creating decisions, features, specs, and tasks with intelligent prompt generation for AI-assisted development.
+A comprehensive toolkit for structured context engineering in AI-assisted development. Glam provides both a VSCode extension and an MCP server to help engineers create well-structured prompts with complete context.
 
 ## 🎯 What is Glam?
 
-Glam is a workflow tool designed to help developers create well-structured, context-rich prompts for AI agents. Rather than executing tasks directly, Glam generates intelligent prompts that include all necessary context, making it easy to work with AI assistants like Cursor Agent.
+Glam is a workflow tool designed to help developers create well-structured, context-rich prompts for AI agents. It uses a systematic approach with decisions, features, specs, contexts, and tasks to ensure AI assistants have all the information they need.
 
-**Key Benefits:**
-- Build comprehensive context systematically
-- Maintain consistency with standardized formats
-- Improve AI accuracy with complete context
-- Create traceable documentation linking decisions to implementation
-- Reduce rework by getting it right the first time
+## 📦 Packages
+
+This is a monorepo containing two packages:
+
+### [@glam/vscode-extension](./packages/vscode-extension/)
+VSCode extension that provides commands for generating context-rich prompts for decisions, features, specs, and tasks.
+
+**Features:**
+- Interactive webview for creating new decisions
+- Prompt generation for distilling decisions into features/specs
+- Task generation from decisions with full context
+- Right-click context menu integration
+
+### [@glam/mcp-server](./packages/mcp-server/)
+Model Context Protocol server that exposes Glam capabilities to AI assistants like Claude Desktop and Cursor.
+
+**Features:**
+- Resources for accessing decisions, features, specs, contexts, and tasks
+- Tools for generating prompts programmatically
+- File management for Glam project structures
 
 ## 🏗️ Project Structure
 
@@ -26,6 +40,56 @@ your-project/
     ├── contexts/      # Context references and guidance
     ├── tasks/         # Implementation tasks
     └── docs/          # Supporting documentation
+```
+
+## 🚀 Getting Started
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/alto9/cursor-context-engineering.git
+cd cursor-context-engineering
+
+# Install dependencies for all packages
+npm install
+
+# Build all packages
+npm run build
+```
+
+### Using the VSCode Extension
+
+```bash
+# Package the extension
+npm run vscode:package
+
+# Install the extension
+code --install-extension packages/vscode-extension/glam-0.1.0.vsix
+```
+
+Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Glam commands:
+- `Glam: New Decision`
+- `Glam: Distill Decision into Features and Specs`
+- `Glam: Convert Decision to Tasks`
+
+### Using the MCP Server
+
+Add to your MCP settings file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "glam": {
+      "command": "node",
+      "args": ["/path/to/cursor-context-engineering/packages/mcp-server/dist/index.js"],
+      "cwd": "/path/to/your/project"
+    }
+  }
+}
 ```
 
 ## 📋 File Formats
@@ -82,38 +146,6 @@ THEN read the document at `ai/docs/typescript_guidance.md`
 AND use that information to help inform decisions
 ```
 
-## 🚀 Commands
-
-Glam provides three main commands accessible from the Command Palette (`Cmd/Ctrl+Shift+P`) or via right-click context menus:
-
-### 1. Glam: New Decision
-Creates a prompt for a new decision document.
-
-**How to use:**
-- Open Command Palette and select "Glam: New Decision"
-- OR right-click on the `ai/decisions` folder and select "Glam: New Decision"
-- Fill out the form with decision details
-- Copy the generated prompt from the Glam output panel
-- Paste into Cursor Agent to create the decision file
-
-### 2. Glam: Distill Decision into Features and Specs
-Generates a prompt to convert a decision into features and specs.
-
-**How to use:**
-- Right-click on a `.decision.md` file and select the command
-- OR use Command Palette and select the decision file
-- Copy the generated prompt from the Glam output panel
-- Paste into Cursor Agent to create/update features and specs
-
-### 3. Glam: Convert Decision to Tasks
-Generates a prompt to break down a decision into implementation tasks.
-
-**How to use:**
-- Right-click on a `.decision.md` file and select the command
-- OR use Command Palette and select the decision file
-- Copy the generated prompt from the Glam output panel
-- Paste into Cursor Agent to generate task files
-
 ## 🔄 The Glam Workflow
 
 1. **Create Context** - Set up context files that define how to handle specific scenarios
@@ -133,34 +165,45 @@ Traditional prompting can be ad-hoc and miss important context. Glam helps you:
 - **Create Traceable Documentation** - Link decisions, features, specs, and tasks
 - **Reduce Rework** - Get it right the first time with well-structured prompts
 
-## 🛠️ Installation
+## 🛠️ Development
 
-### From Source (Development)
-1. Clone this repository
-2. Run `npm install`
-3. Run `npm run compile`
-4. Press F5 to open a new VSCode window with the extension loaded
-
-### From VSIX (When Published)
 ```bash
-code --install-extension glam-0.1.0.vsix
+# Install dependencies
+npm install
+
+# Build all packages
+npm run build
+
+# Watch mode for development
+npm run watch
+
+# Lint all packages
+npm run lint
+
+# Clean build artifacts
+npm run clean
 ```
 
-## 📖 Getting Started
+### Working with Individual Packages
 
-1. Open or create a project in VSCode
-2. Open the Command Palette (`Cmd/Ctrl+Shift+P`)
-3. Type "Glam: New Decision" to start your first decision
-4. Follow the three-step workflow: Decision → Features/Specs → Tasks
+```bash
+# Build just the VSCode extension
+npm run build -w @glam/vscode-extension
 
-## 🎨 Features
+# Build just the MCP server
+npm run build -w @glam/mcp-server
 
-- **Beautiful Webview Forms** - Modern UI for data entry
-- **Intelligent Prompt Generation** - Context-aware prompts that include related files
-- **Automatic File Discovery** - Finds and links related decisions, features, specs, and contexts
-- **Frontmatter Parsing** - Extracts metadata from markdown files
-- **Right-Click Integration** - Context menu support for quick access
-- **Output Panel Display** - Clean, formatted prompts ready to copy
+# Watch the MCP server
+npm run dev -w @glam/mcp-server
+```
+
+## 📚 Documentation
+
+- [VSCode Extension README](./packages/vscode-extension/README.md)
+- [MCP Server README](./packages/mcp-server/README.md)
+- [File Format Examples](./EXAMPLES.md)
+- [Contributing Guidelines](./CONTRIBUTING.md)
+- [Changelog](./CHANGELOG.md)
 
 ## 🎯 Best Practices
 
@@ -179,6 +222,7 @@ code --install-extension glam-0.1.0.vsix
 - Validation and linting for file formats
 - Visualization of decision/feature/spec relationships
 - Export to various documentation formats
+- Enhanced MCP server capabilities
 
 ## 🤝 Contributing
 

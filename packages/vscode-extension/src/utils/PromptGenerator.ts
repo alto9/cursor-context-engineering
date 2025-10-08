@@ -17,7 +17,9 @@ export class PromptGenerator {
         const timestamp = new Date().toISOString().split('T')[0];
         const decisionId = this.generateDecisionId(data.proposedChange);
 
-        return `Create a new decision document in the ai/decisions folder with the following details:
+        return `STEP 1: First, call the get_glam_schema tool with schema_type "decision" to retrieve the proper decision file format.
+
+STEP 2: Once you have the schema, create a new decision document in the ai/decisions folder with the following details:
 
 **Decision ID**: ${decisionId}
 **Filename**: ai/decisions/${decisionId}.decision.md
@@ -35,35 +37,17 @@ ${data.proposedChange}
 **Options considered:**
 ${data.optionsConsidered}
 
-Please create this decision document using the Architecture Decision Record (ADR) format with the following structure:
+STEP 3: Create the decision document adhering to the schema you retrieved. The document should follow the Architecture Decision Record (ADR) format with these key elements:
 
----
-decision_id: ${decisionId}
-date: ${timestamp}
-status: proposed
----
+- Proper frontmatter with decision_id: ${decisionId}
+- Status section (set to "proposed")
+- Context section explaining why this change is needed
+- Decision section describing the proposed change
+- Alternatives Considered section
+- Consequences section (analyze positive and negative impacts)
+- References section for any relevant links or documentation
 
-# ${this.toTitleCase(decisionId.replace(/-/g, ' '))}
-
-## Status
-Proposed
-
-## Context
-${data.whyIsItChanging}
-
-## Decision
-${data.proposedChange}
-
-## Alternatives Considered
-${data.optionsConsidered}
-
-## Consequences
-[To be filled in - what are the positive and negative consequences of this decision?]
-
-## References
-[Any relevant documentation, links, or related decisions]
-
-Ensure the ai/decisions folder exists, and create it if it doesn't. Use proper markdown formatting and ensure the frontmatter is valid YAML.`;
+Ensure the ai/decisions folder exists (create it if needed), use proper markdown formatting, and ensure the frontmatter is valid YAML as specified in the schema.`;
     }
 
     /**
@@ -88,7 +72,11 @@ Ensure the ai/decisions folder exists, and create it if it doesn't. Use proper m
         const existingSpecs = await this.findRelatedFiles(specsFolder, '.spec.md');
         const existingContexts = await this.findRelatedFiles(contextsFolder, '.context.md');
 
-        let prompt = `Review and distill the following decision into features and specs:
+        let prompt = `STEP 1: Retrieve the required schemas by calling:
+- get_glam_schema with schema_type "feature"
+- get_glam_schema with schema_type "spec"
+
+STEP 2: Review and distill the following decision into features and specs:
 
 **Decision File**: ${decisionUri.fsPath}
 **Decision ID**: ${decisionId}
@@ -110,20 +98,6 @@ ${decisionContent}
             }
             prompt += '\n';
         }
-
-        prompt += `**Task**: Analyze this decision and ensure that:
-
-1. **Features** in ai/features/ fully capture the user-facing functionality described in this decision
-   - Each feature should be in Gherkin format with GIVEN/WHEN/THEN scenarios
-   - Features should reference relevant spec_ids in their frontmatter
-   - Create new feature files if needed or update existing ones
-
-2. **Specs** in ai/specs/ provide the technical specifications for implementing these features
-   - Specs should include technical details, architecture decisions, and mermaid diagrams where appropriate
-   - Specs should reference relevant feature_ids in their frontmatter
-   - Create new spec files if needed or update existing ones
-
-`;
 
         if (existingFeatures.length > 0) {
             prompt += `**Existing Features**:
@@ -147,21 +121,26 @@ ${decisionContent}
             prompt += '\n';
         }
 
-        prompt += `Review the decision and determine what features and specs need to be created or updated. Ensure complete coverage of the decision's requirements while maintaining proper relationships between features and specs.
+        prompt += `STEP 3: Analyze this decision and ensure that:
 
-For each feature, use the format:
----
-feature_id: [kebab-case-id]
-spec_id: [array of related spec IDs]
----
+1. **Features** in ai/features/ fully capture the user-facing functionality described in this decision
+   - Each feature MUST follow the feature schema you retrieved (Gherkin format with GIVEN/WHEN/THEN scenarios)
+   - Features should reference relevant spec_ids in their frontmatter
+   - Create new feature files if needed or update existing ones to reflect the new desired state
 
-For each spec, use the format:
----
-spec_id: [kebab-case-id]
-feature_id: [array of related feature IDs]
----
+2. **Specs** in ai/specs/ provide the technical specifications for implementing these features
+   - Specs MUST follow the spec schema you retrieved
+   - Include technical details, architecture decisions, and Mermaid diagrams where appropriate
+   - Specs should reference relevant feature_ids in their frontmatter
+   - Create new spec files if needed or update existing ones to reflect the new desired state
 
-Consider the available context files and reference them appropriately in your features and specs.`;
+STEP 4: Review the decision and determine what features and specs need to be created or updated. Ensure:
+- Complete coverage of the decision's requirements
+- Proper relationships between features and specs (bidirectional references)
+- All files adhere to the schemas retrieved in Step 1
+- Consider available context files and reference them appropriately using context_id fields
+
+The goal is to update the features and specs to represent the NEW DESIRED STATE after this decision is implemented, not just the changes.`;
 
         return prompt;
     }
@@ -187,7 +166,9 @@ Consider the available context files and reference them appropriately in your fe
         const relatedSpecs = await this.findRelatedFiles(specsFolder, '.spec.md');
         const relatedContexts = await this.findRelatedFiles(contextsFolder, '.context.md');
 
-        let prompt = `Convert the following decision into specific implementation tasks:
+        let prompt = `STEP 1: Get the task schema by calling get_glam_schema with schema_type "task"
+
+STEP 2: Review the decision, features, and specs to understand what needs to be implemented:
 
 **Decision File**: ${decisionUri.fsPath}
 **Decision ID**: ${decisionId}
@@ -199,6 +180,10 @@ ${decisionContent}
 
 `;
 
+        // Collect all context_ids and technical objects
+        const contextIds = new Set<string>();
+        const technicalObjects = new Set<string>();
+
         // Include related features
         if (relatedFeatures.length > 0) {
             prompt += `\n**Related Features**:\n`;
@@ -206,6 +191,15 @@ ${decisionContent}
                 const content = await FileParser.readFile(featureFile);
                 const parsed = FileParser.parseFrontmatter(content);
                 const featureId = parsed.frontmatter.feature_id || path.basename(featureFile);
+                
+                // Collect context_ids from features
+                if (parsed.frontmatter.context_id) {
+                    const contexts = Array.isArray(parsed.frontmatter.context_id) 
+                        ? parsed.frontmatter.context_id 
+                        : [parsed.frontmatter.context_id];
+                    contexts.forEach((ctx: string) => contextIds.add(ctx));
+                }
+                
                 prompt += `\n### Feature: ${featureId}\n\`\`\`markdown\n${content}\n\`\`\`\n`;
             }
         }
@@ -217,6 +211,15 @@ ${decisionContent}
                 const content = await FileParser.readFile(specFile);
                 const parsed = FileParser.parseFrontmatter(content);
                 const specId = parsed.frontmatter.spec_id || path.basename(specFile);
+                
+                // Collect context_ids from specs
+                if (parsed.frontmatter.context_id) {
+                    const contexts = Array.isArray(parsed.frontmatter.context_id) 
+                        ? parsed.frontmatter.context_id 
+                        : [parsed.frontmatter.context_id];
+                    contexts.forEach((ctx: string) => contextIds.add(ctx));
+                }
+                
                 prompt += `\n### Spec: ${specId}\n\`\`\`markdown\n${content}\n\`\`\`\n`;
             }
         }
@@ -232,51 +235,71 @@ ${decisionContent}
             }
         }
 
-        prompt += `\n\n**Task**: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
+        prompt += `\n\nSTEP 3: Follow context file instructions`;
+        
+        if (contextIds.size > 0) {
+            prompt += `
 
-Requirements:
-1. Each task should be a separate markdown file with a .task.md extension
-2. Tasks should be specific and implementable
-3. Include all necessary context references from features, specs, and contexts
-4. Tasks should be ordered logically with clear dependencies
-5. Each task should have clear acceptance criteria
+The features and specs reference the following context files:
+${Array.from(contextIds).map(id => `- ${id}`).join('\n')}
 
-Task File Format:
----
-task_id: [kebab-case-id]
-decision_id: ${decisionId}
-feature_id: [array of related feature IDs]
-spec_id: [array of related spec IDs]
-context_id: [array of related context IDs]
-status: pending
-priority: [high|medium|low]
-dependencies: [array of task IDs that must be completed first]
----
+Read and follow the GIVEN/WHEN/THEN rules in each context file above. These rules tell you:
+- What documentation to read
+- What tools to use
+- What research to perform
 
-# [Task Title]
+Execute all applicable context rules before proceeding to the next step.`;
+        } else {
+            prompt += `
 
-## Description
-[Clear description of what needs to be done]
+No specific context files are referenced by the features and specs. Proceed to identify technical objects that need research.`;
+        }
 
-## Context
-[Relevant context from the decision, features, specs, and context files]
+        prompt += `
 
-## Implementation Steps
-1. [Specific step]
-2. [Specific step]
-...
+STEP 4: Identify and research technical objects
 
-## Acceptance Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-...
+Based on the decision, features, and specs above, identify all technical objects, frameworks, or systems that will be:
+- Created
+- Modified
+- Integrated with
+- Configured
 
-## Related Documentation
-- Feature: [feature_id]
-- Spec: [spec_id]
-- Context: [context_id]
+For EACH technical object you identify, call get_glam_context with the spec_object parameter to generate a research prompt. Then execute that research prompt to gather the information needed to create accurate, detailed task instructions.
 
-Analyze all the provided information and create a complete set of tasks that will implement this decision. Be thorough but specific - tasks should be actionable and contain all the information needed for implementation.`;
+Examples of technical objects might include:
+- AWS services (e.g., "AWS Lambda function", "DynamoDB table")
+- Framework components (e.g., "React component", "Express middleware")
+- Infrastructure elements (e.g., "Docker container", "Kubernetes deployment")
+- Database objects (e.g., "PostgreSQL schema", "Redis cache configuration")
+- API integrations (e.g., "Stripe payment integration", "Auth0 authentication")
+
+STEP 5: Create implementation tasks
+
+Using:
+- The task schema from Step 1
+- The decision, features, and specs from Step 2
+- The context guidance from Step 3
+- The research findings from Step 4
+
+Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
+
+Each task MUST:
+1. Follow the task schema exactly (from Step 1)
+2. Be specific and implementable with clear technical details
+3. Include the decision_id: ${decisionId}
+4. Reference all related feature_ids and spec_ids
+5. Reference all applicable context_ids
+6. Have status: pending and an appropriate order number
+7. Include COMPLETE context - assume the implementer knows the general technology but needs specific implementation details
+8. Provide step-by-step implementation instructions
+9. List files that will be affected (created, modified, deleted)
+10. Have clear, testable acceptance criteria
+11. Identify dependencies on other tasks
+
+CRITICAL: Each task should contain ALL the information needed for an AI agent to implement it successfully. Use the research from Step 4 to provide specific technical guidance, code patterns, configuration details, and best practices. Don't assume knowledge - be explicit about HOW to implement each requirement.
+
+The tasks you create are prompts that will be fed to an AI agent for implementation. They must be comprehensive, accurate, and actionable.`;
 
         return prompt;
     }

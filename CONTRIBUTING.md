@@ -5,7 +5,7 @@ Thank you for your interest in contributing to Glam! This document provides guid
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/glam.git`
+2. Clone your fork: `git clone https://github.com/alto9/cursor-context-engineering.git`
 3. Install dependencies: `npm install`
 4. Make your changes
 5. Test your changes by pressing F5 in VSCode
@@ -14,7 +14,7 @@ Thank you for your interest in contributing to Glam! This document provides guid
 ## Development Setup
 
 ### Prerequisites
-- Node.js 20+
+- Node.js 22+
 - VSCode 1.80+
 - TypeScript 5+
 

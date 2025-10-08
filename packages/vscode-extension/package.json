@@ -1,0 +1,91 @@
+{
+  "name": "glam",
+  "displayName": "Glam - Context Engineering for Agentic Development",
+  "description": "VSCode extension that helps engineers use proper context engineering to build and maintain software using Agentic development practices",
+  "version": "0.1.0",
+  "publisher": "alto9",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alto9/cursor-context-engineering",
+    "directory": "packages/vscode-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/alto9/cursor-context-engineering/issues"
+  },
+  "homepage": "https://github.com/alto9/cursor-context-engineering#readme",
+  "engines": {
+    "vscode": "^1.80.0",
+    "node": ">=22.14.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:glam.newDecision",
+    "onCommand:glam.distillDecision",
+    "onCommand:glam.convertToTasks"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "glam.newDecision",
+        "title": "Glam: New Decision"
+      },
+      {
+        "command": "glam.distillDecision",
+        "title": "Glam: Distill Decision into Features and Specs"
+      },
+      {
+        "command": "glam.convertToTasks",
+        "title": "Glam: Convert Decision to Tasks"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder && resourceFilename == decisions",
+          "command": "glam.newDecision",
+          "group": "glam@1"
+        },
+        {
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
+          "command": "glam.distillDecision",
+          "group": "glam@1"
+        },
+        {
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
+          "command": "glam.convertToTasks",
+          "group": "glam@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "clean": "rm -rf dist out *.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.0.0",
+    "webpack": "^5.102.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  }
+}
+
