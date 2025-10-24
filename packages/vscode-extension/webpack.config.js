@@ -23,7 +23,10 @@ const config = {
                 exclude: /node_modules/,
                 use: [
                     {
-                        loader: 'ts-loader'
+                        loader: 'ts-loader',
+                        options: {
+                            configFile: 'tsconfig.json'
+                        }
                     }
                 ]
             }

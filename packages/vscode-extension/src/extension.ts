@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { NewDecisionPanel } from './panels/NewDecisionPanel';
 import { DistillDecisionCommand } from './commands/DistillDecisionCommand';
 import { ConvertToTasksCommand } from './commands/ConvertToTasksCommand';
+import { GlamStudioPanel } from './panels/GlamStudioPanel';
+import { ProjectPicker } from './utils/ProjectPicker';
 
 let outputChannel: vscode.OutputChannel;
 
@@ -36,6 +38,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(newDecisionCommand);
     context.subscriptions.push(distillDecisionCommand);
     context.subscriptions.push(convertToTasksCommand);
+
+    // Register Glam Studio command
+    const openStudioCommand = vscode.commands.registerCommand('glam.openStudio', async () => {
+        const project = await ProjectPicker.pickProject();
+        if (!project) {
+            return;
+        }
+        GlamStudioPanel.render(context.extensionUri, project, outputChannel);
+    });
+    context.subscriptions.push(openStudioCommand);
 }
 
 export function deactivate() {}

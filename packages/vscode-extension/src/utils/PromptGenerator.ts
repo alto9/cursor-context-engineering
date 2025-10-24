@@ -173,11 +173,6 @@ STEP 2: Review the decision, features, and specs to understand what needs to be 
 **Decision File**: ${decisionUri.fsPath}
 **Decision ID**: ${decisionId}
 
-**Decision Content**:
-\`\`\`markdown
-${decisionContent}
-\`\`\`
-
 `;
 
         // Collect all context_ids and technical objects
@@ -274,7 +269,11 @@ Examples of technical objects might include:
 - Database objects (e.g., "PostgreSQL schema", "Redis cache configuration")
 - API integrations (e.g., "Stripe payment integration", "Auth0 authentication")
 
-STEP 5: Create implementation tasks
+STEP 5: Identify or create a folder for this decisions tasks in the ai/tasks/ folder
+- The folder name should be the decision_id
+- The folder should be created in the ai/tasks/ folder
+
+STEP 6: Create implementation tasks
 
 Using:
 - The task schema from Step 1
@@ -282,7 +281,7 @@ Using:
 - The context guidance from Step 3
 - The research findings from Step 4
 
-Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
+Create specific, actionable tasks in the ai/tasks/${decisionId} folder that will implement this decision.
 
 Each task MUST:
 1. Follow the task schema exactly (from Step 1)

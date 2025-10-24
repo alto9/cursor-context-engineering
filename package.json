@@ -20,7 +20,7 @@
     "watch": "npm run watch --workspaces --if-present",
     "lint": "npm run lint --workspaces",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules packages/*/node_modules",
-    "vscode:package": "cd packages/vscode-extension && npm run package && vsce package --no-dependencies"
+    "vscode:package": "cd packages/vscode-extension && npm run package && npx --yes @vscode/vsce package --no-dependencies -o glam-0.1.0.vsix"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

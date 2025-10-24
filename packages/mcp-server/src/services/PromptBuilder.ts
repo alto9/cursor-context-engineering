@@ -80,11 +80,6 @@ Ensure the ai/decisions folder exists, and create it if it doesn't. Use proper m
 **Decision ID**: ${decisionId}
 **Decision File**: ai/decisions/${decisionId}.decision.md
 
-**Decision Content**:
-\`\`\`markdown
-${decision.frontmatter ? `---\n${JSON.stringify(decision.frontmatter, null, 2)}\n---\n\n` : ''}${decision.content}
-\`\`\`
-
 `;
 
     if (contexts.length > 0) {
@@ -95,7 +90,9 @@ ${decision.frontmatter ? `---\n${JSON.stringify(decision.frontmatter, null, 2)}\
       prompt += '\n';
     }
 
-    prompt += `**Task**: Analyze this decision and ensure that:
+    prompt += `STEP 0: Call the get_glam_objects tool to retrieve the list of supported spec objects and their guidance. Use this knowledge to design specs that leverage supported spec objects where appropriate.
+
+**Task**: Analyze this decision and ensure that:
 
 1. **Features** in ai/features/ fully capture the user-facing functionality described in this decision
    - Each feature should be in Gherkin format with GIVEN/WHEN/THEN scenarios
@@ -125,7 +122,9 @@ ${decision.frontmatter ? `---\n${JSON.stringify(decision.frontmatter, null, 2)}\
       prompt += '\n';
     }
 
-    prompt += `Review the decision and determine what features and specs need to be created or updated. Ensure complete coverage of the decision's requirements while maintaining proper relationships between features and specs.`;
+    prompt += `Review the decision and determine what features and specs need to be created or updated. Ensure complete coverage of the decision's requirements while maintaining proper relationships between features and specs.
+
+When drafting specs, prefer using supported spec objects from get_glam_objects when they fit the need, aligning the spec content to the provided guidance.`;
 
     return prompt;
   }
@@ -184,7 +183,9 @@ ${decision.frontmatter ? `---\n${JSON.stringify(decision.frontmatter, null, 2)}\
       prompt += '\n';
     }
 
-    prompt += `\n\n**Task**: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
+    prompt += `\n\nSTEP X: For each spec object referenced or implied in the related specs (e.g., lambda, dynamodb, api-gateway), call get_glam_context with spec_object set to that object. Use the returned guidance to inform precise implementation details in the tasks.
+
+**Task**: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
 
 Requirements:
 1. Each task should be a separate markdown file with a .task.md extension

@@ -26,6 +26,13 @@ export class FileParser {
     }
 
     /**
+     * Stringify frontmatter and content to markdown
+     */
+    static stringifyFrontmatter(frontmatter: any, content: string): string {
+        return matter.stringify(content, frontmatter);
+    }
+
+    /**
      * Extract IDs from frontmatter arrays
      */
     static extractIds(frontmatter: any, key: string): string[] {

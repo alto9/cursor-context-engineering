@@ -7,6 +7,7 @@ VSCode extension that helps engineers use proper context engineering to build an
 - **Glam: New Decision** - Interactive webview form for creating new decision documents
 - **Glam: Distill Decision into Features and Specs** - Generate prompts to convert decisions into features and specs
 - **Glam: Convert Decision to Tasks** - Generate prompts to break down decisions into implementation tasks
+- **Glam: Open Glam Studio** - React-based studio to browse and edit Glam docs (Dashboard, FeatureSets, Specs)
 - **Context Menu Integration** - Right-click on files and folders for quick access
 - **Output Panel** - Clean, formatted prompts ready to copy and paste
 
@@ -34,6 +35,14 @@ code --install-extension glam-0.1.0.vsix
 ```
 
 ## Usage
+### Open Glam Studio
+
+1. Open Command Palette (Cmd/Ctrl+Shift+P)
+2. Type "Glam: Open Glam Studio"
+3. If multiple projects are open, select the project containing the `ai/` folder
+4. The Studio opens with a left navigation (Dashboard, FeatureSets, Specs)
+
+In FeatureSets, you can create a new feature set (creates `ai/features/<id>/index.yaml`) and add features (`*.feature.md`). In Specs, select a spec to edit its frontmatter and body.
 
 ### Create a New Decision
 
