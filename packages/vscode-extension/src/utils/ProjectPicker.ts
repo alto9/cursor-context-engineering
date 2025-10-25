@@ -32,7 +32,7 @@ export class ProjectPicker {
 
         const pick = await vscode.window.showQuickPick(
             valid.map((u) => ({ label: u.fsPath, description: 'ai/', uri: u })),
-            { placeHolder: 'Select the Glam project to open in Glam Studio' }
+            { placeHolder: 'Select the Forge project to open in Forge Studio' }
         );
         return pick?.uri;
     }

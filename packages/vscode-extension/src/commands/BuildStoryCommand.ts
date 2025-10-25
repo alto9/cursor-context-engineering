@@ -38,7 +38,7 @@ export class BuildStoryCommand {
             }
 
             vscode.window.showInformationMessage(
-                'Build story prompt generated! Check the Glam output panel.'
+                'Build story prompt generated! Check the Forge output panel.'
             );
         } catch (error) {
             vscode.window.showErrorMessage(`Error generating prompt: ${error}`);

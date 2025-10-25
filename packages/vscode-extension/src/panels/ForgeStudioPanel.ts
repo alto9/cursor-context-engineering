@@ -11,8 +11,8 @@ interface ActiveSession {
     changedFiles: string[];
 }
 
-export class GlamStudioPanel {
-    public static currentPanel: GlamStudioPanel | undefined;
+export class ForgeStudioPanel {
+    public static currentPanel: ForgeStudioPanel | undefined;
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
     private _projectUri: vscode.Uri;
@@ -130,14 +130,14 @@ export class GlamStudioPanel {
     }
 
     public static render(extensionUri: vscode.Uri, projectUri: vscode.Uri, output: vscode.OutputChannel) {
-        if (GlamStudioPanel.currentPanel) {
-            GlamStudioPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
+        if (ForgeStudioPanel.currentPanel) {
+            ForgeStudioPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
             return;
         }
 
         const panel = vscode.window.createWebviewPanel(
-            'glamStudio',
-            'Glam Studio',
+            'forgeStudio',
+            'Forge Studio',
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
@@ -148,11 +148,11 @@ export class GlamStudioPanel {
             }
         );
 
-        GlamStudioPanel.currentPanel = new GlamStudioPanel(panel, extensionUri, projectUri, output);
+        ForgeStudioPanel.currentPanel = new ForgeStudioPanel(panel, extensionUri, projectUri, output);
     }
 
     public dispose() {
-        GlamStudioPanel.currentPanel = undefined;
+        ForgeStudioPanel.currentPanel = undefined;
         this._panel.dispose();
         if (this._fileWatcher) {
             this._fileWatcher.dispose();
@@ -188,7 +188,7 @@ export class GlamStudioPanel {
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob: data:; script-src 'nonce-${nonce}'; style-src 'unsafe-inline' ${webview.cspSource}; font-src ${webview.cspSource};" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Glam Studio</title>
+  <title>Forge Studio</title>
   <style>
     /* Base styles */
     html, body, #root { height: 100%; margin: 0; padding: 0; }
@@ -664,27 +664,27 @@ ${problemStatement}
         const aiPath = vscode.Uri.joinPath(this._projectUri, 'ai');
         const pattern = new vscode.RelativePattern(aiPath, '**/*');
 
-        console.log(`[Glam] Setting up structure watcher for: ${aiPath.fsPath}`);
+        console.log(`[Forge] Setting up structure watcher for: ${aiPath.fsPath}`);
         
         this._structureWatcher = vscode.workspace.createFileSystemWatcher(pattern);
 
         // Handle file/directory creation
         this._structureWatcher.onDidCreate(uri => {
-            console.log(`[Glam] File/folder created: ${uri.fsPath}`);
+            console.log(`[Forge] File/folder created: ${uri.fsPath}`);
             this._onStructureChanged();
         });
 
         // Handle file/directory deletion
         this._structureWatcher.onDidDelete(uri => {
-            console.log(`[Glam] File/folder deleted: ${uri.fsPath}`);
+            console.log(`[Forge] File/folder deleted: ${uri.fsPath}`);
             this._onStructureChanged();
         });
 
         // Handle file changes (for counts)
         this._structureWatcher.onDidChange(uri => {
-            // Only refresh if it's a Glam file
-            if (this._isGlamFile(uri.fsPath)) {
-                console.log(`[Glam] Glam file changed: ${uri.fsPath}`);
+            // Only refresh if it's a Forge file
+            if (this._isForgeFile(uri.fsPath)) {
+                console.log(`[Forge] Forge file changed: ${uri.fsPath}`);
                 this._onStructureChanged();
             }
         });
@@ -692,7 +692,7 @@ ${problemStatement}
         this._disposables.push(this._structureWatcher);
     }
 
-    private _isGlamFile(filePath: string): boolean {
+    private _isForgeFile(filePath: string): boolean {
         return filePath.endsWith('.session.md') ||
                filePath.endsWith('.feature.md') ||
                filePath.endsWith('.spec.md') ||
@@ -709,7 +709,7 @@ ${problemStatement}
         }
 
         this._refreshTimeout = setTimeout(async () => {
-            console.log('[Glam] Structure changed - refreshing UI');
+            console.log('[Forge] Structure changed - refreshing UI');
             // Refresh counts
             const counts = await this._getCounts();
             this._panel.webview.postMessage({ type: 'counts', data: counts });
@@ -824,7 +824,7 @@ ${problemStatement}
 
             this._output.clear();
             this._output.appendLine('='.repeat(80));
-            this._output.appendLine('GLAM: Distill Session into Stories and Tasks');
+            this._output.appendLine('FORGE: Distill Session into Stories and Tasks');
             this._output.appendLine('='.repeat(80));
             this._output.appendLine('');
             this._output.appendLine('Copy the prompt below and paste it into your Cursor Agent window:');
@@ -835,7 +835,7 @@ ${problemStatement}
             this._output.show(true);
 
             vscode.window.showInformationMessage(
-                'Distill session prompt generated! Check the Glam output panel.'
+                'Distill session prompt generated! Check the Forge output panel.'
             );
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to generate distill prompt: ${error}`);

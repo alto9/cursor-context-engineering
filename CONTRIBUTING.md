@@ -1,6 +1,6 @@
-# Contributing to Glam
+# Contributing to Forge
 
-Thank you for your interest in contributing to Glam! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Forge! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -98,7 +98,7 @@ When adding or modifying prompt generation:
 When reporting bugs, please include:
 
 - VSCode version
-- Glam extension version
+- Forge extension version
 - Steps to reproduce
 - Expected behavior
 - Actual behavior
@@ -124,5 +124,5 @@ We welcome feature requests! Please:
 
 Feel free to open an issue with your questions or reach out to the maintainers.
 
-Thank you for contributing to Glam!
+Thank you for contributing to Forge!
 

@@ -11,16 +11,16 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 
 /**
- * Glam MCP Server
+ * Forge MCP Server
  * Provides context engineering capabilities for Agentic development
  */
-class GlamMCPServer {
+class ForgeMCPServer {
   private server: Server;
 
   constructor() {
     this.server = new Server(
       {
-        name: 'glam-mcp-server',
+        name: 'forge-mcp-server',
         version: '0.1.0',
       },
       {
@@ -39,16 +39,16 @@ class GlamMCPServer {
       return {
         tools: [
           {
-            name: 'get_glam_about',
-            description: 'Get a comprehensive overview of the Glam workflow, including the session-driven approach, when to create Stories vs Tasks, and guidance on implementation',
+            name: 'get_forge_about',
+            description: 'Get a comprehensive overview of the Forge workflow, including the session-driven approach, when to create Stories vs Tasks, and guidance on implementation',
             inputSchema: {
               type: 'object',
               properties: {},
             },
           },
           {
-            name: 'get_glam_schema',
-            description: 'Get the schema specification for a Glam file type (session, feature, spec, model, actor, story, task, or context)',
+            name: 'get_forge_schema',
+            description: 'Get the schema specification for a Forge file type (session, feature, spec, model, actor, story, task, or context)',
             inputSchema: {
               type: 'object',
               properties: {
@@ -62,15 +62,15 @@ class GlamMCPServer {
             },
           },
           {
-            name: 'get_glam_objects',
-            description: 'List supported spec objects with brief guidance. Use these object IDs with get_glam_context.',
+            name: 'get_forge_objects',
+            description: 'List supported spec objects with brief guidance. Use these object IDs with get_forge_context.',
             inputSchema: {
               type: 'object',
               properties: {},
             },
           },
           {
-            name: 'get_glam_context',
+            name: 'get_forge_context',
             description: 'Return guidance for a supported spec object from the guidance library; if none exists, return a best-practice research prompt for that object.',
             inputSchema: {
               type: 'object',
@@ -92,17 +92,17 @@ class GlamMCPServer {
       const { name, arguments: args } = request.params;
 
       switch (name) {
-        case 'get_glam_about':
+        case 'get_forge_about':
           return {
             content: [
               {
                 type: 'text',
-                text: this.getGlamAbout(),
+                text: this.getForgeAbout(),
               },
             ],
           };
 
-        case 'get_glam_schema':
+        case 'get_forge_schema':
           if (!args || typeof args.schema_type !== 'string') {
             throw new Error('schema_type is required');
           }
@@ -110,22 +110,22 @@ class GlamMCPServer {
             content: [
               {
                 type: 'text',
-                text: this.getGlamSchema(args.schema_type),
+                text: this.getForgeSchema(args.schema_type),
               },
             ],
           };
 
-        case 'get_glam_objects':
+        case 'get_forge_objects':
           return {
             content: [
               {
                 type: 'text',
-                text: this.getGlamObjects(),
+                text: this.getForgeObjects(),
               },
             ],
           };
 
-        case 'get_glam_context':
+        case 'get_forge_context':
           if (!args || typeof args.spec_object !== 'string') {
             throw new Error('spec_object is required');
           }
@@ -133,7 +133,7 @@ class GlamMCPServer {
             content: [
               {
                 type: 'text',
-                text: this.getGlamContext(args.spec_object),
+                text: this.getForgeContext(args.spec_object),
               },
             ],
           };
@@ -232,7 +232,7 @@ class GlamMCPServer {
     return '';
   }
 
-  private getGlamObjects(): string {
+  private getForgeObjects(): string {
     const items = this.readGuidanceIndex();
     if (items.length === 0) {
       return `No spec objects are currently registered. To add guidance, create markdown files in guidance/*.spec.md (e.g., guidance/lambda.spec.md).`;
@@ -245,15 +245,15 @@ class GlamMCPServer {
         return `- ${it.id} — ${it.title}${aliasStr}${summary}`;
       })
       .join('\n');
-    const footer = `\n\nUse get_glam_context with spec_object set to one of the IDs above.`;
+    const footer = `\n\nUse get_forge_context with spec_object set to one of the IDs above.`;
     return header + lines + footer;
   }
 
-  private getGlamAbout(): string {
-    return `# Glam - Session-Driven Context Engineering
+  private getForgeAbout(): string {
+    return `# Forge - Session-Driven Context Engineering
 
 ## Overview
-Glam is a comprehensive workflow system for structured context engineering in AI-assisted development. It uses a session-driven approach to manage design decisions and convert them into actionable implementation steps.
+Forge is a comprehensive workflow system for structured context engineering in AI-assisted development. It uses a session-driven approach to manage design decisions and convert them into actionable implementation steps.
 
 ## Core Philosophy
 1. **Accurate Context Without Overload** - Provide exactly what's needed, when it's needed
@@ -275,10 +275,10 @@ your-project/
     └── docs/         # Supporting documentation
 \`\`\`
 
-## The Glam Workflow
+## The Forge Workflow
 
 ### Phase 1: Start a Design Session
-1. User starts a session from Glam Studio or command
+1. User starts a session from Forge Studio or command
 2. Session file created in \`ai/sessions/\` with problem statement
 3. Session begins tracking all file changes
 
@@ -295,7 +295,7 @@ During an active session:
 When design is complete:
 1. User runs "Distill Session" command
 2. System generates a comprehensive prompt that:
-   - Calls \`get_glam_about\` to understand the workflow
+   - Calls \`get_forge_about\` to understand the workflow
    - Analyzes all changed features/specs/models
    - Follows context linkages to gather necessary information
    - Creates Stories (code changes) and Tasks (non-code work)
@@ -326,7 +326,7 @@ When design is complete:
 
 When distilling a session into Stories and Tasks:
 
-1. **Call get_glam_schema** - Validate all file formats
+1. **Call get_forge_schema** - Validate all file formats
 2. **Keep Stories Minimal** - One story should take < 30 minutes to implement
 3. **Break Down Large Changes** - Split complex features into multiple stories
 4. **Use Proper Linkages** - Link stories to features, specs, and models
@@ -375,7 +375,7 @@ When distilling, the AI should:
 This workflow ensures that implementation has complete, accurate context without information overload.`;
   }
 
-  private getGlamSchema(schemaType: string): string {
+  private getForgeSchema(schemaType: string): string {
     const schemas: Record<string, string> = {
       session: `# Session File Schema
 
@@ -848,7 +848,7 @@ Context files prevent information overload by providing just-in-time guidance:
     return schema;
   }
 
-  private getGlamContext(specObject: string): string {
+  private getForgeContext(specObject: string): string {
     const items = this.readGuidanceIndex();
     const requested = this.normalizeObjectId(specObject);
 
@@ -915,12 +915,12 @@ Provide your research findings in a structured format that can be easily referen
   async start() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('Glam MCP Server started');
+    console.error('Forge MCP Server started');
   }
 }
 
 // Start the server
-const server = new GlamMCPServer();
+const server = new ForgeMCPServer();
 server.start().catch((error) => {
   console.error('Failed to start server:', error);
   process.exit(1);

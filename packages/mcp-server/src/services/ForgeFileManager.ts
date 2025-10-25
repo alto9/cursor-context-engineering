@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 
-export interface GlamFile {
+export interface ForgeFile {
   id: string;
   path: string;
   type: 'decision' | 'feature' | 'spec' | 'context' | 'task';
@@ -10,7 +10,7 @@ export interface GlamFile {
   content: string;
 }
 
-export class GlamFileManager {
+export class ForgeFileManager {
   private workspaceRoot: string;
   private aiFolder: string;
 
@@ -33,7 +33,7 @@ export class GlamFileManager {
 
       for (const decision of decisions) {
         resources.push({
-          uri: `glam://decision/${decision.id}`,
+          uri: `forge://decision/${decision.id}`,
           name: decision.id,
           description: `Decision: ${decision.id}`,
           mimeType: 'text/markdown',
@@ -42,7 +42,7 @@ export class GlamFileManager {
 
       for (const feature of features) {
         resources.push({
-          uri: `glam://feature/${feature.id}`,
+          uri: `forge://feature/${feature.id}`,
           name: feature.id,
           description: `Feature: ${feature.id}`,
           mimeType: 'text/markdown',
@@ -51,7 +51,7 @@ export class GlamFileManager {
 
       for (const spec of specs) {
         resources.push({
-          uri: `glam://spec/${spec.id}`,
+          uri: `forge://spec/${spec.id}`,
           name: spec.id,
           description: `Spec: ${spec.id}`,
           mimeType: 'text/markdown',
@@ -60,7 +60,7 @@ export class GlamFileManager {
 
       for (const context of contexts) {
         resources.push({
-          uri: `glam://context/${context.id}`,
+          uri: `forge://context/${context.id}`,
           name: context.id,
           description: `Context: ${context.id}`,
           mimeType: 'text/markdown',
@@ -69,7 +69,7 @@ export class GlamFileManager {
 
       for (const task of tasks) {
         resources.push({
-          uri: `glam://task/${task.id}`,
+          uri: `forge://task/${task.id}`,
           name: task.id,
           description: `Task: ${task.id}`,
           mimeType: 'text/markdown',
@@ -83,7 +83,7 @@ export class GlamFileManager {
   }
 
   async readResource(uri: string): Promise<string> {
-    const match = uri.match(/^glam:\/\/(decision|feature|spec|context|task)\/(.+)$/);
+    const match = uri.match(/^forge:\/\/(decision|feature|spec|context|task)\/(.+)$/);
     if (!match) {
       throw new Error(`Invalid URI format: ${uri}`);
     }
@@ -98,27 +98,27 @@ export class GlamFileManager {
     }
   }
 
-  async listDecisions(): Promise<GlamFile[]> {
+  async listDecisions(): Promise<ForgeFile[]> {
     return this.listFiles('decisions', 'decision.md', 'decision');
   }
 
-  async listFeatures(): Promise<GlamFile[]> {
+  async listFeatures(): Promise<ForgeFile[]> {
     return this.listFiles('features', 'feature.md', 'feature');
   }
 
-  async listSpecs(): Promise<GlamFile[]> {
+  async listSpecs(): Promise<ForgeFile[]> {
     return this.listFiles('specs', 'spec.md', 'spec');
   }
 
-  async listContexts(): Promise<GlamFile[]> {
+  async listContexts(): Promise<ForgeFile[]> {
     return this.listFiles('contexts', 'context.md', 'context');
   }
 
-  async listTasks(): Promise<GlamFile[]> {
+  async listTasks(): Promise<ForgeFile[]> {
     return this.listFiles('tasks', 'task.md', 'task');
   }
 
-  async readFile(filePath: string): Promise<GlamFile | null> {
+  async readFile(filePath: string): Promise<ForgeFile | null> {
     try {
       const content = await fs.readFile(filePath, 'utf-8');
       const parsed = matter(content);
@@ -141,10 +141,10 @@ export class GlamFileManager {
   private async listFiles(
     folder: string,
     extension: string,
-    type: GlamFile['type']
-  ): Promise<GlamFile[]> {
+    type: ForgeFile['type']
+  ): Promise<ForgeFile[]> {
     const folderPath = path.join(this.aiFolder, folder);
-    const files: GlamFile[] = [];
+    const files: ForgeFile[] = [];
 
     try {
       const entries = await fs.readdir(folderPath);
@@ -165,7 +165,7 @@ export class GlamFileManager {
     return files;
   }
 
-  private getFilePath(type: GlamFile['type'], id: string): string {
+  private getFilePath(type: ForgeFile['type'], id: string): string {
     const folderMap = {
       decision: 'decisions',
       feature: 'features',
@@ -183,4 +183,3 @@ export class GlamFileManager {
     return match ? match[1] : 'unknown';
   }
 }
-

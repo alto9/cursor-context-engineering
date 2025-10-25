@@ -1,4 +1,4 @@
-# Glam Monorepo Structure
+# Forge Monorepo Structure
 
 This document describes the monorepo structure and how to work with it.
 
@@ -262,7 +262,7 @@ When setting up CI/CD, ensure:
 ## Future Additions
 
 Potential future packages:
-- `@glam/cli` - Command-line interface for Glam
+- `@glam/cli` - Command-line interface for Forge
 - `@glam/core` - Shared core logic between packages
 - `@glam/types` - Shared TypeScript types
 - `@glam/docs` - Documentation site

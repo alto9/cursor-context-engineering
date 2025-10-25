@@ -1,21 +1,21 @@
-# Glam - Context Engineering for Agentic Development
+# Forge - Context Engineering for Agentic Development
 
-A comprehensive toolkit for structured context engineering in AI-assisted development. Glam provides both a VSCode extension and an MCP server to help engineers create well-structured prompts with complete context.
+A comprehensive toolkit for structured context engineering in AI-assisted development. Forge provides both a VSCode extension and an MCP server to help engineers create well-structured prompts with complete context.
 
-## 🎯 What is Glam?
+## 🎯 What is Forge?
 
-Glam is a session-driven workflow system for structured context engineering in AI-assisted development. It helps you design software systematically by tracking changes during design sessions, then distills those sessions into minimal, actionable implementation stories (< 30 minutes each) with complete context.
+Forge is a session-driven workflow system for structured context engineering in AI-assisted development. It helps you design software systematically by tracking changes during design sessions, then distills those sessions into minimal, actionable implementation stories (< 30 minutes each) with complete context.
 
 ## 📦 Packages
 
 This is a monorepo containing two packages:
 
-### [@glam/vscode-extension](./packages/vscode-extension/)
+### [@forge/vscode-extension](./packages/vscode-extension/)
 VSCode extension that provides commands for session-driven design and implementation.
 
 **Features:**
 - Start and manage design sessions
-- Glam Studio - Full-featured UI for creating and managing Glam files
+- Forge Studio - Full-featured UI for creating and managing Forge files
   - Create features, specs, models, actors, and contexts
   - Create and navigate nested folder structures
   - Edit files with proper frontmatter and content templates
@@ -24,18 +24,18 @@ VSCode extension that provides commands for session-driven design and implementa
 - Build stories with complete context
 - Right-click context menu integration
 
-### [@glam/mcp-server](./packages/mcp-server/)
-Model Context Protocol server that exposes Glam capabilities to AI assistants like Claude Desktop and Cursor.
+### [@forge/mcp-server](./packages/mcp-server/)
+Model Context Protocol server that exposes Forge capabilities to AI assistants like Claude Desktop and Cursor.
 
 **Tools:**
-- `get_glam_about` - Comprehensive workflow overview and guidance
-- `get_glam_schema` - Schema definitions for sessions, features, specs, models, actors, contexts, stories, and tasks
-- `get_glam_context` - Technical object research prompts and guidance
-- `get_glam_objects` - List supported spec objects from guidance library
+- `get_forge_about` - Comprehensive workflow overview and guidance
+- `get_forge_schema` - Schema definitions for sessions, features, specs, models, actors, contexts, stories, and tasks
+- `get_forge_context` - Technical object research prompts and guidance
+- `get_forge_objects` - List supported spec objects from guidance library
 
 ## 🏗️ Project Structure
 
-When you use Glam in a project, it manages files in a nestable folder structure:
+When you use Forge in a project, it manages files in a nestable folder structure:
 
 ```
 your-project/
@@ -73,19 +73,19 @@ npm run build
 npm run vscode:package
 
 # Install the extension
-code --install-extension packages/vscode-extension/glam-0.1.0.vsix
+code --install-extension packages/vscode-extension/forge-0.1.0.vsix
 ```
 
-Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Glam commands:
-- `Glam: Start Design Session` - Begin a new design session with a problem statement
-- `Glam: Distill Session into Stories and Tasks` - Convert a completed session into actionable work items
-- `Glam: Build Story Implementation` - Generate implementation prompt for a specific story
-- `Glam: Open Glam Studio` - Open the visual interface for managing Glam files
+Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Forge commands:
+- `Forge: Start Design Session` - Begin a new design session with a problem statement
+- `Forge: Distill Session into Stories and Tasks` - Convert a completed session into actionable work items
+- `Forge: Build Story Implementation` - Generate implementation prompt for a specific story
+- `Forge: Open Forge Studio` - Open the visual interface for managing Forge files
 
-**Glam Studio Features:**
-- **Dashboard** - View session status and counts of all Glam objects
+**Forge Studio Features:**
+- **Dashboard** - View session status and counts of all Forge objects
 - **Sessions** - Manage active and completed design sessions
-- **Features/Specs/Models/Actors/Contexts** - Create, edit, and organize all Glam file types
+- **Features/Specs/Models/Actors/Contexts** - Create, edit, and organize all Forge file types
 - **Folder Management** - Create nested folders, navigate hierarchies
 - **File Creation** - Create new files with proper templates (requires active session)
 - **Context Menus** - Right-click folders to create subfolders
@@ -100,7 +100,7 @@ Add to your MCP settings file:
 ```json
 {
   "mcpServers": {
-    "glam": {
+    "forge": {
       "command": "node",
       "args": ["/path/to/cursor-context-engineering/packages/mcp-server/dist/index.js"],
       "cwd": "/path/to/your/project"
@@ -221,7 +221,7 @@ Add email validation to User model
 - [ ] Invalid emails are rejected
 ```
 
-## 🔄 The Glam Workflow
+## 🔄 The Forge Workflow
 
 1. **Start a Session** - Begin a design session with a clear problem statement
 2. **Design Changes** - Edit features, specs, models, and contexts during the active session
@@ -230,9 +230,9 @@ Add email validation to User model
 
 The session-driven approach ensures changes are tracked systematically, and distillation creates focused, actionable stories with all necessary context.
 
-## 💡 Why Glam?
+## 💡 Why Forge?
 
-Traditional prompting can be ad-hoc and miss important context. Glam helps you:
+Traditional prompting can be ad-hoc and miss important context. Forge helps you:
 
 - **Build Comprehensive Context** - Systematically gather all relevant information
 - **Maintain Consistency** - Use standardized formats across your project
@@ -263,13 +263,13 @@ npm run clean
 
 ```bash
 # Build just the VSCode extension
-npm run build -w @glam/vscode-extension
+npm run build -w @forge/vscode-extension
 
 # Build just the MCP server
-npm run build -w @glam/mcp-server
+npm run build -w @forge/mcp-server
 
 # Watch the MCP server
-npm run dev -w @glam/mcp-server
+npm run dev -w @forge/mcp-server
 ```
 
 ## 📚 Documentation
@@ -283,7 +283,7 @@ npm run dev -w @glam/mcp-server
 ## 🎯 Best Practices
 
 1. **Start with Sessions** - Begin each design phase with a clear problem statement
-2. **Use Glam Studio** - Visual interface makes creating and organizing files easier
+2. **Use Forge Studio** - Visual interface makes creating and organizing files easier
 3. **Organize with Folders** - Group related features, specs, and models in nested folders
 4. **Link Everything** - Use IDs to create relationships between files (features ↔ specs ↔ models)
 5. **Keep Stories Small** - Target < 30 minutes per story for better focus and completion
@@ -321,4 +321,4 @@ Created by alto9 to provide structured context engineering for AI-assisted devel
 
 ---
 
-**Note**: Glam generates prompts for AI agents rather than executing tasks directly. This gives you full control and visibility into what's being requested, ensuring quality and allowing for customization before execution.
+**Note**: Forge generates prompts for AI agents rather than executing tasks directly. This gives you full control and visibility into what's being requested, ensuring quality and allowing for customization before execution.

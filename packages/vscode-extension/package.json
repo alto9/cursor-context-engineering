@@ -1,6 +1,6 @@
 {
-  "name": "glam",
-  "displayName": "Glam - Context Engineering for Agentic Development",
+  "name": "forge",
+  "displayName": "Forge - Context Engineering for Agentic Development",
   "description": "VSCode extension that helps engineers use proper context engineering to build and maintain software using Agentic development practices",
   "version": "0.1.0",
   "publisher": "alto9",
@@ -24,38 +24,38 @@
   "contributes": {
     "commands": [
       {
-        "command": "glam.startSession",
-        "title": "Glam: Start Design Session"
+        "command": "forge.startSession",
+        "title": "Forge: Start Design Session"
       },
       {
-        "command": "glam.distillSession",
-        "title": "Glam: Distill Session into Stories and Tasks"
+        "command": "forge.distillSession",
+        "title": "Forge: Distill Session into Stories and Tasks"
       },
       {
-        "command": "glam.buildStory",
-        "title": "Glam: Build Story Implementation"
+        "command": "forge.buildStory",
+        "title": "Forge: Build Story Implementation"
       },
       {
-        "command": "glam.openStudio",
-        "title": "Glam: Open Glam Studio"
+        "command": "forge.openStudio",
+        "title": "Forge: Open Forge Studio"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder && resourceFilename == sessions",
-          "command": "glam.startSession",
-          "group": "glam@1"
+          "command": "forge.startSession",
+          "group": "forge@1"
         },
         {
           "when": "resourceExtname == .md && resourcePath =~ /.*\\.session\\.md$/",
-          "command": "glam.distillSession",
-          "group": "glam@1"
+          "command": "forge.distillSession",
+          "group": "forge@1"
         },
         {
           "when": "resourceExtname == .md && resourcePath =~ /.*\\.story\\.md$/",
-          "command": "glam.buildStory",
-          "group": "glam@1"
+          "command": "forge.buildStory",
+          "group": "forge@1"
         }
       ]
     }

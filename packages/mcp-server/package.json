@@ -1,12 +1,12 @@
 {
-  "name": "@glam/mcp-server",
+  "name": "@forge/mcp-server",
   "version": "0.1.0",
-  "description": "Glam MCP Server - Provides Glam context engineering capabilities via Model Context Protocol",
+  "description": "Forge MCP Server - Provides Forge context engineering capabilities via Model Context Protocol",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "glam-mcp": "./dist/index.js"
+    "forge-mcp": "./dist/index.js"
   },
   "repository": {
     "type": "git",

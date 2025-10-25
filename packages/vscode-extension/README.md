@@ -1,13 +1,13 @@
-# Glam VSCode Extension
+# Forge VSCode Extension
 
 VSCode extension that helps engineers use proper context engineering to build and maintain software using Agentic development practices.
 
 ## Features
 
-- **Glam: Start Design Session** - Begin a new design session with a problem statement
-- **Glam: Distill Session into Stories and Tasks** - Convert completed sessions into actionable work items
-- **Glam: Build Story Implementation** - Generate implementation prompts for specific stories
-- **Glam: Open Glam Studio** - Full-featured React-based UI for managing Glam files
+- **Forge: Start Design Session** - Begin a new design session with a problem statement
+- **Forge: Distill Session into Stories and Tasks** - Convert completed sessions into actionable work items
+- **Forge: Build Story Implementation** - Generate implementation prompts for specific stories
+- **Forge: Open Forge Studio** - Full-featured React-based UI for managing Forge files
   - **Dashboard**: View session status and object counts
   - **Sessions**: Create and manage design sessions
   - **Features**: Create features with Gherkin scenarios
@@ -50,15 +50,15 @@ code --install-extension glam-0.1.0.vsix
 ### Start a Design Session
 
 1. Open Command Palette (`Cmd/Ctrl+Shift+P`)
-2. Type "Glam: Start Design Session"
+2. Type "Forge: Start Design Session"
 3. Enter your problem statement
 4. A new session file is created in `ai/sessions/`
-5. You can now create and edit Glam files in the Studio
+5. You can now create and edit Forge files in the Studio
 
-### Open Glam Studio
+### Open Forge Studio
 
 1. Open Command Palette (Cmd/Ctrl+Shift+P)
-2. Type "Glam: Open Glam Studio"
+2. Type "Forge: Open Forge Studio"
 3. The Studio opens with tabs for Dashboard, Sessions, Features, Specs, Models, Actors, and Contexts
 
 **Studio Workflows:**
@@ -85,20 +85,20 @@ code --install-extension glam-0.1.0.vsix
 1. Complete your design work in Studio
 2. Stop the active session from Dashboard or Sessions page
 3. Right-click on the `.session.md` file OR use Command Palette
-4. Select "Glam: Distill Session into Stories and Tasks"
+4. Select "Forge: Distill Session into Stories and Tasks"
 5. Copy the generated prompt
 6. Paste into Cursor Agent to generate story and task files in `ai/tickets/<session-id>/`
 
 ### Build Story Implementation
 
 1. Right-click on a `.story.md` file in `ai/tickets/`
-2. Select "Glam: Build Story Implementation"
+2. Select "Forge: Build Story Implementation"
 3. Copy the generated prompt (includes all linked features, specs, models, and contexts)
 4. Paste into Cursor Agent to implement the story
 
 ## Project Structure
 
-Glam works with the following directory structure:
+Forge works with the following directory structure:
 
 ```
 your-project/
@@ -144,7 +144,7 @@ src/
 │   ├── DistillSessionCommand.ts    # Distill session to stories/tasks
 │   └── BuildStoryCommand.ts        # Build story implementation
 ├── panels/                         # Webview panels
-│   └── GlamStudioPanel.ts          # Main Studio UI
+│   └── ForgeStudioPanel.ts          # Main Studio UI
 ├── webview/                        # React-based webview code
 │   └── studio/
 │       └── index.tsx               # Studio React app

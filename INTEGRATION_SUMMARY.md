@@ -1,8 +1,8 @@
-# Glam MCP Server + VSCode Extension Integration
+# Forge MCP Server + VSCode Extension Integration
 
 ## Summary of Changes
 
-The Glam VSCode extension has been updated to leverage the MCP server tools for schema validation and research guidance. The extension now generates prompts that **instruct the AI agent** to use the MCP tools.
+The Forge VSCode extension has been updated to leverage the MCP server tools for schema validation and research guidance. The extension now generates prompts that **instruct the AI agent** to use the MCP tools.
 
 ## Updated Prompt Generators
 
@@ -177,7 +177,7 @@ In your test project's `.cursor/mcp.json`:
 
 ### Test the Integration
 1. Restart Cursor completely
-2. Open command palette: `Glam: New Decision`
+2. Open command palette: `Forge: New Decision`
 3. Fill out the form
 4. Copy the generated prompt
 5. Paste into AI chat - it should call `get_glam_schema` automatically
@@ -188,7 +188,7 @@ In your test project's `.cursor/mcp.json`:
 ## Benefits
 
 ### Schema Consistency
-- All Glam files adhere to exact schemas
+- All Forge files adhere to exact schemas
 - Schemas are centralized and versioned
 - No more format drift between files
 
@@ -220,7 +220,7 @@ In your test project's `.cursor/mcp.json`:
 
 ## Philosophy
 
-Glam is about **methodical context engineering**:
+Forge is about **methodical context engineering**:
 - Capture intent (Decision)
 - Define desired state (Features & Specs)
 - Generate actionable instructions (Tasks)

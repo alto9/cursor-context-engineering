@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Testing Glam MCP Server..."
+echo "Testing Forge MCP Server..."
 echo ""
 echo "Node version:"
 node --version

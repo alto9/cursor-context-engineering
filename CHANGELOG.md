@@ -1,16 +1,16 @@
 # Changelog
 
-All notable changes to the Glam extension will be documented in this file.
+All notable changes to the Forge extension will be documented in this file.
 
 ## [0.1.0] - 2025-10-01
 
 ### Added
-- Initial release of Glam extension
-- `Glam: New Decision` command with webview form
-- `Glam: Distill Decision into Features and Specs` command
-- `Glam: Convert Decision to Tasks` command
+- Initial release of Forge extension
+- `Forge: New Decision` command with webview form
+- `Forge: Distill Decision into Features and Specs` command
+- `Forge: Convert Decision to Tasks` command
 - Intelligent prompt generation with context awareness
-- Frontmatter parsing for Glam file formats
+- Frontmatter parsing for Forge file formats
 - Right-click context menu integration
 - Output panel for displaying generated prompts
 - Support for decision, feature, spec, context, and task file formats

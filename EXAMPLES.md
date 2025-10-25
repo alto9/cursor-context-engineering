@@ -1,6 +1,6 @@
-# Glam File Format Examples
+# Forge File Format Examples
 
-This document provides concrete examples of each Glam file type to help you get started.
+This document provides concrete examples of each Forge file type to help you get started.
 
 ## Context File Example
 
@@ -13,7 +13,7 @@ context_id: typescript-best-practices
 
 # TypeScript Best Practices Context
 
-GIVEN we are working within Glam files
+GIVEN we are working within Forge files
 WHEN information is needed about TypeScript implementation
 THEN read the document at `ai/docs/typescript_coding_standards.md`
 AND use that information to guide implementation decisions
@@ -530,5 +530,5 @@ Key considerations from the authentication spec:
 
 ---
 
-These examples demonstrate the complete Glam workflow from decision to implementation task, showing how each document type builds upon the others with proper linking and context.
+These examples demonstrate the complete Forge workflow from decision to implementation task, showing how each document type builds upon the others with proper linking and context.
 

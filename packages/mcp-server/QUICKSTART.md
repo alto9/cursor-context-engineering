@@ -1,11 +1,11 @@
-# Glam MCP Server - Quick Start Guide
+# Forge MCP Server - Quick Start Guide
 
 ## What You Have
 
-Your Glam MCP Server now provides **two focused tools**:
+Your Forge MCP Server now provides **two focused tools**:
 
 ### 1. `get_glam_schema`
-- **Purpose:** Returns the complete schema specification for Glam file types
+- **Purpose:** Returns the complete schema specification for Forge file types
 - **Input:** `schema_type` - one of: `decision`, `feature`, `spec`, `task`, `context`
 - **Output:** Detailed schema with frontmatter fields, content structure, and linkage requirements
 
@@ -124,9 +124,9 @@ When you call `get_glam_context` with a technical object, it returns a prompt th
 Now that your MCP server is set up with the correct tools, you can:
 
 1. Test both tools thoroughly
-2. Integrate them into your Glam workflow
-3. Use `get_glam_schema` when creating/validating Glam files
+2. Integrate them into your Forge workflow
+3. Use `get_glam_schema` when creating/validating Forge files
 4. Use `get_glam_context` when researching technical concepts
 
-The server is now focused on providing **schema specifications** and **research guidance**, which are the core needs for your Glam system.
+The server is now focused on providing **schema specifications** and **research guidance**, which are the core needs for your Forge system.
 

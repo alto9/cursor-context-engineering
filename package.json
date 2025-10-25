@@ -1,8 +1,8 @@
 {
-  "name": "glam-monorepo",
+  "name": "forge-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "Glam - Context Engineering for Agentic Development",
+  "description": "Forge - Context Engineering for Agentic Development",
   "repository": {
     "type": "git",
     "url": "https://github.com/alto9/cursor-context-engineering"
@@ -20,7 +20,7 @@
     "watch": "npm run watch --workspaces --if-present",
     "lint": "npm run lint --workspaces",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules packages/*/node_modules",
-    "vscode:package": "cd packages/vscode-extension && npm run package && npx --yes @vscode/vsce package --no-dependencies -o glam-0.1.0.vsix"
+    "vscode:package": "cd packages/vscode-extension && npm run package && npx --yes @vscode/vsce package --no-dependencies -o forge-0.1.0.vsix"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

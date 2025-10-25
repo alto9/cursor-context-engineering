@@ -40,7 +40,7 @@ export class StartSessionCommand {
             }
 
             vscode.window.showInformationMessage(
-                'Start session prompt generated! Check the Glam output panel.'
+                'Start session prompt generated! Check the Forge output panel.'
             );
         } catch (error) {
             vscode.window.showErrorMessage(`Error generating prompt: ${error}`);

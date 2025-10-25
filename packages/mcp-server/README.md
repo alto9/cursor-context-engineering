@@ -1,16 +1,16 @@
-# Glam MCP Server
+# Forge MCP Server
 
-A Model Context Protocol (MCP) server that provides Glam context engineering capabilities for agentic development workflows.
+A Model Context Protocol (MCP) server that provides Forge context engineering capabilities for agentic development workflows.
 
 ## Overview
 
-The Glam MCP Server exposes two powerful tools that help agents understand and work with the Glam file format system:
+The Forge MCP Server exposes two powerful tools that help agents understand and work with the Forge file format system:
 
 ### Tools
 
 #### 1. `get_glam_schema`
 
-Returns the complete schema specification for a Glam file type.
+Returns the complete schema specification for a Forge file type.
 
 **Parameters:**
 - `schema_type` (required): One of `decision`, `feature`, `spec`, `task`, or `context`
@@ -21,7 +21,7 @@ Returns the complete schema specification for a Glam file type.
 - Content structure requirements
 - Linkage requirements between different file types
 
-**Example use case:** When an agent needs to create or validate a Glam file, it can call this tool to understand the exact format requirements.
+**Example use case:** When an agent needs to create or validate a Forge file, it can call this tool to understand the exact format requirements.
 
 #### 2. `get_glam_context`
 
@@ -111,7 +111,7 @@ Alternatively, if you want to use the built binary directly:
 
 After updating the configuration:
 1. Restart Cursor
-2. The Glam tools will be available to the AI agent
+2. The Forge tools will be available to the AI agent
 3. You can verify by asking the agent to call `get_glam_schema` with a schema type
 
 ## Tool Usage Examples
@@ -150,7 +150,7 @@ The server returns a research prompt that guides the agent through investigating
 
 ## Architecture
 
-The Glam MCP Server is built with:
+The Forge MCP Server is built with:
 - **TypeScript** for type safety
 - **MCP SDK** (@modelcontextprotocol/sdk) for protocol implementation
 - **Stdio Transport** for process-based communication
@@ -191,7 +191,7 @@ npm run clean
 
 ## Schema Specifications
 
-The server provides schemas for five Glam file types:
+The server provides schemas for five Forge file types:
 
 1. **Decision** (`*.decision.md`) - Architecture Decision Records
 2. **Feature** (`*.feature.md`) - Gherkin-based feature specifications

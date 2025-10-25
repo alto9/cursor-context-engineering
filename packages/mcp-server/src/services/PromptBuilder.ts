@@ -1,4 +1,4 @@
-import { GlamFileManager } from './GlamFileManager.js';
+import { ForgeFileManager } from './ForgeFileManager.js';
 
 export interface NewDecisionData {
   whatIsChanging: string;
@@ -8,7 +8,7 @@ export interface NewDecisionData {
 }
 
 export class PromptBuilder {
-  constructor(private fileManager: GlamFileManager) {}
+  constructor(private fileManager: ForgeFileManager) {}
 
   async generateNewDecisionPrompt(data: NewDecisionData): Promise<string> {
     const timestamp = new Date().toISOString().split('T')[0];
@@ -90,7 +90,7 @@ Ensure the ai/decisions folder exists, and create it if it doesn't. Use proper m
       prompt += '\n';
     }
 
-    prompt += `STEP 0: Call the get_glam_objects tool to retrieve the list of supported spec objects and their guidance. Use this knowledge to design specs that leverage supported spec objects where appropriate.
+    prompt += `STEP 0: Call the get_forge_objects tool to retrieve the list of supported spec objects and their guidance. Use this knowledge to design specs that leverage supported spec objects where appropriate.
 
 **Task**: Analyze this decision and ensure that:
 
@@ -124,7 +124,7 @@ Ensure the ai/decisions folder exists, and create it if it doesn't. Use proper m
 
     prompt += `Review the decision and determine what features and specs need to be created or updated. Ensure complete coverage of the decision's requirements while maintaining proper relationships between features and specs.
 
-When drafting specs, prefer using supported spec objects from get_glam_objects when they fit the need, aligning the spec content to the provided guidance.`;
+When drafting specs, prefer using supported spec objects from get_forge_objects when they fit the need, aligning the spec content to the provided guidance.`;
 
     return prompt;
   }
@@ -186,7 +186,7 @@ Read each file to understand the full context:
 - Read related specs to understand the technical implementation details
 - Read available contexts for guidance
 
-STEP 2: For each spec object referenced or implied in the related specs (e.g., lambda, dynamodb, api-gateway), call get_glam_context with spec_object set to that object. Use the returned guidance to inform precise implementation details in the tasks.
+STEP 2: For each spec object referenced or implied in the related specs (e.g., lambda, dynamodb, api-gateway), call get_forge_context with spec_object set to that object. Use the returned guidance to inform precise implementation details in the tasks.
 
 STEP 3: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
 

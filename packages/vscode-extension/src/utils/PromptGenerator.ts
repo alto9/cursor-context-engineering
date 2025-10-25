@@ -11,9 +11,9 @@ export class PromptGenerator {
         const timestamp = new Date().toISOString();
         const sessionId = this.generateId(problemStatement);
 
-        return `STEP 1: First, call the get_glam_about MCP tool to understand the Glam workflow.
+        return `STEP 1: First, call the get_forge_about MCP tool to understand the Forge workflow.
 
-STEP 2: Call the get_glam_schema MCP tool with schema_type "session" to retrieve the proper session file format.
+STEP 2: Call the get_forge_schema MCP tool with schema_type "session" to retrieve the proper session file format.
 
 STEP 3: Create a new session document in the ai/sessions folder with the following details:
 
@@ -52,11 +52,11 @@ Once created, this session will track all changes to features, specs, models, an
         // Check if workspace is a git repository
         const isGitRepo = await GitUtils.isGitRepository(workspaceFolder.uri.fsPath);
 
-        let prompt = `STEP 1: Call the get_glam_about MCP tool to understand the Glam workflow and distillation principles.
+        let prompt = `STEP 1: Call the get_forge_about MCP tool to understand the Forge workflow and distillation principles.
 
 STEP 2: Retrieve the required schemas:
-- get_glam_schema with schema_type "story"
-- get_glam_schema with schema_type "task"
+- get_forge_schema with schema_type "story"
+- get_forge_schema with schema_type "task"
 
 STEP 3: Review the design session:
 

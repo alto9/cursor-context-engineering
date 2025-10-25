@@ -84,7 +84,7 @@ function App() {
     <div className="container">
       <div className="sidebar">
         <div style={{ padding: 12, fontWeight: 600, borderBottom: '1px solid var(--vscode-panel-border)' }}>
-          Glam Studio
+          Forge Studio
           {activeSession && (
             <div style={{ fontSize: 10, marginTop: 4, color: 'var(--vscode-charts-green)', fontWeight: 'normal' }}>
               ● Session Active
@@ -832,11 +832,11 @@ function DashboardPage({ counts, activeSession }: { counts: any; activeSession: 
       </div>
       <div className="card">
         <h3>Quick Start</h3>
-        <p>Welcome to Glam Studio - your session-driven design workspace.</p>
+        <p>Welcome to Forge Studio - your session-driven design workspace.</p>
         <ol style={{ lineHeight: 1.8 }}>
           <li>Start a design session from the Sessions page</li>
           <li>Design your features, specs, and models during the session</li>
-          <li>Glam tracks all changes automatically</li>
+          <li>Forge tracks all changes automatically</li>
           <li>Stop the session and distill it into actionable stories and tasks</li>
           <li>Build each story to implement your changes</li>
         </ol>
