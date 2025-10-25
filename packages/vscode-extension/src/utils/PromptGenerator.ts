@@ -354,6 +354,7 @@ Begin implementation now.`;
         if (filePath.includes('.feature.md')) return 'feature';
         if (filePath.includes('.spec.md')) return 'spec';
         if (filePath.includes('.model.md')) return 'model';
+        if (filePath.includes('.actor.md')) return 'actor';
         if (filePath.includes('.context.md')) return 'context';
         if (filePath.includes('.session.md')) return 'session';
         if (filePath.includes('.story.md')) return 'story';

@@ -4,7 +4,7 @@ A comprehensive toolkit for structured context engineering in AI-assisted develo
 
 ## 🎯 What is Glam?
 
-Glam is a session-driven workflow system for structured context engineering in AI-assisted development. It uses design sessions to track changes, then distills those sessions into minimal, actionable implementation stories with complete context.
+Glam is a session-driven workflow system for structured context engineering in AI-assisted development. It helps you design software systematically by tracking changes during design sessions, then distills those sessions into minimal, actionable implementation stories (< 30 minutes each) with complete context.
 
 ## 📦 Packages
 
@@ -15,7 +15,11 @@ VSCode extension that provides commands for session-driven design and implementa
 
 **Features:**
 - Start and manage design sessions
-- Glam Studio for browsing and managing Glam files
+- Glam Studio - Full-featured UI for creating and managing Glam files
+  - Create features, specs, models, actors, and contexts
+  - Create and navigate nested folder structures
+  - Edit files with proper frontmatter and content templates
+  - Session-aware workflows (requires active session for editing)
 - Distill sessions into Stories and Tasks
 - Build stories with complete context
 - Right-click context menu integration
@@ -23,11 +27,11 @@ VSCode extension that provides commands for session-driven design and implementa
 ### [@glam/mcp-server](./packages/mcp-server/)
 Model Context Protocol server that exposes Glam capabilities to AI assistants like Claude Desktop and Cursor.
 
-**Features:**
-- get_glam_about - Comprehensive workflow overview
-- get_glam_schema - Schema definitions for all file types
-- get_glam_context - Technical object guidance
-- get_glam_objects - List supported spec objects
+**Tools:**
+- `get_glam_about` - Comprehensive workflow overview and guidance
+- `get_glam_schema` - Schema definitions for sessions, features, specs, models, actors, contexts, stories, and tasks
+- `get_glam_context` - Technical object research prompts and guidance
+- `get_glam_objects` - List supported spec objects from guidance library
 
 ## 🏗️ Project Structure
 
@@ -36,12 +40,13 @@ When you use Glam in a project, it manages files in a nestable folder structure:
 ```
 your-project/
 └── ai/
-    ├── sessions/      # Design session tracking (nestable)
-    ├── features/      # Feature definitions with Gherkin (nestable, index.md)
-    ├── specs/         # Technical specifications with Mermaid (nestable)
-    ├── models/        # Data model definitions (nestable)
-    ├── contexts/      # Context references and guidance (nestable)
-    ├── tickets/       # Implementation Stories and Tasks (nestable, by session)
+    ├── sessions/      # Design session tracking (*.session.md)
+    ├── features/      # Feature definitions with Gherkin (*.feature.md, nestable, index.md)
+    ├── specs/         # Technical specifications with Mermaid (*.spec.md, nestable)
+    ├── models/        # Data model definitions (*.model.md, nestable)
+    ├── actors/        # Actor/persona definitions (*.actor.md, nestable)
+    ├── contexts/      # Context references and guidance (*.context.md, nestable)
+    ├── tickets/       # Implementation Stories and Tasks (*.story.md, *.task.md, by session)
     └── docs/          # Supporting documentation
 ```
 
@@ -72,10 +77,18 @@ code --install-extension packages/vscode-extension/glam-0.1.0.vsix
 ```
 
 Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Glam commands:
-- `Glam: Start Design Session`
-- `Glam: Distill Session into Stories and Tasks`
-- `Glam: Build Story Implementation`
-- `Glam: Open Glam Studio`
+- `Glam: Start Design Session` - Begin a new design session with a problem statement
+- `Glam: Distill Session into Stories and Tasks` - Convert a completed session into actionable work items
+- `Glam: Build Story Implementation` - Generate implementation prompt for a specific story
+- `Glam: Open Glam Studio` - Open the visual interface for managing Glam files
+
+**Glam Studio Features:**
+- **Dashboard** - View session status and counts of all Glam objects
+- **Sessions** - Manage active and completed design sessions
+- **Features/Specs/Models/Actors/Contexts** - Create, edit, and organize all Glam file types
+- **Folder Management** - Create nested folders, navigate hierarchies
+- **File Creation** - Create new files with proper templates (requires active session)
+- **Context Menus** - Right-click folders to create subfolders
 
 ### Using the MCP Server
 
@@ -159,6 +172,28 @@ User entity representing system users.
 | id | UUID | Yes | Unique identifier |
 | email | string | Yes | Email address (unique) |
 | password_hash | string | Yes | Bcrypt hash |
+```
+
+### Actor Files (*.actor.md)
+```markdown
+---
+actor_id: system-administrator
+type: user
+---
+
+## Overview
+System administrator responsible for managing users and system configuration.
+
+## Responsibilities
+- Manage user accounts and permissions
+- Configure system settings
+- Monitor system health
+- Perform backups and maintenance
+
+## Interactions
+- Creates and manages user accounts
+- Accesses admin dashboard
+- Reviews system logs and metrics
 ```
 
 ### Story Files (*.story.md)
@@ -247,22 +282,26 @@ npm run dev -w @glam/mcp-server
 
 ## 🎯 Best Practices
 
-1. **Start with Context** - Define context files early to guide decision-making
-2. **One Decision at a Time** - Focus on completing each decision fully before starting another
-3. **Link Everything** - Use IDs to create relationships between files
-4. **Be Specific** - Provide detailed information in decisions to get better features and specs
-5. **Review Before Distilling** - Ensure decisions are complete before converting to features/specs
-6. **Iterate** - Refine features and specs before generating tasks
+1. **Start with Sessions** - Begin each design phase with a clear problem statement
+2. **Use Glam Studio** - Visual interface makes creating and organizing files easier
+3. **Organize with Folders** - Group related features, specs, and models in nested folders
+4. **Link Everything** - Use IDs to create relationships between files (features ↔ specs ↔ models)
+5. **Keep Stories Small** - Target < 30 minutes per story for better focus and completion
+6. **Review Before Distilling** - Ensure your design (features/specs/models) is complete before generating stories
+7. **Define Actors** - Document who interacts with your system for better feature clarity
+8. **Use Contexts** - Create context files to guide technical implementation decisions
 
 ## 🔮 Future Plans
 
-- Direct integration with Cursor Agent CLI (when stable)
+- Real-time file editing in Studio (currently requires save/reload)
+- Drag-and-drop folder reorganization
+- Visualization of feature/spec/model relationships
 - Template customization for different project types
-- Prompt history and versioning
 - Validation and linting for file formats
-- Visualization of decision/feature/spec relationships
-- Export to various documentation formats
-- Enhanced MCP server capabilities
+- Export to various documentation formats (PDF, Confluence, etc.)
+- Story execution tracking and status updates
+- Enhanced MCP server capabilities with more specialized tools
+- AI-assisted content generation for features and specs
 
 ## 🤝 Contributing
 

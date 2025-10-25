@@ -30,6 +30,11 @@ export class GlamStudioPanel {
 
         this._update();
         
+        // Load active session from disk (filesystem is source of truth)
+        this._loadActiveSessionFromDisk().catch(err => {
+            console.error('Failed to load active session from disk:', err);
+        });
+        
         // Start persistent structure watcher
         this._startStructureWatcher();
 
@@ -47,6 +52,8 @@ export class GlamStudioPanel {
                     break;
                 }
                 case 'getActiveSession': {
+                    // Always reload from disk to ensure filesystem is source of truth
+                    await this._loadActiveSessionFromDisk();
                     this._panel.webview.postMessage({ type: 'activeSession', data: this._activeSession });
                     break;
                 }
@@ -70,11 +77,14 @@ export class GlamStudioPanel {
                 case 'switchProject': {
                     if (message.data?.projectPath) {
                         this._projectUri = vscode.Uri.file(message.data.projectPath);
+                        // Load active session for the new project
+                        await this._loadActiveSessionFromDisk();
                         // Restart the structure watcher for the new project
                         this._startStructureWatcher();
                         this._panel.webview.postMessage({ type: 'initialState', data: await this._getInitialState() });
                         const counts = await this._getCounts();
                         this._panel.webview.postMessage({ type: 'counts', data: counts });
+                        this._panel.webview.postMessage({ type: 'activeSession', data: this._activeSession });
                     }
                     break;
                 }
@@ -99,6 +109,18 @@ export class GlamStudioPanel {
                 }
                 case 'createFolder': {
                     await this._createFolder(message.folderPath);
+                    break;
+                }
+                case 'createFile': {
+                    await this._createFile(message.folderPath, message.category, message.title);
+                    break;
+                }
+                case 'promptCreateFolder': {
+                    await this._promptCreateFolder(message.folderPath, message.category);
+                    break;
+                }
+                case 'promptCreateFile': {
+                    await this._promptCreateFile(message.folderPath, message.category);
                     break;
                 }
                 default:
@@ -398,16 +420,17 @@ export class GlamStudioPanel {
 </html>`;
     }
 
-    private async _getCounts(): Promise<{ sessions: number; features: number; specs: number; models: number; contexts: number; stories: number; tasks: number; }>
+    private async _getCounts(): Promise<{ sessions: number; features: number; specs: number; models: number; actors: number; contexts: number; stories: number; tasks: number; }>
     {
         const sessions = await this._countRecursive(['ai', 'sessions'], (name) => name.endsWith('.session.md'));
         const features = await this._countRecursive(['ai', 'features'], (name) => name.endsWith('.feature.md'));
         const specs = await this._countRecursive(['ai', 'specs'], (name) => name.endsWith('.spec.md'));
         const models = await this._countRecursive(['ai', 'models'], (name) => name.endsWith('.model.md'));
+        const actors = await this._countRecursive(['ai', 'actors'], (name) => name.endsWith('.actor.md'));
         const contexts = await this._countRecursive(['ai', 'contexts'], (name) => name.endsWith('.context.md'));
         const stories = await this._countRecursive(['ai', 'tickets'], (name) => name.endsWith('.story.md'));
         const tasks = await this._countRecursive(['ai', 'tickets'], (name) => name.endsWith('.task.md'));
-        return { sessions, features, specs, models, contexts, stories, tasks };
+        return { sessions, features, specs, models, actors, contexts, stories, tasks };
     }
 
     private async _countRecursive(pathSegs: string[], predicate: (name: string) => boolean): Promise<number> {
@@ -463,6 +486,53 @@ export class GlamStudioPanel {
         });
 
         return sessions;
+    }
+
+    /**
+     * Load active session from disk by scanning for session files with status: "active"
+     * This makes the filesystem the source of truth for session state
+     */
+    private async _loadActiveSessionFromDisk(): Promise<void> {
+        const sessionsDir = vscode.Uri.joinPath(this._projectUri, 'ai', 'sessions');
+        
+        try {
+            const files = await this._listFilesRecursive(sessionsDir, '.session.md');
+            
+            for (const file of files) {
+                const content = await FileParser.readFile(file.fsPath);
+                const parsed = FileParser.parseFrontmatter(content);
+                
+                // Check if this session is active
+                if (parsed.frontmatter.status === 'active') {
+                    const sessionId = parsed.frontmatter.session_id || path.basename(file.fsPath, '.session.md');
+                    
+                    // Load this as the active session
+                    this._activeSession = {
+                        sessionId,
+                        problemStatement: parsed.frontmatter.problem_statement || '',
+                        startTime: parsed.frontmatter.start_time || new Date().toISOString(),
+                        changedFiles: Array.isArray(parsed.frontmatter.changed_files) ? parsed.frontmatter.changed_files : []
+                    };
+                    
+                    // Start file watcher for this session
+                    this._startFileWatcher();
+                    
+                    // Only take the first active session found
+                    // If multiple exist, we take the first one (could log a warning)
+                    return;
+                }
+            }
+            
+            // No active session found - clear any in-memory state
+            this._activeSession = null;
+            if (this._fileWatcher) {
+                this._fileWatcher.dispose();
+                this._fileWatcher = undefined;
+            }
+        } catch (error) {
+            // Sessions directory doesn't exist yet or other error
+            this._activeSession = null;
+        }
     }
 
     private async _listFilesRecursive(dir: vscode.Uri, extension: string): Promise<vscode.Uri[]> {
@@ -816,10 +886,22 @@ ${problemStatement}
         
         try {
             const entries = await vscode.workspace.fs.readDirectory(folderUri);
-            const files: any[] = [];
+            const items: any[] = [];
 
             for (const [name, type] of entries) {
-                if (type === vscode.FileType.File && name.endsWith(fileExtension) && name !== 'index.md') {
+                if (type === vscode.FileType.Directory && !name.startsWith('.') && name !== 'node_modules') {
+                    // Add subfolder
+                    const subfolderUri = vscode.Uri.joinPath(folderUri, name);
+                    const stats = await vscode.workspace.fs.stat(subfolderUri);
+                    
+                    items.push({
+                        name,
+                        path: subfolderUri.fsPath,
+                        type: 'folder',
+                        modified: new Date(stats.mtime).toISOString()
+                    });
+                } else if (type === vscode.FileType.File && name.endsWith(fileExtension) && name !== 'index.md') {
+                    // Add file
                     const fileUri = vscode.Uri.joinPath(folderUri, name);
                     const stats = await vscode.workspace.fs.stat(fileUri);
                     
@@ -833,18 +915,25 @@ ${problemStatement}
                         // Ignore parse errors
                     }
 
-                    files.push({
+                    items.push({
                         name,
                         path: fileUri.fsPath,
+                        type: 'file',
                         modified: new Date(stats.mtime).toISOString(),
                         frontmatter
                     });
                 }
             }
 
-            // Sort by name
-            files.sort((a, b) => a.name.localeCompare(b.name));
-            return files;
+            // Sort folders first, then files, both alphabetically
+            items.sort((a, b) => {
+                if (a.type === b.type) {
+                    return a.name.localeCompare(b.name);
+                }
+                return a.type === 'folder' ? -1 : 1;
+            });
+            
+            return items;
         } catch {
             return [];
         }
@@ -892,6 +981,61 @@ ${problemStatement}
         }
     }
 
+    private async _promptCreateFolder(folderPath: string, category: string): Promise<void> {
+        // Check if session is active
+        if (!this._activeSession) {
+            vscode.window.showErrorMessage('Cannot create folder: No active design session. Start a session first.');
+            return;
+        }
+
+        // If folderPath is empty, use the base category path
+        const basePath = folderPath || this._getCategoryPath(category).fsPath;
+
+        const folderName = await vscode.window.showInputBox({
+            prompt: 'Enter subfolder name',
+            placeHolder: 'my-subfolder',
+            validateInput: (value) => {
+                if (!value || !value.trim()) {
+                    return 'Folder name cannot be empty';
+                }
+                return null;
+            }
+        });
+
+        if (folderName) {
+            const kebabName = this._toKebabCase(folderName);
+            const newFolderPath = path.join(basePath, kebabName);
+            await this._createFolder(newFolderPath);
+        }
+    }
+
+    private async _promptCreateFile(folderPath: string, category: string): Promise<void> {
+        // Check if session is active
+        if (!this._activeSession) {
+            vscode.window.showErrorMessage('Cannot create file: No active design session. Start a session first.');
+            return;
+        }
+
+        // If folderPath is empty, use the base category path
+        const basePath = folderPath || this._getCategoryPath(category).fsPath;
+
+        const categoryLabel = category.charAt(0).toUpperCase() + category.slice(0, -1);
+        const title = await vscode.window.showInputBox({
+            prompt: `Enter ${categoryLabel} title`,
+            placeHolder: 'My New Item',
+            validateInput: (value) => {
+                if (!value || !value.trim()) {
+                    return 'Title cannot be empty';
+                }
+                return null;
+            }
+        });
+
+        if (title && title.trim()) {
+            await this._createFile(basePath, category, title.trim());
+        }
+    }
+
     private async _createFolder(folderPath: string): Promise<void> {
         // Check if session is active
         if (!this._activeSession) {
@@ -915,6 +1059,212 @@ ${problemStatement}
                 type: 'folderCreated', 
                 data: { path: folderPath, success: false, error: String(error) } 
             });
+        }
+    }
+
+    private async _createFile(folderPath: string, category: string, title: string): Promise<void> {
+        // Check if session is active
+        if (!this._activeSession) {
+            vscode.window.showErrorMessage('Cannot create file: No active design session. Start a session first.');
+            return;
+        }
+
+        try {
+            // Generate kebab-case filename
+            const filename = this._toKebabCase(title);
+            const fileExtension = this._getCategoryExtension(category);
+            const filePath = path.join(folderPath, `${filename}${fileExtension}`);
+            const fileUri = vscode.Uri.file(filePath);
+
+            // Check if file already exists
+            try {
+                await vscode.workspace.fs.stat(fileUri);
+                vscode.window.showErrorMessage(`File already exists: ${filename}${fileExtension}`);
+                this._panel.webview.postMessage({ 
+                    type: 'fileCreated', 
+                    data: { path: filePath, success: false, error: 'File already exists' } 
+                });
+                return;
+            } catch {
+                // File doesn't exist, continue
+            }
+
+            // Generate frontmatter template
+            const frontmatter = this._getFrontmatterTemplate(category, filename);
+            
+            // Generate minimal content template
+            const content = this._getContentTemplate(category, title);
+
+            // Create file
+            const text = FileParser.stringifyFrontmatter(frontmatter, content);
+            await vscode.workspace.fs.writeFile(fileUri, Buffer.from(text, 'utf-8'));
+            
+            this._panel.webview.postMessage({ 
+                type: 'fileCreated', 
+                data: { path: filePath, success: true } 
+            });
+            
+            vscode.window.showInformationMessage(`File created: ${filename}${fileExtension}`);
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to create file: ${error}`);
+            this._panel.webview.postMessage({ 
+                type: 'fileCreated', 
+                data: { path: folderPath, success: false, error: String(error) } 
+            });
+        }
+    }
+
+    private _toKebabCase(str: string): string {
+        return str
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .substring(0, 50);
+    }
+
+    private _getFrontmatterTemplate(category: string, id: string): any {
+        switch (category) {
+            case 'features':
+                return {
+                    feature_id: id,
+                    spec_id: [],
+                    model_id: []
+                };
+            case 'specs':
+                return {
+                    spec_id: id,
+                    feature_id: [],
+                    model_id: [],
+                    context_id: []
+                };
+            case 'models':
+                return {
+                    model_id: id,
+                    type: '',
+                    related_models: []
+                };
+            case 'contexts':
+                return {
+                    context_id: id,
+                    category: ''
+                };
+            case 'actors':
+                return {
+                    actor_id: id,
+                    type: 'user'
+                };
+            default:
+                return {};
+        }
+    }
+
+    private _getContentTemplate(category: string, title: string): string {
+        switch (category) {
+            case 'features':
+                return `## Overview
+
+(Describe what this feature does)
+
+## Behavior
+
+\`\`\`gherkin
+Feature: ${title}
+
+Scenario: (Describe a scenario)
+  Given (initial context)
+  When (action taken)
+  Then (expected outcome)
+\`\`\`
+
+## Notes
+
+(Additional context or considerations)
+`;
+            case 'specs':
+                return `## Overview
+
+(Describe the technical implementation)
+
+## Architecture
+
+\`\`\`mermaid
+graph TD
+  A[Component A] --> B[Component B]
+\`\`\`
+
+## Implementation Details
+
+(Detailed technical specifications)
+
+## Notes
+
+(Additional context or considerations)
+`;
+            case 'models':
+                return `## Overview
+
+(Describe what this model represents)
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| id | string | Yes | Unique identifier |
+
+## Relationships
+
+(Describe relationships with other models)
+
+## Validation Rules
+
+(Describe validation requirements)
+
+## Notes
+
+(Additional context or considerations)
+`;
+            case 'contexts':
+                return `## Overview
+
+(Describe when to use this context)
+
+## Usage
+
+\`\`\`gherkin
+Scenario: When to use this context
+  Given (specific situation)
+  When (working on something)
+  Then (use this guidance)
+\`\`\`
+
+## Guidance
+
+(Provide specific technical guidance)
+
+## Notes
+
+(Additional context or considerations)
+`;
+            case 'actors':
+                return `## Overview
+
+(Describe this actor and their role)
+
+## Responsibilities
+
+- (List key responsibilities)
+
+## Interactions
+
+(Describe how this actor interacts with the system)
+
+## Notes
+
+(Additional context or considerations)
+`;
+            default:
+                return '(Add your content here)\n';
         }
     }
 

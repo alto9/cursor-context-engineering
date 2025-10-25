@@ -48,13 +48,13 @@ class GlamMCPServer {
           },
           {
             name: 'get_glam_schema',
-            description: 'Get the schema specification for a Glam file type (session, feature, spec, model, story, task, or context)',
+            description: 'Get the schema specification for a Glam file type (session, feature, spec, model, actor, story, task, or context)',
             inputSchema: {
               type: 'object',
               properties: {
                 schema_type: {
                   type: 'string',
-                  enum: ['session', 'feature', 'spec', 'model', 'story', 'task', 'context'],
+                  enum: ['session', 'feature', 'spec', 'model', 'actor', 'story', 'task', 'context'],
                   description: 'The type of schema to retrieve',
                 },
               },
@@ -269,6 +269,7 @@ your-project/
     ├── features/     # Feature definitions with Gherkin (nestable, index.md at each level)
     ├── specs/        # Technical specifications with Mermaid (nestable)
     ├── models/       # Data model definitions (nestable)
+    ├── actors/       # Actor definitions and profiles (nestable)
     ├── contexts/     # Context references and guidance (nestable)
     ├── tickets/      # Implementation Stories and Tasks (nestable, organized by session)
     └── docs/         # Supporting documentation
@@ -286,6 +287,7 @@ During an active session:
 - Edit Features: Define or modify feature behavior using Gherkin
 - Edit Specs: Create or update technical specifications with Mermaid diagrams
 - Edit Models: Define data structures and their properties
+- Edit Actors: Define actors and their roles in the system
 - Edit Contexts: Add guidance for specific technical areas
 - All changes are tracked in the session's changed_files array
 
@@ -592,6 +594,88 @@ interface User {
 ## Linkages
 - Referenced by **feature_id** and **spec_id** values
 - May reference other **model_id** values for relationships`,
+
+      actor: `# Actor File Schema
+
+## File Format
+- **Filename**: <actor-id>.actor.md
+- **Location**: ai/actors/ (nestable)
+- **Format**: Frontmatter + Markdown
+
+## Frontmatter Fields
+---
+actor_id: kebab-case-id  # Must match filename without .actor.md
+type: user  # user, system, external
+---
+
+## Content Structure
+
+Actors represent entities that interact with or participate in your system. Use markdown to describe:
+
+### Overview
+Brief description of who or what this actor is and their role.
+
+### Responsibilities
+What this actor is responsible for or what actions they can perform.
+
+### Characteristics
+Key attributes, behaviors, or constraints that define this actor.
+
+### Context
+How this actor fits into the larger system or organization.
+
+## Actor Types
+
+### User
+Human users who directly interact with the system.
+- End users, administrators, operators
+- Have specific roles and permissions
+- Perform actions through the user interface
+
+### System
+Automated systems or services that interact with your system.
+- External APIs, microservices, background jobs
+- Automated processes and integrations
+- System-to-system communication
+
+### External
+External entities that interact with the system indirectly.
+- Third-party services, partners, regulatory bodies
+- External data sources or destinations
+- Stakeholders who don't directly use the system
+
+## Example
+
+\`\`\`markdown
+---
+actor_id: customer-service-rep
+type: user
+---
+
+# Customer Service Representative
+
+## Overview
+Front-line support staff who assist customers with issues, questions, and account management.
+
+## Responsibilities
+- Respond to customer inquiries via phone, email, and chat
+- Process returns and refunds
+- Update customer account information
+- Escalate complex issues to specialized teams
+
+## Characteristics
+- Requires authentication and role-based access
+- Works primarily during business hours
+- Needs quick access to customer history and order details
+- Must follow company policies and compliance requirements
+
+## Context
+Part of the customer support team, reporting to Support Manager. Primary interface between customers and the company for issue resolution.
+\`\`\`
+
+## Linkages
+- Will be referenced by **feature_id** values in Gherkin scenarios (future enhancement)
+- May reference related actors for hierarchical or collaborative relationships`,
 
       story: `# Story File Schema
 

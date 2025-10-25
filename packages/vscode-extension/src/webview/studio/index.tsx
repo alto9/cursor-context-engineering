@@ -26,8 +26,9 @@ interface FolderNode {
 interface FileItem {
   name: string;
   path: string;
+  type: 'file' | 'folder';
   modified: string;
-  frontmatter: any;
+  frontmatter?: any;
 }
 
 interface FileContent {
@@ -38,8 +39,8 @@ interface FileContent {
 
 function App() {
   const [state, setState] = React.useState<any>({ projectPath: '' });
-  const [counts, setCounts] = React.useState<{ sessions: number; features: number; specs: number; models: number; contexts: number; stories: number; tasks: number } | null>(null);
-  const [route, setRoute] = React.useState<{ page: 'dashboard' | 'features' | 'specs' | 'models' | 'contexts' | 'sessions'; params?: any }>({ page: 'dashboard' });
+  const [counts, setCounts] = React.useState<{ sessions: number; features: number; specs: number; models: number; actors: number; contexts: number; stories: number; tasks: number } | null>(null);
+  const [route, setRoute] = React.useState<{ page: 'dashboard' | 'features' | 'specs' | 'models' | 'actors' | 'contexts' | 'sessions'; params?: any }>({ page: 'dashboard' });
   const [activeSession, setActiveSession] = React.useState<ActiveSession | null>(null);
   const [sessions, setSessions] = React.useState<Session[]>([]);
   const [showNewSessionForm, setShowNewSessionForm] = React.useState(false);
@@ -96,6 +97,7 @@ function App() {
           <li style={{ padding: '8px 12px', cursor: 'pointer', background: route.page === 'features' ? 'var(--vscode-list-activeSelectionBackground)' : 'transparent' }} onClick={() => setRoute({ page: 'features' })}>Features</li>
           <li style={{ padding: '8px 12px', cursor: 'pointer', background: route.page === 'specs' ? 'var(--vscode-list-activeSelectionBackground)' : 'transparent' }} onClick={() => setRoute({ page: 'specs' })}>Specifications</li>
           <li style={{ padding: '8px 12px', cursor: 'pointer', background: route.page === 'models' ? 'var(--vscode-list-activeSelectionBackground)' : 'transparent' }} onClick={() => setRoute({ page: 'models' })}>Models</li>
+          <li style={{ padding: '8px 12px', cursor: 'pointer', background: route.page === 'actors' ? 'var(--vscode-list-activeSelectionBackground)' : 'transparent' }} onClick={() => setRoute({ page: 'actors' })}>Actors</li>
           <li style={{ padding: '8px 12px', cursor: 'pointer', background: route.page === 'contexts' ? 'var(--vscode-list-activeSelectionBackground)' : 'transparent' }} onClick={() => setRoute({ page: 'contexts' })}>Contexts</li>
         </ul>
       </div>
@@ -133,6 +135,10 @@ function App() {
 
         {route.page === 'models' && (
           <BrowserPage category="models" title="Models" activeSession={activeSession} />
+        )}
+
+        {route.page === 'actors' && (
+          <BrowserPage category="actors" title="Actors" activeSession={activeSession} />
         )}
 
         {route.page === 'contexts' && (
@@ -178,6 +184,14 @@ function BrowserPage({ category, title, activeSession }: { category: string; tit
           vscode?.postMessage({ type: 'getFolderTree', category });
         }
       }
+      if (msg?.type === 'fileCreated') {
+        if (msg.data?.success) {
+          // Refresh folder contents
+          if (selectedFolder) {
+            vscode?.postMessage({ type: 'getFolderContents', folderPath: selectedFolder, category });
+          }
+        }
+      }
       if (msg?.type === 'structureChanged') {
         // Refresh folder tree when structure changes
         vscode?.postMessage({ type: 'getFolderTree', category });
@@ -198,9 +212,18 @@ function BrowserPage({ category, title, activeSession }: { category: string; tit
     vscode?.postMessage({ type: 'getFolderContents', folderPath, category });
   };
 
-  const handleFileClick = (filePath: string) => {
-    setSelectedFile(filePath);
-    vscode?.postMessage({ type: 'getFileContent', filePath });
+  const handleItemClick = (itemPath: string, itemType: 'file' | 'folder') => {
+    if (itemType === 'folder') {
+      // Navigate into the folder
+      setSelectedFolder(itemPath);
+      setSelectedFile(null);
+      setFileContent(null);
+      vscode?.postMessage({ type: 'getFolderContents', folderPath: itemPath, category });
+    } else {
+      // Open the file
+      setSelectedFile(itemPath);
+      vscode?.postMessage({ type: 'getFileContent', filePath: itemPath });
+    }
   };
 
   const handleBackToFolder = () => {
@@ -221,16 +244,24 @@ function BrowserPage({ category, title, activeSession }: { category: string; tit
       </div>
       <div className="split-content">
         {!selectedFolder && !selectedFile && (
-          <div className="empty-state">
-            <div className="empty-state-icon">📁</div>
-            <div>Select a folder to view its contents</div>
-          </div>
+          <CategoryEmptyState 
+            category={category}
+            title={title}
+            activeSession={activeSession}
+          />
         )}
         {selectedFolder && !selectedFile && (
           <FolderProfile 
             files={folderContents}
-            onFileClick={handleFileClick}
+            onFileClick={(path) => {
+              const item = folderContents.find(f => f.path === path);
+              if (item) {
+                handleItemClick(path, item.type);
+              }
+            }}
             folderPath={selectedFolder}
+            category={category}
+            activeSession={activeSession}
           />
         )}
         {selectedFile && fileContent && (
@@ -241,6 +272,70 @@ function BrowserPage({ category, title, activeSession }: { category: string; tit
             onBack={handleBackToFolder}
           />
         )}
+      </div>
+    </div>
+  );
+}
+
+function CategoryEmptyState({ category, title, activeSession }: {
+  category: string;
+  title: string;
+  activeSession: ActiveSession | null;
+}) {
+  const categoryLabel = category.charAt(0).toUpperCase() + category.slice(0, -1);
+
+  const handleCreateFile = () => {
+    vscode?.postMessage({
+      type: 'promptCreateFile',
+      folderPath: '', // Backend will use base category path
+      category
+    });
+  };
+
+  const handleCreateFolder = () => {
+    vscode?.postMessage({
+      type: 'promptCreateFolder',
+      folderPath: '', // Backend will use base category path
+      category
+    });
+  };
+
+  if (!activeSession) {
+    return (
+      <div className="p-16">
+        <div className="empty-state">
+          <div className="empty-state-icon">📁</div>
+          <div style={{ marginBottom: 8 }}>No {title.toLowerCase()} yet</div>
+          <div className="alert alert-info" style={{ marginTop: 16, textAlign: 'left' }}>
+            Start a design session to create {title.toLowerCase()}.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-16">
+      <div className="empty-state">
+        <div className="empty-state-icon">📁</div>
+        <div style={{ marginBottom: 16 }}>No {title.toLowerCase()} yet</div>
+        <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 24 }}>
+          Get started by creating your first {categoryLabel.toLowerCase()} or organizing with folders.
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <button 
+            className="btn btn-primary"
+            onClick={handleCreateFile}
+          >
+            + New {categoryLabel}
+          </button>
+          <button 
+            className="btn btn-secondary"
+            onClick={handleCreateFolder}
+          >
+            + New Folder
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -266,6 +361,19 @@ function FolderTreeView({ folders, selectedFolder, onFolderClick, category, acti
     setExpanded(newExpanded);
   };
 
+  const handleContextMenu = (e: React.MouseEvent, folderPath: string) => {
+    if (!activeSession) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    vscode?.postMessage({ 
+      type: 'promptCreateFolder', 
+      folderPath,
+      category
+    });
+  };
+
   const renderFolder = (folder: FolderNode, level: number = 0) => {
     const isExpanded = expanded.has(folder.path);
     const isSelected = selectedFolder === folder.path;
@@ -277,6 +385,7 @@ function FolderTreeView({ folders, selectedFolder, onFolderClick, category, acti
           className={`tree-folder ${isSelected ? 'selected' : ''}`}
           style={{ paddingLeft: level * 16 + 8 }}
           onClick={() => onFolderClick(folder.path)}
+          onContextMenu={(e) => handleContextMenu(e, folder.path)}
         >
           {hasChildren && (
             <span 
@@ -302,24 +411,6 @@ function FolderTreeView({ folders, selectedFolder, onFolderClick, category, acti
     <div className="tree-view">
       <div className="toolbar">
         <span className="font-medium">{category}</span>
-        {activeSession && (
-          <button 
-            className="btn btn-primary"
-            style={{ fontSize: 11, padding: '4px 8px' }}
-            onClick={() => {
-              const folderName = prompt('Enter folder name:');
-              if (folderName) {
-                const basePath = selectedFolder || `/home/danderson/code/alto9/opensource/cursor-context-engineering/ai/${category}`;
-                vscode?.postMessage({ 
-                  type: 'createFolder', 
-                  folderPath: `${basePath}/${folderName}` 
-                });
-              }
-            }}
-          >
-            + New
-          </button>
-        )}
       </div>
       {folders.length === 0 && (
         <div style={{ padding: 16, textAlign: 'center', opacity: 0.7, fontSize: 12 }}>
@@ -331,29 +422,59 @@ function FolderTreeView({ folders, selectedFolder, onFolderClick, category, acti
   );
 }
 
-function FolderProfile({ files, onFileClick, folderPath }: { 
+function FolderProfile({ files, onFileClick, folderPath, category, activeSession }: { 
   files: FileItem[]; 
   onFileClick: (path: string) => void;
   folderPath: string;
+  category: string;
+  activeSession: ActiveSession | null;
 }) {
+  const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1, -1);
+  
+  const handleCreateFile = () => {
+    vscode?.postMessage({
+      type: 'promptCreateFile',
+      folderPath,
+      category
+    });
+  };
+
   return (
     <div className="p-16">
-      <h3 className="section-title">Folder Contents</h3>
-      <div className="text-xs opacity-70 mb-16">{folderPath}</div>
+      <div className="toolbar">
+        <div>
+          <h3 className="section-title" style={{ margin: 0, border: 'none', padding: 0 }}>Folder Contents</h3>
+          <div className="text-xs opacity-70">{folderPath}</div>
+        </div>
+        {activeSession && (
+          <button 
+            className="btn btn-primary"
+            style={{ fontSize: 12, padding: '6px 12px' }}
+            onClick={handleCreateFile}
+          >
+            + New {categoryLabel}
+          </button>
+        )}
+      </div>
+      
       {files.length === 0 && (
         <div className="empty-state">
-          <div>No files in this folder</div>
+          <div>No items in this folder</div>
         </div>
       )}
-      {files.map(file => (
+      
+      {files.map(item => (
         <div 
-          key={file.path} 
+          key={item.path} 
           className="file-list-item"
-          onClick={() => onFileClick(file.path)}
+          onClick={() => onFileClick(item.path)}
         >
-          <div className="file-name">{file.name}</div>
+          <div className="file-name">
+            {item.type === 'folder' ? '📁 ' : '📄 '}
+            {item.name}
+          </div>
           <div className="file-meta">
-            Modified: {new Date(file.modified).toLocaleDateString()}
+            {item.type === 'folder' ? 'Folder' : `Modified: ${new Date(item.modified).toLocaleDateString()}`}
           </div>
         </div>
       ))}
@@ -435,6 +556,13 @@ function ItemProfile({ category, fileContent, activeSession, onBack }: {
         )}
         {category === 'models' && (
           <ModelFrontmatter 
+            frontmatter={frontmatter} 
+            onChange={updateFrontmatter}
+            readOnly={isReadOnly}
+          />
+        )}
+        {category === 'actors' && (
+          <ActorFrontmatter 
             frontmatter={frontmatter} 
             onChange={updateFrontmatter}
             readOnly={isReadOnly}
@@ -634,6 +762,39 @@ function ContextFrontmatter({ frontmatter, onChange, readOnly }: {
   );
 }
 
+function ActorFrontmatter({ frontmatter, onChange, readOnly }: { 
+  frontmatter: any; 
+  onChange: (key: string, value: any) => void;
+  readOnly: boolean;
+}) {
+  return (
+    <>
+      <div className="form-group">
+        <label className="form-label">Actor ID</label>
+        <input 
+          className="form-input"
+          value={frontmatter.actor_id || ''}
+          onChange={(e) => onChange('actor_id', e.target.value)}
+          readOnly={readOnly}
+        />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Type</label>
+        <select
+          className="form-input"
+          value={frontmatter.type || 'user'}
+          onChange={(e) => onChange('type', e.target.value)}
+          disabled={readOnly}
+        >
+          <option value="user">User</option>
+          <option value="system">System</option>
+          <option value="external">External</option>
+        </select>
+      </div>
+    </>
+  );
+}
+
 function DashboardPage({ counts, activeSession }: { counts: any; activeSession: ActiveSession | null }) {
   return (
     <>
@@ -664,6 +825,7 @@ function DashboardPage({ counts, activeSession }: { counts: any; activeSession: 
         <Card title="Features" value={counts?.features ?? 0} />
         <Card title="Specs" value={counts?.specs ?? 0} />
         <Card title="Models" value={counts?.models ?? 0} />
+        <Card title="Actors" value={counts?.actors ?? 0} />
         <Card title="Contexts" value={counts?.contexts ?? 0} />
         <Card title="Stories" value={counts?.stories ?? 0} />
         <Card title="Tasks" value={counts?.tasks ?? 0} />
