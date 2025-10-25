@@ -4,41 +4,44 @@ A comprehensive toolkit for structured context engineering in AI-assisted develo
 
 ## 🎯 What is Glam?
 
-Glam is a workflow tool designed to help developers create well-structured, context-rich prompts for AI agents. It uses a systematic approach with decisions, features, specs, contexts, and tasks to ensure AI assistants have all the information they need.
+Glam is a session-driven workflow system for structured context engineering in AI-assisted development. It uses design sessions to track changes, then distills those sessions into minimal, actionable implementation stories with complete context.
 
 ## 📦 Packages
 
 This is a monorepo containing two packages:
 
 ### [@glam/vscode-extension](./packages/vscode-extension/)
-VSCode extension that provides commands for generating context-rich prompts for decisions, features, specs, and tasks.
+VSCode extension that provides commands for session-driven design and implementation.
 
 **Features:**
-- Interactive webview for creating new decisions
-- Prompt generation for distilling decisions into features/specs
-- Task generation from decisions with full context
+- Start and manage design sessions
+- Glam Studio for browsing and managing Glam files
+- Distill sessions into Stories and Tasks
+- Build stories with complete context
 - Right-click context menu integration
 
 ### [@glam/mcp-server](./packages/mcp-server/)
 Model Context Protocol server that exposes Glam capabilities to AI assistants like Claude Desktop and Cursor.
 
 **Features:**
-- Resources for accessing decisions, features, specs, contexts, and tasks
-- Tools for generating prompts programmatically
-- File management for Glam project structures
+- get_glam_about - Comprehensive workflow overview
+- get_glam_schema - Schema definitions for all file types
+- get_glam_context - Technical object guidance
+- get_glam_objects - List supported spec objects
 
 ## 🏗️ Project Structure
 
-When you use Glam in a project, it helps you manage files in the following structure:
+When you use Glam in a project, it manages files in a nestable folder structure:
 
 ```
 your-project/
 └── ai/
-    ├── decisions/     # Architecture Decision Records (ADRs)
-    ├── features/      # Feature definitions with Gherkin scenarios
-    ├── specs/         # Technical specifications with Mermaid diagrams
-    ├── contexts/      # Context references and guidance
-    ├── tasks/         # Implementation tasks
+    ├── sessions/      # Design session tracking (nestable)
+    ├── features/      # Feature definitions with Gherkin (nestable, index.md)
+    ├── specs/         # Technical specifications with Mermaid (nestable)
+    ├── models/        # Data model definitions (nestable)
+    ├── contexts/      # Context references and guidance (nestable)
+    ├── tickets/       # Implementation Stories and Tasks (nestable, by session)
     └── docs/          # Supporting documentation
 ```
 
@@ -69,9 +72,10 @@ code --install-extension packages/vscode-extension/glam-0.1.0.vsix
 ```
 
 Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Glam commands:
-- `Glam: New Decision`
-- `Glam: Distill Decision into Features and Specs`
-- `Glam: Convert Decision to Tasks`
+- `Glam: Start Design Session`
+- `Glam: Distill Session into Stories and Tasks`
+- `Glam: Build Story Implementation`
+- `Glam: Open Glam Studio`
 
 ### Using the MCP Server
 
@@ -94,66 +98,102 @@ Add to your MCP settings file:
 
 ## 📋 File Formats
 
-### Decision Files (*.decision.md)
+### Session Files (*.session.md)
 ```markdown
 ---
-decision_id: add-user-authentication
-date: 2025-10-01
-status: proposed
+session_id: user-authentication-session
+start_time: 2025-10-25T10:00:00Z
+end_time: null
+status: active
+problem_statement: "Add user authentication with email verification"
+changed_files: [
+  "ai/features/user/login.feature.md",
+  "ai/specs/api/auth-endpoint.spec.md"
+]
 ---
 
-# Add User Authentication
+# User Authentication Session
 
-[ADR content with context, decision, alternatives, and consequences]
+## Problem Statement
+Add secure user authentication...
+
+## Goals
+- Secure password handling
+- Email verification
+- Session management
 ```
 
 ### Feature Files (*.feature.md)
 ```markdown
 ---
 feature_id: user-login
-spec_id: [authentication-spec, session-management-spec]
+spec_id: [authentication-spec]
+model_id: [user]
 ---
 
-# User Login Feature
+\`\`\`gherkin
+Feature: User Login
 
-GIVEN a registered user
-WHEN they enter valid credentials
-THEN they should be logged into the system
-AND receive a session token
+Scenario: Successful login
+  Given a registered user with email "user@example.com"
+  When they enter valid credentials
+  Then they should be logged into the system
+  And receive a session token
+\`\`\`
 ```
 
-### Spec Files (*.spec.md)
+### Model Files (*.model.md)
 ```markdown
 ---
-spec_id: authentication-spec
-feature_id: [user-login, password-reset]
+model_id: user
+type: entity
+related_models: [user-role, user-session]
 ---
 
-# Authentication Specification
+## Overview
+User entity representing system users.
 
-[Technical details and Mermaid diagrams]
+### Properties
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| id | UUID | Yes | Unique identifier |
+| email | string | Yes | Email address (unique) |
+| password_hash | string | Yes | Bcrypt hash |
 ```
 
-### Context Files (*.context.md)
+### Story Files (*.story.md)
 ```markdown
 ---
-context_id: typescript-guidance
+story_id: add-email-validation
+session_id: user-authentication-session
+feature_id: [user-login]
+spec_id: [authentication-spec]
+status: pending
+priority: high
+estimated_minutes: 25
 ---
 
-GIVEN we are working within Glam files
-WHEN information is needed about TypeScript implementation
-THEN read the document at `ai/docs/typescript_guidance.md`
-AND use that information to help inform decisions
+## Objective
+Add email validation to User model
+
+## Implementation Steps
+1. Add validation function
+2. Update tests
+3. Apply to registration endpoint
+
+## Acceptance Criteria
+- [ ] Valid emails pass validation
+- [ ] Invalid emails are rejected
 ```
 
 ## 🔄 The Glam Workflow
 
-1. **Create Context** - Set up context files that define how to handle specific scenarios
-2. **Make Decisions** - Use "New Decision" to create ADRs for significant changes
-3. **Distill to Features & Specs** - Convert decisions into user-facing features and technical specs
-4. **Generate Tasks** - Break down the work into specific, actionable tasks with full context
+1. **Start a Session** - Begin a design session with a clear problem statement
+2. **Design Changes** - Edit features, specs, models, and contexts during the active session
+3. **Distill to Stories & Tasks** - Convert the session into minimal implementation stories (< 30 min each) and external tasks
+4. **Build Stories** - Implement each story with complete context from linked features, specs, and models
 
-Each step builds on the previous one, creating a comprehensive knowledge graph that ensures your AI agent has all the context it needs for accurate implementation.
+The session-driven approach ensures changes are tracked systematically, and distillation creates focused, actionable stories with all necessary context.
 
 ## 💡 Why Glam?
 

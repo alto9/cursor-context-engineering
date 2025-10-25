@@ -39,14 +39,22 @@ class GlamMCPServer {
       return {
         tools: [
           {
+            name: 'get_glam_about',
+            description: 'Get a comprehensive overview of the Glam workflow, including the session-driven approach, when to create Stories vs Tasks, and guidance on implementation',
+            inputSchema: {
+              type: 'object',
+              properties: {},
+            },
+          },
+          {
             name: 'get_glam_schema',
-            description: 'Get the schema specification for a Glam file type (decision, feature, spec, task, or context)',
+            description: 'Get the schema specification for a Glam file type (session, feature, spec, model, story, task, or context)',
             inputSchema: {
               type: 'object',
               properties: {
                 schema_type: {
                   type: 'string',
-                  enum: ['decision', 'feature', 'spec', 'task', 'context'],
+                  enum: ['session', 'feature', 'spec', 'model', 'story', 'task', 'context'],
                   description: 'The type of schema to retrieve',
                 },
               },
@@ -84,6 +92,16 @@ class GlamMCPServer {
       const { name, arguments: args } = request.params;
 
       switch (name) {
+        case 'get_glam_about':
+          return {
+            content: [
+              {
+                type: 'text',
+                text: this.getGlamAbout(),
+              },
+            ],
+          };
+
         case 'get_glam_schema':
           if (!args || typeof args.schema_type !== 'string') {
             throw new Error('schema_type is required');
@@ -231,81 +249,256 @@ class GlamMCPServer {
     return header + lines + footer;
   }
 
+  private getGlamAbout(): string {
+    return `# Glam - Session-Driven Context Engineering
+
+## Overview
+Glam is a comprehensive workflow system for structured context engineering in AI-assisted development. It uses a session-driven approach to manage design decisions and convert them into actionable implementation steps.
+
+## Core Philosophy
+1. **Accurate Context Without Overload** - Provide exactly what's needed, when it's needed
+2. **Session-Driven Design** - Track all changes made during design sessions
+3. **Minimal Story Size** - Keep implementation stories small, focused, and actionable
+4. **Nestable Organization** - Use folder hierarchies to organize related concepts
+
+## File Structure
+\`\`\`
+your-project/
+└── ai/
+    ├── sessions/     # Design session tracking (nestable)
+    ├── features/     # Feature definitions with Gherkin (nestable, index.md at each level)
+    ├── specs/        # Technical specifications with Mermaid (nestable)
+    ├── models/       # Data model definitions (nestable)
+    ├── contexts/     # Context references and guidance (nestable)
+    ├── tickets/      # Implementation Stories and Tasks (nestable, organized by session)
+    └── docs/         # Supporting documentation
+\`\`\`
+
+## The Glam Workflow
+
+### Phase 1: Start a Design Session
+1. User starts a session from Glam Studio or command
+2. Session file created in \`ai/sessions/\` with problem statement
+3. Session begins tracking all file changes
+
+### Phase 2: Design Changes
+During an active session:
+- Edit Features: Define or modify feature behavior using Gherkin
+- Edit Specs: Create or update technical specifications with Mermaid diagrams
+- Edit Models: Define data structures and their properties
+- Edit Contexts: Add guidance for specific technical areas
+- All changes are tracked in the session's changed_files array
+
+### Phase 3: Distill Session
+When design is complete:
+1. User runs "Distill Session" command
+2. System generates a comprehensive prompt that:
+   - Calls \`get_glam_about\` to understand the workflow
+   - Analyzes all changed features/specs/models
+   - Follows context linkages to gather necessary information
+   - Creates Stories (code changes) and Tasks (non-code work)
+   - Places them in \`ai/tickets/<session-id>/\`
+
+### Phase 4: Build Implementation
+1. User selects a Story from the tickets folder
+2. Runs "Build Story" command
+3. System generates prompt with full context to implement the story
+
+## Stories vs Tasks
+
+### Stories (*.story.md)
+- Code changes and implementation work
+- Require development and testing
+- Should be MINIMAL in scope - one focused change
+- Located in \`ai/tickets/<session-id>/\`
+- Example: "Add email validation to User model"
+
+### Tasks (*.task.md)
+- Non-code work external to the system
+- Manual processes, configuration, documentation
+- No implementation in codebase
+- Located in \`ai/tickets/<session-id>/\`
+- Example: "Configure AWS IAM role in console"
+
+## Key Principles for Distillation
+
+When distilling a session into Stories and Tasks:
+
+1. **Call get_glam_schema** - Validate all file formats
+2. **Keep Stories Minimal** - One story should take < 30 minutes to implement
+3. **Break Down Large Changes** - Split complex features into multiple stories
+4. **Use Proper Linkages** - Link stories to features, specs, and models
+5. **Follow Context Rules** - Check context files for guidance on technical approaches
+6. **Verify Completeness** - Ensure all changed files are accounted for in stories/tasks
+
+## Gherkin Format
+
+All Gherkin scenarios MUST use code blocks for consistency:
+
+\`\`\`gherkin
+Feature: User Authentication
+
+Scenario: Successful login
+  Given a registered user with email "user@example.com"
+  When they enter valid credentials
+  Then they should be logged into the system
+  And receive a session token
+\`\`\`
+
+## Index Files
+
+Every Features folder should contain an \`index.md\` with:
+- Frontmatter with folder-level metadata
+- Background (Gherkin) - shared context for all features in folder
+- Rules (Gherkin) - business rules that apply to all features in folder
+
+## Best Practices
+
+1. **Nested Organization** - Group related features/specs in folders
+2. **Context Links** - Use context files to avoid repeating technical guidance
+3. **Model-First** - Define data models before specs that use them
+4. **Iterative Sessions** - Keep sessions focused on one problem area
+5. **Clear Naming** - Use descriptive kebab-case IDs for all files
+
+## Output Expectations
+
+When distilling, the AI should:
+- Create multiple small stories rather than one large story
+- Link each story to relevant features, specs, and models
+- Include specific file paths and clear objectives
+- Add acceptance criteria to verify completion
+- Order stories logically with dependencies
+- Create tasks for any manual/external work
+
+This workflow ensures that implementation has complete, accurate context without information overload.`;
+  }
+
   private getGlamSchema(schemaType: string): string {
     const schemas: Record<string, string> = {
-      decision: `# Decision File Schema
+      session: `# Session File Schema
 
 ## File Format
-- **Filename**: <decision-id>.decision.md
-- **Location**: ai/decisions/
+- **Filename**: <session-id>.session.md
+- **Location**: ai/sessions/ (nestable)
 - **Format**: Frontmatter + Markdown
 
 ## Frontmatter Fields
 ---
-decision_id: kebab-case-id  # Must match filename without .decision.md
+session_id: kebab-case-id  # Must match filename without .session.md
+start_time: 2025-10-25T10:00:00Z  # ISO 8601 timestamp
+end_time: 2025-10-25T12:30:00Z  # ISO 8601 timestamp (null if active)
+status: active  # active, completed, cancelled
+problem_statement: "Brief description of what we're solving"
+changed_files: [
+  "ai/features/user/authentication.feature.md",
+  "ai/specs/api/auth-endpoint.spec.md",
+  "ai/models/user.model.md"
+]
 ---
 
 ## Content Structure
-The decision document should follow an ADR (Architecture Decision Record) format with these sections:
+The session document should describe:
 
-1. **Title** - Clear, descriptive title of the decision
-2. **Status** - Current status (proposed, accepted, deprecated, superseded)
-3. **Context** - What is the issue or situation that motivates this decision?
-4. **Decision** - What is the change that we're proposing/doing?
-5. **Consequences** - What becomes easier or harder as a result of this decision?
+1. **Problem Statement** - What problem are we solving?
+2. **Goals** - What are we trying to achieve?
+3. **Approach** - High-level approach to the solution
+4. **Key Decisions** - Important decisions made during the session
+5. **Notes** - Additional context, concerns, or considerations
+
+## Workflow
+1. Session starts with problem_statement and start_time
+2. During session, changed_files array tracks all modifications
+3. Session ends with end_time and status: completed
+4. Distillation creates Stories and Tasks in ai/tickets/<session-id>/
 
 ## Linkages
-- A decision can be distilled into multiple **features** and **specs**
-- Features and specs will reference this decision_id in their frontmatter`,
+- Sessions generate **story** and **task** files in ai/tickets/<session-id>/
+- Stories and tasks reference the session_id
+- Changed files are analyzed during distillation`,
 
       feature: `# Feature File Schema
 
 ## File Format
 - **Filename**: <feature-id>.feature.md
-- **Location**: ai/features/
+- **Location**: ai/features/ (nestable with index.md support)
 - **Format**: Frontmatter + Gherkin Scenarios
 
 ## Frontmatter Fields
 ---
 feature_id: kebab-case-id  # Must match filename without .feature.md
 spec_id: [spec-id-1, spec-id-2]  # Array of related spec IDs
-decision_id: decision-id  # Optional: originating decision
+model_id: [model-id-1]  # Array of related model IDs
 ---
 
 ## Content Structure
-Feature files should contain Gherkin scenarios describing the desired behavior:
+Feature files use Gherkin format in code blocks:
 
-Feature: [Feature Name]
+\`\`\`gherkin
+Feature: User Login
 
-Scenario: [Scenario Name]
-  GIVEN [initial context]
-  WHEN [action or event]
-  THEN [expected outcome]
-  AND [additional outcome]
-  
-Scenario: [Another Scenario]
-  GIVEN [context]
-  AND [more context]
-  WHEN [action]
-  THEN [outcome]
+Background:
+  Given the user authentication system is available
+  And the database is accessible
+
+Scenario: Successful login with valid credentials
+  Given a registered user with email "user@example.com"
+  And the user has a valid password
+  When they submit their credentials
+  Then they should be logged into the system
+  And receive a session token
+  And be redirected to the dashboard
+
+Scenario: Failed login with invalid password
+  Given a registered user with email "user@example.com"
+  When they submit an incorrect password
+  Then they should see an error message
+  And remain on the login page
+  And no session should be created
+\`\`\`
+
+## Index Files (index.md)
+Every features folder should have an index.md with:
+
+---
+title: "User Management Features"
+description: "All features related to user management"
+---
+
+\`\`\`gherkin
+Background:
+  Given the application is running
+  And user data is properly seeded
+
+Rule: All user operations require authentication
+  Example: Viewing user profile
+    Given an authenticated user
+    When they view their profile
+    Then they should see their information
+
+Rule: Email addresses must be unique
+  Example: Duplicate email registration
+    Given a user with email "user@example.com" exists
+    When another user tries to register with "user@example.com"
+    Then the registration should fail
+\`\`\`
 
 ## Linkages
 - References one or more **spec_id** values
-- May reference a **decision_id** that originated this feature
-- Specs will also reference this feature_id in their frontmatter`,
+- May reference **model_id** values for data structures
+- Specs and Stories will reference this feature_id`,
 
       spec: `# Spec File Schema
 
 ## File Format
 - **Filename**: <spec-id>.spec.md
-- **Location**: ai/specs/
+- **Location**: ai/specs/ (nestable)
 - **Format**: Frontmatter + Markdown + Mermaid Diagrams
 
 ## Frontmatter Fields
 ---
 spec_id: kebab-case-id  # Must match filename without .spec.md
 feature_id: [feature-id-1, feature-id-2]  # Array of related feature IDs
-decision_id: decision-id  # Optional: originating decision
+model_id: [model-id-1, model-id-2]  # Array of related model IDs
 context_id: [context-id-1, context-id-2]  # Optional: related contexts
 ---
 
@@ -320,94 +513,247 @@ Specification documents should include:
 
 ### Mermaid Diagrams
 Use Mermaid for visual representations:
-- Sequence diagrams for workflows
-- Flowcharts for decision trees
-- Class diagrams for data structures
-- Architecture diagrams for system design
+
+\`\`\`mermaid
+sequenceDiagram
+    participant User
+    participant API
+    participant Database
+    
+    User->>API: POST /login
+    API->>Database: Query user
+    Database-->>API: User data
+    API-->>User: JWT token
+\`\`\`
 
 ## Linkages
 - References one or more **feature_id** values
-- May reference a **decision_id** that originated this spec
+- References **model_id** values for data structures used
 - May reference **context_id** values for additional guidance
-- Tasks will reference this spec_id`,
+- Stories will reference this spec_id`,
+
+      model: `# Model File Schema
+
+## File Format
+- **Filename**: <model-id>.model.md
+- **Location**: ai/models/ (nestable)
+- **Format**: Frontmatter + Structured Property Definitions
+
+## Frontmatter Fields
+---
+model_id: kebab-case-id  # Must match filename without .model.md
+type: entity  # entity, dto, value-object, interface, enum
+related_models: [user-address, user-role]  # Array of related model IDs
+---
+
+## Content Structure
+
+### Overview
+Brief description of the model and its purpose.
+
+### Properties
+
+| Property | Type | Required | Description | Validation |
+|----------|------|----------|-------------|------------|
+| id | string (UUID) | Yes | Unique identifier | Must be valid UUID v4 |
+| email | string | Yes | User email address | Must be valid email format, unique |
+| name | string | Yes | Full name | 2-100 characters |
+| created_at | datetime | Yes | Creation timestamp | ISO 8601 format |
+| status | enum | Yes | Account status | One of: active, suspended, deleted |
+
+### Relationships
+- **One-to-Many**: User has many Orders
+- **Many-to-One**: User belongs to one Organization
+- **Many-to-Many**: User has many Roles through UserRoles
+
+### Validation Rules
+1. Email must be unique across all users
+2. Email must be validated before account activation
+3. Password must be hashed using bcrypt with cost factor 12
+4. Status cannot be changed from deleted to active
+
+### Constraints
+- Unique constraint on email field
+- Check constraint: status IN ('active', 'suspended', 'deleted')
+- Not null constraints on id, email, name, created_at, status
+
+## Example
+
+\`\`\`typescript
+interface User {
+  id: string; // UUID
+  email: string;
+  name: string;
+  created_at: Date;
+  status: 'active' | 'suspended' | 'deleted';
+}
+\`\`\`
+
+## Linkages
+- Referenced by **feature_id** and **spec_id** values
+- May reference other **model_id** values for relationships`,
+
+      story: `# Story File Schema
+
+## File Format
+- **Filename**: <story-id>.story.md
+- **Location**: ai/tickets/<session-id>/ (nestable)
+- **Format**: Frontmatter + Markdown
+
+## Frontmatter Fields
+---
+story_id: kebab-case-id  # Must match filename without .story.md
+session_id: session-id  # Originating session
+feature_id: [feature-id-1]  # Related features
+spec_id: [spec-id-1, spec-id-2]  # Related specs
+model_id: [model-id-1]  # Related models
+status: pending  # pending, in-progress, completed, blocked
+priority: high  # low, medium, high
+estimated_minutes: 25  # Estimated time to complete
+---
+
+## Content Structure
+
+### Objective
+Clear, concise statement of what needs to be implemented.
+
+### Context
+Why this story exists and how it fits into the larger feature.
+
+### Implementation Steps
+1. Specific step to take
+2. Another specific step
+3. Final step
+
+### Files Affected
+- \`src/models/User.ts\` - Add email validation
+- \`src/api/auth.ts\` - Update login endpoint
+- \`tests/auth.test.ts\` - Add validation tests
+
+### Acceptance Criteria
+- [ ] Email validation function returns true for valid emails
+- [ ] Email validation function returns false for invalid emails
+- [ ] Login endpoint rejects invalid email formats
+- [ ] All tests pass
+
+### Dependencies
+- None (or list other story IDs that must be completed first)
+
+## Best Practices
+- Keep stories small (< 30 minutes of work)
+- One focused change per story
+- Clear, actionable steps
+- Measurable acceptance criteria
+
+## Linkages
+- References a **session_id** (required)
+- References **feature_id**, **spec_id**, and **model_id** values
+- May depend on other **story_id** values`,
 
       task: `# Task File Schema
 
 ## File Format
 - **Filename**: <task-id>.task.md
-- **Location**: ai/tasks/
+- **Location**: ai/tickets/<session-id>/ (nestable)
 - **Format**: Frontmatter + Markdown
 
 ## Frontmatter Fields
 ---
 task_id: kebab-case-id  # Must match filename without .task.md
-decision_id: decision-id  # Originating decision
-spec_id: [spec-id-1, spec-id-2]  # Related specs
-feature_id: [feature-id-1]  # Related features
-context_id: [context-id-1, context-id-2]  # Relevant contexts
+session_id: session-id  # Originating session
+type: external  # external, manual, documentation, configuration
 status: pending  # pending, in-progress, completed, blocked
-order: 1  # Execution order within the decision
+priority: medium  # low, medium, high
 ---
 
 ## Content Structure
-Task documents should be specific, actionable implementation steps:
 
-1. **Objective** - Clear statement of what needs to be done
-2. **Implementation Steps** - Specific, numbered steps to complete the task
-3. **Files Affected** - List of files that will be created, modified, or deleted
-4. **Acceptance Criteria** - How to verify the task is complete
-5. **Dependencies** - Other tasks that must be completed first
-6. **Context References** - Links to relevant context documents
+### Description
+Clear description of the non-code work that needs to be done.
+
+### Reason
+Why this task is necessary and how it supports the implementation.
+
+### Steps
+1. Specific manual step to perform
+2. Another step
+3. Verification step
+
+### Resources
+- Links to documentation
+- Access credentials needed
+- Tools required
+
+### Completion Criteria
+- [ ] Specific verifiable outcome
+- [ ] Another verifiable outcome
+
+## Task Types
+
+### External
+Work done outside the codebase (e.g., cloud console configuration, third-party service setup)
+
+### Manual
+Manual processes that can't be automated yet
+
+### Documentation
+Creating or updating documentation that isn't code comments
+
+### Configuration
+Configuration changes in external systems
 
 ## Linkages
-- References a **decision_id** (required)
-- References one or more **spec_id** values (required)
-- References one or more **feature_id** values (required)
-- May reference **context_id** values for implementation guidance
-- Tasks should be ordered sequentially within a decision`,
+- References a **session_id** (required)
+- No code dependencies - these are external/manual work items`,
 
       context: `# Context File Schema
 
 ## File Format
 - **Filename**: <context-id>.context.md
-- **Location**: ai/contexts/
-- **Format**: Frontmatter + Gherkin-style Rules
+- **Location**: ai/contexts/ (nestable)
+- **Format**: Frontmatter + Gherkin Scenarios
 
 ## Frontmatter Fields
 ---
 context_id: kebab-case-id  # Must match filename without .context.md
+category: technical  # technical, business, process, tool
 ---
 
 ## Content Structure
-Context files provide guidance on when and how to use specific information or tools. They use Gherkin-style conditional logic:
+Context files provide guidance on when and how to use specific information or tools. Use Gherkin format in code blocks:
 
-GIVEN [condition or working context]
-WHEN [information need arises]
-THEN [action to take]
-AND [additional action]
+\`\`\`gherkin
+Scenario: Using TypeScript guidance
+  Given we are implementing a feature in TypeScript
+  When information is needed about TypeScript best practices
+  Then read the document at ai/docs/typescript-guide.md
+  And follow the coding standards defined there
 
-### Example 1: Document Reference
-GIVEN we are working within Glam files
-WHEN information is needed about TypeScript implementation
-THEN read the document at ai/docs/typescript_guidance.md
-AND use that information to inform decisions regarding TypeScript
+Scenario: Using AWS CDK guidance
+  Given we are implementing infrastructure with AWS CDK
+  When information is needed about CDK patterns
+  Then use the aws_cdk_guidance MCP tool
+  And apply the recommended patterns from the response
 
-### Example 2: Tool Usage
-GIVEN we are working within Glam files
-WHEN information is needed about AWS CDK implementation
-THEN use the aws_cdk_guidance tool
-AND use that information to inform decisions regarding CDK implementation
+Scenario: External API research
+  Given a feature requires integration with a third-party API
+  When implementation details are needed
+  Then perform web search for the official API documentation
+  And verify the API version matches our requirements
+  And document the findings in ai/docs/
+\`\`\`
 
-### Example 3: External Research
-GIVEN a task requires understanding of [technology]
-WHEN implementing features related to [domain]
-THEN perform web search for latest best practices
-AND verify approaches against official documentation
+## Purpose
+Context files prevent information overload by providing just-in-time guidance:
+- When to consult documentation
+- Which tools to use for specific technologies
+- Where to find additional information
+- Research strategies for unknown technologies
 
 ## Linkages
-- Context files are referenced by **spec_id** and **task_id** values
-- They provide just-in-time guidance without overloading the main context window
-- They can point to documentation, tools, or research strategies`,
+- Referenced by **spec_id** and **story_id** values
+- May reference documentation in ai/docs/
+- May reference MCP tools or external resources`,
     };
 
     const schema = schemas[schemaType];
@@ -469,10 +815,10 @@ After gathering information, create a summary that includes:
 - **Dependencies**: What does it depend on or integrate with?
 
 ### 5. Create Context (if needed)
-If this is a recurring concept that will be needed in multiple tasks, consider creating a context file at:
+If this is a recurring concept that will be needed in multiple stories, consider creating a context file at:
 ai/contexts/${specObject.toLowerCase().replace(/\s+/g, '-')}-guidance.context.md
 
-This context file should follow the context schema and provide GIVEN/WHEN/THEN rules for when and how to use this information in future work.
+This context file should follow the context schema and provide Gherkin scenarios for when and how to use this information in future work.
 
 ## Output Format
 Provide your research findings in a structured format that can be easily referenced during implementation. Include specific code examples, configuration patterns, and integration points relevant to this project.

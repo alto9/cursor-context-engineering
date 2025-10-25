@@ -1,8 +1,15 @@
 import * as vscode from 'vscode';
-
+import * as path from 'path';
 import { FileParser } from '../utils/FileParser';
-import { GherkinParser, GherkinScenario } from '../utils/GherkinParser';
-import { YamlIO, FeatureSetIndex } from '../utils/YamlIO';
+import { PromptGenerator } from '../utils/PromptGenerator';
+import { GitUtils } from '../utils/GitUtils';
+
+interface ActiveSession {
+    sessionId: string;
+    problemStatement: string;
+    startTime: string;
+    changedFiles: string[];
+}
 
 export class GlamStudioPanel {
     public static currentPanel: GlamStudioPanel | undefined;
@@ -11,6 +18,9 @@ export class GlamStudioPanel {
     private _projectUri: vscode.Uri;
     private readonly _output: vscode.OutputChannel;
     private _disposables: vscode.Disposable[] = [];
+    private _activeSession: ActiveSession | null = null;
+    private _fileWatcher: vscode.FileSystemWatcher | undefined;
+    private _structureWatcher: vscode.FileSystemWatcher | undefined;
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, projectUri: vscode.Uri, output: vscode.OutputChannel) {
         this._panel = panel;
@@ -19,6 +29,9 @@ export class GlamStudioPanel {
         this._output = output;
 
         this._update();
+        
+        // Start persistent structure watcher
+        this._startStructureWatcher();
 
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
@@ -33,66 +46,59 @@ export class GlamStudioPanel {
                     this._panel.webview.postMessage({ type: 'counts', data: counts });
                     break;
                 }
-                case 'listFeatureSets': {
-                    const sets = await this._listFeatureSets();
-                    this._panel.webview.postMessage({ type: 'featureSets', data: sets });
+                case 'getActiveSession': {
+                    this._panel.webview.postMessage({ type: 'activeSession', data: this._activeSession });
                     break;
                 }
-                case 'createFeatureSet': {
-                    await this._createFeatureSet(message.data?.name, message.data?.description, message.data?.background);
-                    const sets = await this._listFeatureSets();
-                    this._panel.webview.postMessage({ type: 'featureSets', data: sets });
-                    const counts = await this._getCounts();
-                    this._panel.webview.postMessage({ type: 'counts', data: counts });
+                case 'listSessions': {
+                    const sessions = await this._listSessions();
+                    this._panel.webview.postMessage({ type: 'sessions', data: sessions });
                     break;
                 }
-                case 'getFeatureSet': {
-                    const data = await this._getFeatureSet(message.data?.id);
-                    this._panel.webview.postMessage({ type: 'featureSet', data });
+                case 'createSession': {
+                    await this._createSession(message.problemStatement);
                     break;
                 }
-                case 'createFeature': {
-                    await this._createFeature(message.data?.featuresetId, message.data?.name, message.data?.frontmatter, message.data?.scenarios);
-                    const data = await this._getFeatureSet(message.data?.featuresetId);
-                    this._panel.webview.postMessage({ type: 'featureSet', data });
-                    const counts = await this._getCounts();
-                    this._panel.webview.postMessage({ type: 'counts', data: counts });
+                case 'stopSession': {
+                    await this._stopSession();
                     break;
                 }
-                case 'getFeature': {
-                    const data = await this._getFeature(message.data?.path);
-                    this._panel.webview.postMessage({ type: 'feature', data });
-                    break;
-                }
-                case 'updateFeature': {
-                    await this._updateFeature(message.data?.path, message.data?.frontmatter, message.data?.scenarios);
-                    const data = await this._getFeature(message.data?.path);
-                    this._panel.webview.postMessage({ type: 'feature', data });
-                    break;
-                }
-                case 'listSpecs': {
-                    const data = await this._listSpecs();
-                    this._panel.webview.postMessage({ type: 'specs', data });
-                    break;
-                }
-                case 'getSpec': {
-                    const data = await this._getSpec(message.data?.path);
-                    this._panel.webview.postMessage({ type: 'spec', data });
-                    break;
-                }
-                case 'updateSpec': {
-                    await this._updateSpec(message.data?.path, message.data?.frontmatter, message.data?.body);
-                    const data = await this._getSpec(message.data?.path);
-                    this._panel.webview.postMessage({ type: 'spec', data });
+                case 'distillSession': {
+                    await this._distillSession(message.sessionId);
                     break;
                 }
                 case 'switchProject': {
                     if (message.data?.projectPath) {
                         this._projectUri = vscode.Uri.file(message.data.projectPath);
+                        // Restart the structure watcher for the new project
+                        this._startStructureWatcher();
                         this._panel.webview.postMessage({ type: 'initialState', data: await this._getInitialState() });
                         const counts = await this._getCounts();
                         this._panel.webview.postMessage({ type: 'counts', data: counts });
                     }
+                    break;
+                }
+                case 'getFolderTree': {
+                    const tree = await this._getFolderTree(message.category);
+                    this._panel.webview.postMessage({ type: 'folderTree', data: tree, category: message.category });
+                    break;
+                }
+                case 'getFolderContents': {
+                    const contents = await this._getFolderContents(message.folderPath, message.category);
+                    this._panel.webview.postMessage({ type: 'folderContents', data: contents });
+                    break;
+                }
+                case 'getFileContent': {
+                    const content = await this._getFileContent(message.filePath);
+                    this._panel.webview.postMessage({ type: 'fileContent', data: content });
+                    break;
+                }
+                case 'saveFileContent': {
+                    await this._saveFileContent(message.filePath, message.frontmatter, message.content);
+                    break;
+                }
+                case 'createFolder': {
+                    await this._createFolder(message.folderPath);
                     break;
                 }
                 default:
@@ -126,6 +132,15 @@ export class GlamStudioPanel {
     public dispose() {
         GlamStudioPanel.currentPanel = undefined;
         this._panel.dispose();
+        if (this._fileWatcher) {
+            this._fileWatcher.dispose();
+        }
+        if (this._structureWatcher) {
+            this._structureWatcher.dispose();
+        }
+        if (this._refreshTimeout) {
+            clearTimeout(this._refreshTimeout);
+        }
         while (this._disposables.length) {
             const x = this._disposables.pop();
             if (x) {
@@ -153,40 +168,246 @@ export class GlamStudioPanel {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glam Studio</title>
   <style>
+    /* Base styles */
     html, body, #root { height: 100%; margin: 0; padding: 0; }
-    body { font-family: var(--vscode-font-family); color: var(--vscode-editor-foreground); background: var(--vscode-editor-background); }
-    .sidebar { width: 220px; border-right: 1px solid var(--vscode-panel-border); }
+    body { 
+      font-family: var(--vscode-font-family); 
+      color: var(--vscode-editor-foreground); 
+      background: var(--vscode-editor-background);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    /* Layout */
     .container { display: flex; height: 100%; }
+    .sidebar { 
+      width: 220px; 
+      border-right: 1px solid var(--vscode-panel-border);
+      background: var(--vscode-sideBar-background);
+    }
+    .main-content { flex: 1; overflow: auto; }
+    
+    /* Tree view styles */
+    .tree-view { padding: 8px 0; }
+    .tree-folder { 
+      display: flex; 
+      align-items: center; 
+      padding: 4px 8px; 
+      cursor: pointer;
+      user-select: none;
+    }
+    .tree-folder:hover { background: var(--vscode-list-hoverBackground); }
+    .tree-folder.selected { background: var(--vscode-list-activeSelectionBackground); }
+    .tree-chevron {
+      display: inline-block;
+      width: 16px;
+      text-align: center;
+      font-size: 10px;
+      transition: transform 0.1s;
+    }
+    .tree-chevron.expanded { transform: rotate(90deg); }
+    .tree-label { margin-left: 4px; }
+    .tree-children { padding-left: 16px; }
+    
+    /* Content sections */
+    .content-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--vscode-panel-border);
+    }
+    .content-section:last-child { border-bottom: none; }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--vscode-panel-border);
+    }
+    
+    /* File list */
+    .file-list-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      background: var(--vscode-editor-background);
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .file-list-item:hover {
+      background: var(--vscode-list-hoverBackground);
+      border-color: var(--vscode-focusBorder);
+    }
+    .file-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .file-meta {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    
+    /* Form styles */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 6px 8px;
+      background: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border: 1px solid var(--vscode-input-border);
+      border-radius: 3px;
+      font-family: var(--vscode-font-family);
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: 1px solid var(--vscode-focusBorder);
+      outline-offset: -1px;
+    }
+    .form-input:read-only,
+    .form-textarea:read-only {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 200px;
+      font-family: var(--vscode-editor-font-family);
+    }
+    
+    /* Button styles */
+    .btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: var(--vscode-font-family);
+      transition: opacity 0.1s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--vscode-button-background);
+      color: var(--vscode-button-foreground);
+    }
+    .btn-secondary {
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    /* Card styles */
+    .card {
+      padding: 16px;
+      background: var(--vscode-editor-background);
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    
+    /* Split view */
+    .split-view {
+      display: flex;
+      height: 100%;
+    }
+    .split-sidebar {
+      width: 220px;
+      border-right: 1px solid var(--vscode-panel-border);
+      overflow: auto;
+    }
+    .split-content {
+      flex: 1;
+      overflow: auto;
+    }
+    
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--vscode-panel-border);
+      background: var(--vscode-editor-background);
+    }
+    
+    /* Empty state */
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+      opacity: 0.7;
+    }
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    /* Alert styles */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    .alert-info {
+      background: var(--vscode-inputValidation-infoBackground);
+      border: 1px solid var(--vscode-inputValidation-infoBorder);
+    }
+    .alert-warning {
+      background: var(--vscode-inputValidation-warningBackground);
+      border: 1px solid var(--vscode-inputValidation-warningBorder);
+    }
+    
+    /* Utility classes */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-8 { gap: 8px; }
+    .gap-16 { gap: 16px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mt-16 { margin-top: 16px; }
+    .p-16 { padding: 16px; }
+    .text-sm { font-size: 12px; }
+    .text-xs { font-size: 11px; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .opacity-70 { opacity: 0.7; }
   </style>
-  </head>
+</head>
 <body>
   <div id="root"></div>
-  <script nonce="${nonce}">
-    const acquireVsCodeApi = globalThis.acquireVsCodeApi || (() => ({ postMessage: () => {} }));
-    window.__GLAM_NONCE__ = '${nonce}';
-  </script>
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;
     }
 
-    private async _getCounts(): Promise<{ decisions: number; features: number; featureSets: number; specs: number; }>
+    private async _getCounts(): Promise<{ sessions: number; features: number; specs: number; models: number; contexts: number; stories: number; tasks: number; }>
     {
-        const decisions = await this._countByGlob(['ai', 'decisions'], (name) => name.endsWith('.decision.md'));
-        const specs = await this._countRecursive(['ai', 'specs'], (name) => name.endsWith('.spec.md'));
+        const sessions = await this._countRecursive(['ai', 'sessions'], (name) => name.endsWith('.session.md'));
         const features = await this._countRecursive(['ai', 'features'], (name) => name.endsWith('.feature.md'));
-        const featureSets = await this._countFeatureSets();
-        return { decisions, features, featureSets, specs };
-    }
-
-    private async _countByGlob(pathSegs: string[], predicate: (name: string) => boolean): Promise<number> {
-        try {
-            const dir = vscode.Uri.joinPath(this._projectUri, ...pathSegs);
-            const entries = await vscode.workspace.fs.readDirectory(dir);
-            return entries.filter(([name, type]) => type === vscode.FileType.File && predicate(name)).length;
-        } catch {
-            return 0;
-        }
+        const specs = await this._countRecursive(['ai', 'specs'], (name) => name.endsWith('.spec.md'));
+        const models = await this._countRecursive(['ai', 'models'], (name) => name.endsWith('.model.md'));
+        const contexts = await this._countRecursive(['ai', 'contexts'], (name) => name.endsWith('.context.md'));
+        const stories = await this._countRecursive(['ai', 'tickets'], (name) => name.endsWith('.story.md'));
+        const tasks = await this._countRecursive(['ai', 'tickets'], (name) => name.endsWith('.task.md'));
+        return { sessions, features, specs, models, contexts, stories, tasks };
     }
 
     private async _countRecursive(pathSegs: string[], predicate: (name: string) => boolean): Promise<number> {
@@ -212,142 +433,503 @@ export class GlamStudioPanel {
         }
     }
 
-    private async _countFeatureSets(): Promise<number> {
+    private async _listSessions(): Promise<any[]> {
+        const sessionsDir = vscode.Uri.joinPath(this._projectUri, 'ai', 'sessions');
+        const sessions: any[] = [];
+
         try {
-            const featuresRoot = vscode.Uri.joinPath(this._projectUri, 'ai', 'features');
-            const entries = await vscode.workspace.fs.readDirectory(featuresRoot);
-            let count = 0;
-            for (const [name, type] of entries) {
-                if (type === vscode.FileType.Directory) {
-                    // check index.yaml exists
-                    try {
-                        await vscode.workspace.fs.stat(vscode.Uri.joinPath(featuresRoot, name, 'index.yaml'));
-                        count += 1;
-                    } catch {
-                        // no index.yaml
-                    }
-                }
+            const files = await this._listFilesRecursive(sessionsDir, '.session.md');
+            
+            for (const file of files) {
+                const content = await FileParser.readFile(file.fsPath);
+                const parsed = FileParser.parseFrontmatter(content);
+                const sessionId = parsed.frontmatter.session_id || path.basename(file.fsPath, '.session.md');
+                
+                sessions.push({
+                    sessionId,
+                    filePath: file.fsPath,
+                    frontmatter: parsed.frontmatter
+                });
             }
-            return count;
-        } catch {
-            return 0;
+        } catch (error) {
+            // Sessions directory doesn't exist yet
         }
+
+        // Sort by start_time descending
+        sessions.sort((a, b) => {
+            const timeA = a.frontmatter?.start_time || '';
+            const timeB = b.frontmatter?.start_time || '';
+            return timeB.localeCompare(timeA);
+        });
+
+        return sessions;
     }
 
-    private async _listFeatureSets(): Promise<Array<{ id: string; path: string }>> {
-        const result: Array<{ id: string; path: string }> = [];
+    private async _listFilesRecursive(dir: vscode.Uri, extension: string): Promise<vscode.Uri[]> {
+        const files: vscode.Uri[] = [];
+        
         try {
-            const featuresRoot = vscode.Uri.joinPath(this._projectUri, 'ai', 'features');
-            const entries = await vscode.workspace.fs.readDirectory(featuresRoot);
+            const entries = await vscode.workspace.fs.readDirectory(dir);
+            
             for (const [name, type] of entries) {
-                if (type === vscode.FileType.Directory) {
-                    try {
-                        await vscode.workspace.fs.stat(vscode.Uri.joinPath(featuresRoot, name, 'index.yaml'));
-                        result.push({ id: name, path: vscode.Uri.joinPath(featuresRoot, name).fsPath });
-                    } catch {
-                        // skip
-                    }
-                }
-            }
-        } catch {
-            // ignore
-        }
-        return result;
-    }
-
-    private async _createFeatureSet(name: string, description?: string, background?: string): Promise<void> {
-        const id = kebabCase(name || 'feature-set');
-        const folder = vscode.Uri.joinPath(this._projectUri, 'ai', 'features', id);
-        const indexUri = vscode.Uri.joinPath(folder, 'index.yaml');
-        try { await vscode.workspace.fs.createDirectory(folder); } catch {}
-        const index: FeatureSetIndex = { name, description, background };
-        await YamlIO.writeYaml(indexUri, index);
-    }
-
-    private async _getFeatureSet(id: string): Promise<{ id: string; index: FeatureSetIndex | null; features: Array<{ id: string; path: string }> }> {
-        const folder = vscode.Uri.joinPath(this._projectUri, 'ai', 'features', id);
-        let index: FeatureSetIndex | null = null;
-        try {
-            index = await YamlIO.readYaml<FeatureSetIndex>(vscode.Uri.joinPath(folder, 'index.yaml'));
-        } catch {}
-        const features: Array<{ id: string; path: string }> = [];
-        try {
-            const entries = await vscode.workspace.fs.readDirectory(folder);
-            for (const [name, type] of entries) {
-                if (type === vscode.FileType.File && name.endsWith('.feature.md')) {
-                    features.push({ id: name.replace(/\.feature\.md$/, ''), path: vscode.Uri.joinPath(folder, name).fsPath });
-                }
-            }
-        } catch {}
-        return { id, index, features };
-    }
-
-    private async _createFeature(featuresetId: string, name: string, frontmatter: any, scenarios?: GherkinScenario[]): Promise<void> {
-        const id = kebabCase(name || 'feature');
-        const folder = vscode.Uri.joinPath(this._projectUri, 'ai', 'features', featuresetId);
-        const file = vscode.Uri.joinPath(folder, `${id}.feature.md`);
-        const fm = {
-            feature_id: id,
-            spec_id: [],
-            background: frontmatter?.background || ''
-        };
-        const content = scenarios && scenarios.length > 0 ? GherkinParser.serialize(scenarios) : '';
-        const text = FileParser.stringifyFrontmatter(fm, content);
-        const enc = new TextEncoder();
-        await vscode.workspace.fs.writeFile(file, enc.encode(text));
-    }
-
-    private async _getFeature(path: string): Promise<{ path: string; frontmatter: any; scenarios: GherkinScenario[] }> {
-        const uri = vscode.Uri.file(path);
-        const bytes = await vscode.workspace.fs.readFile(uri);
-        const text = Buffer.from(bytes).toString('utf-8');
-        const parsed = FileParser.parseFrontmatter(text);
-        const scenarios = GherkinParser.parse(parsed.content || '');
-        return { path, frontmatter: parsed.frontmatter, scenarios };
-    }
-
-    private async _updateFeature(path: string, frontmatter: any, scenarios: GherkinScenario[]): Promise<void> {
-        const uri = vscode.Uri.file(path);
-        const content = GherkinParser.serialize(scenarios || []);
-        const text = FileParser.stringifyFrontmatter(frontmatter || {}, content);
-        const enc = new TextEncoder();
-        await vscode.workspace.fs.writeFile(uri, enc.encode(text));
-    }
-
-    private async _listSpecs(): Promise<Array<{ path: string; id: string }>> {
-        const root = vscode.Uri.joinPath(this._projectUri, 'ai', 'specs');
-        const out: Array<{ path: string; id: string }> = [];
-        await this._walkSpecs(root, out);
-        return out;
-    }
-
-    private async _walkSpecs(uri: vscode.Uri, out: Array<{ path: string; id: string }>) {
-        try {
-            const entries = await vscode.workspace.fs.readDirectory(uri);
-            for (const [name, type] of entries) {
-                const child = vscode.Uri.joinPath(uri, name);
-                if (type === vscode.FileType.File && name.endsWith('.spec.md')) {
-                    out.push({ path: child.fsPath, id: name.replace(/\.spec\.md$/, '') });
+                const fullPath = vscode.Uri.joinPath(dir, name);
+                if (type === vscode.FileType.File && name.endsWith(extension)) {
+                    files.push(fullPath);
                 } else if (type === vscode.FileType.Directory) {
-                    await this._walkSpecs(child, out);
+                    files.push(...await this._listFilesRecursive(fullPath, extension));
                 }
             }
-        } catch {}
+        } catch {
+            // Directory doesn't exist
+        }
+        
+        return files;
     }
 
-    private async _getSpec(path: string): Promise<{ path: string; frontmatter: any; body: string }> {
-        const uri = vscode.Uri.file(path);
-        const bytes = await vscode.workspace.fs.readFile(uri);
-        const text = Buffer.from(bytes).toString('utf-8');
-        const parsed = FileParser.parseFrontmatter(text);
-        return { path, frontmatter: parsed.frontmatter, body: parsed.content };
+    private async _createSession(problemStatement: string) {
+        const sessionId = this._generateId(problemStatement);
+        const startTime = new Date().toISOString();
+        
+        // Ensure sessions directory exists
+        const sessionsDir = vscode.Uri.joinPath(this._projectUri, 'ai', 'sessions');
+        try {
+            await vscode.workspace.fs.createDirectory(sessionsDir);
+        } catch {
+            // Directory already exists
+        }
+
+        // Try to get current git commit for precise diff tracking
+        let startCommit: string | null = null;
+        const isGitRepo = await GitUtils.isGitRepository(this._projectUri.fsPath);
+        if (isGitRepo) {
+            startCommit = await GitUtils.getCurrentCommit(this._projectUri.fsPath);
+        }
+
+        // Create session file
+        const sessionFile = vscode.Uri.joinPath(sessionsDir, `${sessionId}.session.md`);
+        const frontmatter: any = {
+            session_id: sessionId,
+            start_time: startTime,
+            end_time: null,
+            status: 'active',
+            problem_statement: problemStatement,
+            changed_files: []
+        };
+
+        // Add start_commit if git is available
+        if (startCommit) {
+            frontmatter.start_commit = startCommit;
+        }
+
+        const content = `## Problem Statement
+
+${problemStatement}
+
+## Goals
+
+(To be filled during the session)
+
+## Approach
+
+(To be filled during the session)
+
+## Key Decisions
+
+(Track important decisions made during the session)
+
+## Notes
+
+(Additional context, concerns, or considerations)
+`;
+
+        const text = FileParser.stringifyFrontmatter(frontmatter, content);
+        await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(text, 'utf-8'));
+
+        // Set as active session
+        this._activeSession = {
+            sessionId,
+            problemStatement,
+            startTime,
+            changedFiles: []
+        };
+
+        // Start file watcher for ai directory
+        this._startFileWatcher();
+
+        // Notify webview
+        this._panel.webview.postMessage({ type: 'sessionCreated', data: this._activeSession });
+
+        vscode.window.showInformationMessage(`Design session "${sessionId}" started!`);
     }
 
-    private async _updateSpec(path: string, frontmatter: any, body: string): Promise<void> {
-        const uri = vscode.Uri.file(path);
-        const text = FileParser.stringifyFrontmatter(frontmatter || {}, body || '');
-        const enc = new TextEncoder();
-        await vscode.workspace.fs.writeFile(uri, enc.encode(text));
+    private _startFileWatcher() {
+        if (this._fileWatcher) {
+            this._fileWatcher.dispose();
+        }
+
+        const pattern = new vscode.RelativePattern(
+            path.join(this._projectUri.fsPath, 'ai'),
+            '**/*.{feature.md,spec.md,model.md,context.md}'
+        );
+
+        this._fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+
+        this._fileWatcher.onDidChange(uri => this._onFileChanged(uri));
+        this._fileWatcher.onDidCreate(uri => this._onFileChanged(uri));
+
+        this._disposables.push(this._fileWatcher);
+    }
+
+    private _startStructureWatcher() {
+        if (this._structureWatcher) {
+            this._structureWatcher.dispose();
+            // Remove from disposables if it was there
+            const index = this._disposables.indexOf(this._structureWatcher);
+            if (index > -1) {
+                this._disposables.splice(index, 1);
+            }
+        }
+
+        // Watch the entire ai directory for any file or directory changes
+        const aiPath = vscode.Uri.joinPath(this._projectUri, 'ai');
+        const pattern = new vscode.RelativePattern(aiPath, '**/*');
+
+        console.log(`[Glam] Setting up structure watcher for: ${aiPath.fsPath}`);
+        
+        this._structureWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+
+        // Handle file/directory creation
+        this._structureWatcher.onDidCreate(uri => {
+            console.log(`[Glam] File/folder created: ${uri.fsPath}`);
+            this._onStructureChanged();
+        });
+
+        // Handle file/directory deletion
+        this._structureWatcher.onDidDelete(uri => {
+            console.log(`[Glam] File/folder deleted: ${uri.fsPath}`);
+            this._onStructureChanged();
+        });
+
+        // Handle file changes (for counts)
+        this._structureWatcher.onDidChange(uri => {
+            // Only refresh if it's a Glam file
+            if (this._isGlamFile(uri.fsPath)) {
+                console.log(`[Glam] Glam file changed: ${uri.fsPath}`);
+                this._onStructureChanged();
+            }
+        });
+
+        this._disposables.push(this._structureWatcher);
+    }
+
+    private _isGlamFile(filePath: string): boolean {
+        return filePath.endsWith('.session.md') ||
+               filePath.endsWith('.feature.md') ||
+               filePath.endsWith('.spec.md') ||
+               filePath.endsWith('.model.md') ||
+               filePath.endsWith('.context.md') ||
+               filePath.endsWith('.story.md') ||
+               filePath.endsWith('.task.md');
+    }
+
+    private async _onStructureChanged() {
+        // Debounce rapid changes
+        if (this._refreshTimeout) {
+            clearTimeout(this._refreshTimeout);
+        }
+
+        this._refreshTimeout = setTimeout(async () => {
+            console.log('[Glam] Structure changed - refreshing UI');
+            // Refresh counts
+            const counts = await this._getCounts();
+            this._panel.webview.postMessage({ type: 'counts', data: counts });
+
+            // Notify webview that structure changed so it can refresh trees
+            this._panel.webview.postMessage({ type: 'structureChanged' });
+        }, 300);
+    }
+
+    private _refreshTimeout: NodeJS.Timeout | undefined;
+
+    private _onFileChanged(uri: vscode.Uri) {
+        if (!this._activeSession) {
+            return;
+        }
+
+        const relativePath = path.relative(this._projectUri.fsPath, uri.fsPath);
+        
+        if (!this._activeSession.changedFiles.includes(relativePath)) {
+            this._activeSession.changedFiles.push(relativePath);
+            
+            // Update the session file
+            this._updateSessionFile().catch(err => {
+                console.error('Failed to update session file:', err);
+            });
+
+            // Notify webview
+            this._panel.webview.postMessage({ type: 'activeSession', data: this._activeSession });
+        }
+    }
+
+    private async _updateSessionFile() {
+        if (!this._activeSession) {
+            return;
+        }
+
+        const sessionFile = vscode.Uri.joinPath(
+            this._projectUri, 
+            'ai', 
+            'sessions', 
+            `${this._activeSession.sessionId}.session.md`
+        );
+
+        try {
+            const content = await FileParser.readFile(sessionFile.fsPath);
+            const parsed = FileParser.parseFrontmatter(content);
+            
+            parsed.frontmatter.changed_files = this._activeSession.changedFiles;
+            
+            const text = FileParser.stringifyFrontmatter(parsed.frontmatter, parsed.content);
+            await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(text, 'utf-8'));
+        } catch (error) {
+            console.error('Failed to update session file:', error);
+        }
+    }
+
+    private async _stopSession() {
+        if (!this._activeSession) {
+            return;
+        }
+
+        const sessionId = this._activeSession.sessionId;
+        const endTime = new Date().toISOString();
+
+        // Update session file
+        const sessionFile = vscode.Uri.joinPath(
+            this._projectUri, 
+            'ai', 
+            'sessions', 
+            `${sessionId}.session.md`
+        );
+
+        try {
+            const content = await FileParser.readFile(sessionFile.fsPath);
+            const parsed = FileParser.parseFrontmatter(content);
+            
+            parsed.frontmatter.end_time = endTime;
+            parsed.frontmatter.status = 'completed';
+            parsed.frontmatter.changed_files = this._activeSession.changedFiles;
+            
+            const text = FileParser.stringifyFrontmatter(parsed.frontmatter, parsed.content);
+            await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(text, 'utf-8'));
+
+            // Stop file watcher
+            if (this._fileWatcher) {
+                this._fileWatcher.dispose();
+                this._fileWatcher = undefined;
+            }
+
+            // Clear active session
+            this._activeSession = null;
+
+            // Notify webview
+            this._panel.webview.postMessage({ type: 'sessionStopped' });
+
+            vscode.window.showInformationMessage(`Design session "${sessionId}" completed!`);
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to stop session: ${error}`);
+        }
+    }
+
+    private async _distillSession(sessionId: string) {
+        const sessionFile = vscode.Uri.joinPath(
+            this._projectUri,
+            'ai',
+            'sessions',
+            `${sessionId}.session.md`
+        );
+
+        try {
+            const prompt = await PromptGenerator.generateDistillSessionPrompt(sessionFile);
+
+            this._output.clear();
+            this._output.appendLine('='.repeat(80));
+            this._output.appendLine('GLAM: Distill Session into Stories and Tasks');
+            this._output.appendLine('='.repeat(80));
+            this._output.appendLine('');
+            this._output.appendLine('Copy the prompt below and paste it into your Cursor Agent window:');
+            this._output.appendLine('');
+            this._output.appendLine('-'.repeat(80));
+            this._output.appendLine(prompt);
+            this._output.appendLine('-'.repeat(80));
+            this._output.show(true);
+
+            vscode.window.showInformationMessage(
+                'Distill session prompt generated! Check the Glam output panel.'
+            );
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to generate distill prompt: ${error}`);
+        }
+    }
+
+    private _generateId(title: string): string {
+        return title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .substring(0, 50);
+    }
+
+    private async _getFolderTree(category: string): Promise<any> {
+        const basePath = this._getCategoryPath(category);
+        const fileExtension = this._getCategoryExtension(category);
+        return await this._buildFolderTree(basePath, fileExtension);
+    }
+
+    private async _buildFolderTree(dirUri: vscode.Uri, fileExtension: string): Promise<any> {
+        try {
+            const entries = await vscode.workspace.fs.readDirectory(dirUri);
+            const folders: any[] = [];
+
+            for (const [name, type] of entries) {
+                if (type === vscode.FileType.Directory && name !== 'node_modules' && !name.startsWith('.')) {
+                    const childUri = vscode.Uri.joinPath(dirUri, name);
+                    const children = await this._buildFolderTree(childUri, fileExtension);
+                    folders.push({
+                        name,
+                        path: childUri.fsPath,
+                        children
+                    });
+                }
+            }
+
+            return folders;
+        } catch {
+            return [];
+        }
+    }
+
+    private async _getFolderContents(folderPath: string, category: string): Promise<any[]> {
+        const fileExtension = this._getCategoryExtension(category);
+        const folderUri = vscode.Uri.file(folderPath);
+        
+        try {
+            const entries = await vscode.workspace.fs.readDirectory(folderUri);
+            const files: any[] = [];
+
+            for (const [name, type] of entries) {
+                if (type === vscode.FileType.File && name.endsWith(fileExtension) && name !== 'index.md') {
+                    const fileUri = vscode.Uri.joinPath(folderUri, name);
+                    const stats = await vscode.workspace.fs.stat(fileUri);
+                    
+                    // Try to read frontmatter for metadata
+                    let frontmatter: any = {};
+                    try {
+                        const content = await FileParser.readFile(fileUri.fsPath);
+                        const parsed = FileParser.parseFrontmatter(content);
+                        frontmatter = parsed.frontmatter;
+                    } catch {
+                        // Ignore parse errors
+                    }
+
+                    files.push({
+                        name,
+                        path: fileUri.fsPath,
+                        modified: new Date(stats.mtime).toISOString(),
+                        frontmatter
+                    });
+                }
+            }
+
+            // Sort by name
+            files.sort((a, b) => a.name.localeCompare(b.name));
+            return files;
+        } catch {
+            return [];
+        }
+    }
+
+    private async _getFileContent(filePath: string): Promise<any> {
+        try {
+            const content = await FileParser.readFile(filePath);
+            const parsed = FileParser.parseFrontmatter(content);
+            return {
+                path: filePath,
+                frontmatter: parsed.frontmatter,
+                content: parsed.content
+            };
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to read file: ${error}`);
+            return null;
+        }
+    }
+
+    private async _saveFileContent(filePath: string, frontmatter: any, content: string): Promise<void> {
+        // Check if session is active
+        if (!this._activeSession) {
+            vscode.window.showErrorMessage('Cannot save file: No active design session. Start a session first.');
+            return;
+        }
+
+        try {
+            const text = FileParser.stringifyFrontmatter(frontmatter, content);
+            const fileUri = vscode.Uri.file(filePath);
+            await vscode.workspace.fs.writeFile(fileUri, Buffer.from(text, 'utf-8'));
+            
+            this._panel.webview.postMessage({ 
+                type: 'fileSaved', 
+                data: { path: filePath, success: true } 
+            });
+            
+            vscode.window.showInformationMessage('File saved successfully!');
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to save file: ${error}`);
+            this._panel.webview.postMessage({ 
+                type: 'fileSaved', 
+                data: { path: filePath, success: false, error: String(error) } 
+            });
+        }
+    }
+
+    private async _createFolder(folderPath: string): Promise<void> {
+        // Check if session is active
+        if (!this._activeSession) {
+            vscode.window.showErrorMessage('Cannot create folder: No active design session. Start a session first.');
+            return;
+        }
+
+        try {
+            const folderUri = vscode.Uri.file(folderPath);
+            await vscode.workspace.fs.createDirectory(folderUri);
+            
+            this._panel.webview.postMessage({ 
+                type: 'folderCreated', 
+                data: { path: folderPath, success: true } 
+            });
+            
+            vscode.window.showInformationMessage('Folder created successfully!');
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to create folder: ${error}`);
+            this._panel.webview.postMessage({ 
+                type: 'folderCreated', 
+                data: { path: folderPath, success: false, error: String(error) } 
+            });
+        }
+    }
+
+    private _getCategoryPath(category: string): vscode.Uri {
+        return vscode.Uri.joinPath(this._projectUri, 'ai', category);
+    }
+
+    private _getCategoryExtension(category: string): string {
+        const extensions: { [key: string]: string } = {
+            'features': '.feature.md',
+            'specs': '.spec.md',
+            'models': '.model.md',
+            'contexts': '.context.md'
+        };
+        return extensions[category] || '.md';
     }
 }
 
@@ -359,13 +941,3 @@ function getNonce() {
     }
     return text;
 }
-
-function kebabCase(input: string): string {
-    return (input || '')
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-}
-
-

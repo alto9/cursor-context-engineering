@@ -8,113 +8,185 @@ You are helping me build a vscode-extension called "Glam".
 
 ## What it is
 
-Glam helps engineers use proper context engineering to build and maintain software using Agentic development practices. Glam includes a set of file formats that are used to build context windows in methodical ways, and vscode commands that assist the developer in building prompts.
+Glam helps engineers use proper context engineering to build and maintain software using Agentic development practices. Glam uses a session-driven workflow to track design changes and convert them into minimal, actionable implementation stories.
 
-## The big picture
+## The Big Picture
 
 A developer would install Glam at the start of a project. Using Glam, a set of files in a folder named 'ai' in the root of the project would get managed. The folders are:
 
-    - ai/decisions
-    - ai/docs
-    - ai/features
-    - ai/specs
-    - ai/contexts
-    - ai/tasks
+- ai/sessions
+- ai/features
+- ai/specs
+- ai/models
+- ai/contexts
+- ai/tickets
+- ai/docs
 
-Each file in those folders would have a name respective of the file type. For example, a decision would be in the ai/decisions folder and have a name that was like *.decision.md.
+All folders except 'docs' are nestable, and nesting is preferred to maximize contextual structure.
 
-The first thing an engineer should do is fill out their context files. Accurate context without overloading is key here. What specifically would an agent or person need to know to complete the job accurately.
+## File Structure
 
-A decision is made by using the command `Glam: New Decision`. Once the file is created and the users completes it, they execute a command `Glam: Distill Decision into Features and Specs` which will make sure that the features and specs files in their respecitive folders fully account for the change that has been decided upon, and reflect the desired state of the infrastructure. Once that is completed, the user will run the command `Glam: Convert Decision to Tasks` which has a very important job. It will first ask which decision to convert, and once that is provided, it will:
-    - Examine the decision
-    - Examine the features and specs related to that decision
-    - Examine the context files related to the features/specs
-    - Determine specific implementation steps and write out a group of fully populated Task objects containing specific implementation steps.
+### Sessions (ai/sessions/)
+- Session files (*.session.md) track design sessions
+- Contains: session_id, start_time, end_time, status, problem_statement, changed_files[]
+- Tracks all file changes made during the session
 
-## File Format
+### Features (ai/features/)
+- Feature files (*.feature.md) define user-facing functionality
+- Uses Gherkin format in code blocks (```gherkin)
+- Every features folder should have an index.md with Background and Rules
+- Contains: feature_id, spec_id[], model_id[]
 
-We will need to define a schema for each type of file, and it might be ok to use a simple 'frontmatter'+ markdown support for a file format called 'glam-decision' for example.
+### Specs (ai/specs/)
+- Spec files (*.spec.md) define technical implementation
+- Includes Mermaid diagrams for architecture
+- Contains: spec_id, feature_id[], model_id[], context_id[]
 
-We want to support Gherkin scenarios in the features, and we want to support mermaid diagrams in the specs. More details:
+### Models (ai/models/)
+- Model files (*.model.md) define data structures
+- Contains property tables, relationships, validation rules
+- Contains: model_id, type, related_models[]
 
-### Context
----
-context_id: (kebab-case file name matches context_id minus ".context.md")
+### Contexts (ai/contexts/)
+- Context files (*.context.md) provide just-in-time guidance
+- Uses Gherkin scenarios in code blocks (```gherkin)
+- Tells agents when/how to use specific documentation or tools
+- Contains: context_id, category
 
----
+### Tickets (ai/tickets/)
+- Stories (*.story.md) - code implementation work (< 30 minutes each)
+- Tasks (*.task.md) - external/manual work
+- Organized by session in ai/tickets/<session-id>/
+- Contains: story_id/task_id, session_id, feature_id[], spec_id[], model_id[], status
 
-[ Gherkin scenarios ]
+## The Workflow
 
-example: 
-GIVEN we are working within Glam files
-WHEN information is needed about javascript implementation
-THEN read the document at `ai/docs/typescript_guidance.md`
-AND use that information to help inform decisions regarding javascript implementation
+### Phase 1: Start a Design Session
+1. User runs "Glam: Start Design Session" command
+2. System prompts for problem statement
+3. Creates session file in ai/sessions/ with status: active
+4. Session begins tracking changed files
 
--or-
+### Phase 2: Design Changes
+During an active session, user edits:
+- Features (define/modify behavior with Gherkin)
+- Specs (technical implementation with Mermaid)
+- Models (data structures and properties)
+- Contexts (guidance for specific technologies)
 
-GIVEN we are working within Glam files
-WHEN information is needed about AWS CDK implementation
-THEN use the `aws_cdk_guidance` tool
-AND use that information to help inform decisions regarding CDK implementation
+All changes are tracked in the session's changed_files array.
 
-### Decision
----
-decision_id: (kebab-case file name matches decision_id minus ".decision.md")
+### Phase 3: Distill Session
+1. User runs "Glam: Distill Session into Stories and Tasks"
+2. System generates prompt that:
+   - Calls get_glam_about MCP tool
+   - Analyzes all changed files
+   - Follows context linkages
+   - Creates Stories (code) and Tasks (non-code)
+   - Places them in ai/tickets/<session-id>/
 
----
+### Phase 4: Build Implementation
+1. User selects a Story file
+2. Runs "Glam: Build Story Implementation"
+3. System generates prompt with full context from linked features, specs, and models
 
-[ sections relating to an ADR ]
+## Key Principles
 
-### Feature
----
-feature_id: (kebab-case file name matches feature_id minus ".decision.md")
-spec_id: (array of references to spec IDs in project)
----
+### Gherkin Format
+ALL Gherkin must use code blocks for consistency:
 
-[ Gherkin scenarios ]
+```gherkin
+Feature: User Login
 
-example: 
-GIVEN a user has done X
-WHEN scenario involves Y
-THEN this should happen
-AND also this should happen
+Scenario: Successful login
+  Given a registered user
+  When they enter valid credentials
+  Then they should be logged into the system
+  And receive a session token
+```
 
-### Spec
----
-spec_id: (kebab-case file name matches spec_id minus ".spec.md")
-feature_id: (array of references to feature IDs in project)
----
+### Minimal Stories
+- Each story should take < 30 minutes to implement
+- Break complex changes into multiple small stories
+- One focused change per story
 
-[ sections relating to a spec + mermaid diagrams ]
+### Nestable Structure
+- All folders are nestable to group related concepts
+- Features folders have index.md for shared Background and Rules
+- index.md files never show in tree views
 
-## How it works
+### Complete Context
+- Stories link to features, specs, and models
+- Context files provide technical guidance
+- Distillation follows all linkages to gather complete information
 
-The extension will add a set of commands that are available from the command palette and conditionally available on right click of folders in the file explorer. The commmands are as follows:
+## VSCode Commands
 
-- Glam: New Decision
-    - Accessible from the command palette and also on right click of any folder named 'decisions'.
-    - Shows a new vscode web-view with a form on it that asks the following information:
-        - What is changing?
-        - Why is it changing?
-        - Summary of the proposed change?
-        - Options considered?
-    - Once that form is submitted, a function runs that builds a custom prompt text that includes their input. That prompt text is outputted to the 'Output' pane along with instructions for the user to copy/paste it into their agent.
+The extension provides these commands:
 
-- Glam: Distill Decision into Features and Specs
-    - Accessible from the command palette and also on right click of any decision file.
-    - If opened from the command palette, a selector should show asking the user to choose the decision file to work with.
-    - Once the decision is known, a custom prompt text is generated that includes the user's decision selection.
+### Glam: Start Design Session
+- Accessible from command palette and right-click on 'sessions' folder
+- Prompts for problem statement
+- Generates prompt to create session file
+- Outputs to Glam output panel for copy/paste
 
-- Glam: Convert Decision to Tasks
-    - Accessible from the command palette and also on right click of any decision file.
-    - If opened from the command palette, a selector should show asking the user to choose the decision file to work with.
-    - Once the decision is known, a custom prompt text is generated that includes the user's decision selection.
+### Glam: Distill Session into Stories and Tasks
+- Accessible from command palette and right-click on *.session.md files
+- Generates comprehensive distillation prompt
+- Analyzes all changed files
+- Calls get_glam_about to understand workflow
+- Creates Stories and Tasks in ai/tickets/<session-id>/
 
-Every command literally does one thing, it generates a prompt that the user is meant to add to their Agent window. Every command mentioned above so far should do this. For example, when I add a new decision, the extension does not make a new decision file, what it does is constructs a prompt that would do exactly what I want and send that text to the 'output' panel. The user should copy/paste that text into the Agent window to get the result they want.
+### Glam: Build Story Implementation
+- Accessible from command palette and right-click on *.story.md files
+- Generates build prompt with full context
+- Includes linked features, specs, models, and contexts
+- Ready for AI agent to implement
 
-In a future version, we will consider calling the cursor-agent cli automatically instead of just outputting the prompt, but right now that is too buggy, we need the user to do it at this time.
+### Glam: Open Glam Studio
+- Opens web view with Dashboard, Features, Specs, Models, Contexts, Sessions
+- Currently shows basic structure and counts
+- Tree views and editors are placeholders for future enhancement
 
-## The overall goal
+## How Commands Work
 
-Glam should help users design good prompts with proper context by going through this 3 phase workflow. The prompts that are generated should be intelligent, and should find the required linkages and follow their context document links when appropriate. The idea is that when you create a set of tasks after a decision has been distilled, those tasks have ALL the information they need. They are specific but not verbose, and highly accurate. This is possible if the prompts are built artfully, the magic of Glam is in that construction of the custom prompts and how the document linkages are used to generate them.
+Every command generates a prompt that the user copies to the Agent window. Commands do NOT make file changes directly - they create prompts that instruct the agent to make changes.
+
+The prompts are artfully constructed to:
+- Call relevant MCP tools (get_glam_about, get_glam_schema, get_glam_context)
+- Include all necessary file contents
+- Follow context linkages
+- Provide clear, specific instructions
+- Emphasize minimal story size for distillation
+
+## MCP Server Tools
+
+The @glam/mcp-server provides:
+
+### get_glam_about
+Returns comprehensive overview of Glam workflow including:
+- Session-driven approach
+- When to create Stories vs Tasks
+- Minimal story size guidance
+- File structure and linkages
+
+### get_glam_schema
+Returns schema for: session, feature, spec, model, story, task, context
+Each schema includes:
+- File format and naming
+- Frontmatter fields
+- Content structure
+- Linkage rules
+
+### get_glam_context
+Takes spec_object parameter
+Returns guidance for technical objects or research prompt if not found
+
+### get_glam_objects
+Lists supported spec objects from guidance library
+
+## Overall Goal
+
+Glam should help users design good prompts with proper context through a session-driven workflow. The prompts generated are intelligent, follow all necessary linkages, and ensure AI agents have complete, accurate context for implementation.
+
+The magic of Glam is in the construction of these prompts and how document linkages are used to generate them with complete context but no overload.

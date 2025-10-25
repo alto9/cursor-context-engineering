@@ -20,26 +20,20 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:glam.newDecision",
-    "onCommand:glam.distillDecision",
-    "onCommand:glam.convertToTasks",
-    "onCommand:glam.openStudio"
-  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "glam.newDecision",
-        "title": "Glam: New Decision"
+        "command": "glam.startSession",
+        "title": "Glam: Start Design Session"
       },
       {
-        "command": "glam.distillDecision",
-        "title": "Glam: Distill Decision into Features and Specs"
+        "command": "glam.distillSession",
+        "title": "Glam: Distill Session into Stories and Tasks"
       },
       {
-        "command": "glam.convertToTasks",
-        "title": "Glam: Convert Decision to Tasks"
+        "command": "glam.buildStory",
+        "title": "Glam: Build Story Implementation"
       },
       {
         "command": "glam.openStudio",
@@ -49,19 +43,19 @@
     "menus": {
       "explorer/context": [
         {
-          "when": "explorerResourceIsFolder && resourceFilename == decisions",
-          "command": "glam.newDecision",
+          "when": "explorerResourceIsFolder && resourceFilename == sessions",
+          "command": "glam.startSession",
           "group": "glam@1"
         },
         {
-          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
-          "command": "glam.distillDecision",
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.session\\.md$/",
+          "command": "glam.distillSession",
           "group": "glam@1"
         },
         {
-          "when": "resourceExtname == .md && resourcePath =~ /.*\\.decision\\.md$/",
-          "command": "glam.convertToTasks",
-          "group": "glam@2"
+          "when": "resourceExtname == .md && resourcePath =~ /.*\\.story\\.md$/",
+          "command": "glam.buildStory",
+          "group": "glam@1"
         }
       ]
     }

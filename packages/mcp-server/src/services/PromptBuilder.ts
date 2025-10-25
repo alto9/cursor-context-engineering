@@ -154,38 +154,41 @@ When drafting specs, prefer using supported spec objects from get_glam_objects w
 **Decision ID**: ${decisionId}
 **Decision File**: ai/decisions/${decisionId}.decision.md
 
-**Decision Content**:
-\`\`\`markdown
-${decision.frontmatter ? `---\n${JSON.stringify(decision.frontmatter, null, 2)}\n---\n\n` : ''}${decision.content}
-\`\`\`
-
 `;
 
     if (relatedFeatures.length > 0) {
       prompt += `\n**Related Features**:\n`;
       for (const feature of relatedFeatures) {
-        prompt += `\n### Feature: ${feature.id}\n\`\`\`markdown\n${feature.frontmatter ? `---\n${JSON.stringify(feature.frontmatter, null, 2)}\n---\n\n` : ''}${feature.content}\n\`\`\`\n`;
+        prompt += `- ${feature.id}: ai/features/${feature.id}.feature.md\n`;
       }
     }
 
     if (relatedSpecs.length > 0) {
       prompt += `\n**Related Specs**:\n`;
       for (const spec of relatedSpecs) {
-        prompt += `\n### Spec: ${spec.id}\n\`\`\`markdown\n${spec.frontmatter ? `---\n${JSON.stringify(spec.frontmatter, null, 2)}\n---\n\n` : ''}${spec.content}\n\`\`\`\n`;
+        prompt += `- ${spec.id}: ai/specs/${spec.id}.spec.md\n`;
       }
     }
 
     if (contexts.length > 0) {
       prompt += `\n**Available Contexts**:\n`;
       for (const context of contexts) {
-        prompt += `- ${context.id}\n`;
+        prompt += `- ${context.id}: ai/contexts/${context.id}.context.md\n`;
       }
       prompt += '\n';
     }
 
-    prompt += `\n\nSTEP X: For each spec object referenced or implied in the related specs (e.g., lambda, dynamodb, api-gateway), call get_glam_context with spec_object set to that object. Use the returned guidance to inform precise implementation details in the tasks.
+    prompt += `\n\nSTEP 1: Read the decision file and all related files listed above
 
-**Task**: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
+Read each file to understand the full context:
+- Read the decision file to understand what is being decided
+- Read related features to understand the expected behavior
+- Read related specs to understand the technical implementation details
+- Read available contexts for guidance
+
+STEP 2: For each spec object referenced or implied in the related specs (e.g., lambda, dynamodb, api-gateway), call get_glam_context with spec_object set to that object. Use the returned guidance to inform precise implementation details in the tasks.
+
+STEP 3: Create specific, actionable tasks in the ai/tasks/ folder that will implement this decision.
 
 Requirements:
 1. Each task should be a separate markdown file with a .task.md extension
