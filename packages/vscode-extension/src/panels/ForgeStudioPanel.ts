@@ -907,10 +907,14 @@ ${problemStatement}
                     
                     // Try to read frontmatter for metadata
                     let frontmatter: any = {};
+                    let objectId: string | undefined;
                     try {
                         const content = await FileParser.readFile(fileUri.fsPath);
                         const parsed = FileParser.parseFrontmatter(content);
                         frontmatter = parsed.frontmatter;
+                        
+                        // Extract object ID based on category
+                        objectId = this._extractObjectId(category, frontmatter);
                     } catch {
                         // Ignore parse errors
                     }
@@ -920,7 +924,8 @@ ${problemStatement}
                         path: fileUri.fsPath,
                         type: 'file',
                         modified: new Date(stats.mtime).toISOString(),
-                        frontmatter
+                        frontmatter,
+                        objectId: objectId || name  // Fallback to filename if no ID found
                     });
                 }
             }
@@ -937,6 +942,21 @@ ${problemStatement}
         } catch {
             return [];
         }
+    }
+
+    private _extractObjectId(category: string, frontmatter: any): string | undefined {
+        // Map category to the appropriate ID field
+        const idFieldMap: { [key: string]: string } = {
+            'features': 'feature_id',
+            'specs': 'spec_id',
+            'models': 'model_id',
+            'actors': 'actor_id',
+            'contexts': 'context_id',
+            'sessions': 'session_id'
+        };
+        
+        const idField = idFieldMap[category];
+        return idField ? frontmatter[idField] : undefined;
     }
 
     private async _getFileContent(filePath: string): Promise<any> {

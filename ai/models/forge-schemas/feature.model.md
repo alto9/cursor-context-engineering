@@ -61,6 +61,19 @@ Scenario: [Scenario Name]
   And [additional expected result]
 ```
 
+## Structure Notes
+
+### Background
+Background contains Gherkin steps that provide shared context for all scenarios. It should be structured as Given/When/Then steps, not plain text.
+
+### Rules
+Rules are business rules that contain Example scenarios. Each rule is an object with:
+- `title`: The rule description
+- `examples`: Array of Example scenarios (similar to Scenarios but nested under a Rule)
+
+### Scenarios
+Top-level scenarios that are not nested within Rules. Each scenario contains Given/When/Then/And/But steps.
+
 ## Example Usage
 
 ```yaml
@@ -70,25 +83,52 @@ description: "Allow users to authenticate with email and password"
 spec_id: ["auth-endpoints", "session-management"]
 model_id: ["user", "session"]
 context_id: ["security-guidelines", "express-routing"]
+background:
+  steps:
+    - keyword: "Given"
+      text: "the authentication system is configured"
+    - keyword: "And"
+      text: "users can register accounts"
 scenarios:
-  - name: "Successful login"
-    gherkin: |
-      Given a registered user with email "user@example.com"
-      When they enter valid credentials
-      Then they should be logged into the system
-      And receive a session token
-  - name: "Invalid credentials"
-    gherkin: |
-      Given a registered user
-      When they enter invalid credentials
-      Then they should see an error message
-      And remain on the login page
-background: |
-  Given the authentication system is configured
-  And users can register accounts
+  - title: "Successful login"
+    steps:
+      - keyword: "Given"
+        text: "a registered user with email \"user@example.com\""
+      - keyword: "When"
+        text: "they enter valid credentials"
+      - keyword: "Then"
+        text: "they should be logged into the system"
+      - keyword: "And"
+        text: "receive a session token"
+  - title: "Invalid credentials"
+    steps:
+      - keyword: "Given"
+        text: "a registered user"
+      - keyword: "When"
+        text: "they enter invalid credentials"
+      - keyword: "Then"
+        text: "they should see an error message"
+      - keyword: "And"
+        text: "remain on the login page"
 rules:
-  - "Passwords must be at least 8 characters"
-  - "Sessions expire after 24 hours"
+  - title: "Password complexity requirements"
+    examples:
+      - title: "Valid password"
+        steps:
+          - keyword: "Given"
+            text: "a user registering with password \"SecurePass123\""
+          - keyword: "When"
+            text: "they submit the form"
+          - keyword: "Then"
+            text: "the password should be accepted"
+      - title: "Invalid short password"
+        steps:
+          - keyword: "Given"
+            text: "a user registering with password \"short\""
+          - keyword: "When"
+            text: "they submit the form"
+          - keyword: "Then"
+            text: "they should see an error \"Password must be at least 8 characters\""
 status: "approved"
 created_at: "2024-01-15T10:30:00Z"
 updated_at: "2024-01-15T11:15:00Z"
