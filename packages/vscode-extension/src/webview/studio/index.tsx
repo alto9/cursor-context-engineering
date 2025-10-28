@@ -45,6 +45,7 @@ function App() {
   const [activeSession, setActiveSession] = React.useState<ActiveSession | null>(null);
   const [sessions, setSessions] = React.useState<Session[]>([]);
   const [showNewSessionForm, setShowNewSessionForm] = React.useState(false);
+  const [sessionPanelMinimized, setSessionPanelMinimized] = React.useState(false);
 
   React.useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -74,6 +75,11 @@ function App() {
         setActiveSession(null);
         vscode?.postMessage({ type: 'getCounts' });
         vscode?.postMessage({ type: 'listSessions' });
+      }
+      if (msg?.type === 'sessionUpdated') {
+        if (msg.data?.success) {
+          // Session saved successfully - could show a brief indicator
+        }
       }
     }
     window.addEventListener('message', onMessage);
@@ -146,6 +152,13 @@ function App() {
           <BrowserPage category="contexts" title="Contexts" activeSession={activeSession} />
         )}
       </div>
+      {activeSession && (
+        <SessionPanel 
+          session={activeSession}
+          minimized={sessionPanelMinimized}
+          onToggleMinimize={() => setSessionPanelMinimized(!sessionPanelMinimized)}
+        />
+      )}
     </div>
   );
 }
@@ -1862,6 +1875,317 @@ function Card({ title, value }: { title: string; value: number }) {
     <div className="card" style={{ minWidth: 140 }}>
       <div style={{ fontSize: 12, opacity: 0.8 }}>{title}</div>
       <div style={{ fontSize: 22, fontWeight: 700 }}>{value}</div>
+    </div>
+  );
+}
+
+function SessionPanel({ session, minimized, onToggleMinimize }: { 
+  session: ActiveSession; 
+  minimized: boolean; 
+  onToggleMinimize: () => void;
+}) {
+  const [problemStatement, setProblemStatement] = React.useState(session.problemStatement);
+  const [goals, setGoals] = React.useState('');
+  const [approach, setApproach] = React.useState('');
+  const [keyDecisions, setKeyDecisions] = React.useState('');
+  const [notes, setNotes] = React.useState('');
+  const [isLoaded, setIsLoaded] = React.useState(false);
+
+  // Load session file content on mount
+  React.useEffect(() => {
+    const loadSessionContent = async () => {
+      // Request the full session file content via getFileContent
+      const sessionPath = `ai/sessions/${session.sessionId}.session.md`;
+      vscode?.postMessage({ type: 'getFileContent', filePath: sessionPath });
+    };
+    
+    if (!isLoaded) {
+      loadSessionContent();
+    }
+
+    // Listen for file content response
+    const handleMessage = (event: MessageEvent) => {
+      const msg = event.data;
+      if (msg?.type === 'fileContent' && msg.data?.path?.includes(session.sessionId)) {
+        const content = msg.data.content || '';
+        
+        // Parse sections from markdown content
+        const goalsMatch = content.match(/## Goals\s*\n([\s\S]*?)(?=\n## |\n---|\Z)/);
+        const approachMatch = content.match(/## Approach\s*\n([\s\S]*?)(?=\n## |\n---|\Z)/);
+        const decisionsMatch = content.match(/## Key Decisions\s*\n([\s\S]*?)(?=\n## |\n---|\Z)/);
+        const notesMatch = content.match(/## Notes\s*\n([\s\S]*?)(?=\n## |\n---|\Z)/);
+        
+        setGoals(goalsMatch ? goalsMatch[1].trim() : '');
+        setApproach(approachMatch ? approachMatch[1].trim() : '');
+        setKeyDecisions(decisionsMatch ? decisionsMatch[1].trim() : '');
+        setNotes(notesMatch ? notesMatch[1].trim() : '');
+        setProblemStatement(msg.data.frontmatter?.problem_statement || session.problemStatement);
+        setIsLoaded(true);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [session.sessionId, isLoaded]);
+
+  // Debounced save function
+  const saveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const handleSave = React.useCallback(() => {
+    const content = `## Problem Statement
+
+${problemStatement}
+
+## Goals
+
+${goals}
+
+## Approach
+
+${approach}
+
+## Key Decisions
+
+${keyDecisions}
+
+## Notes
+
+${notes}
+`;
+
+    const frontmatter = {
+      session_id: session.sessionId,
+      start_time: session.startTime,
+      status: 'active',
+      problem_statement: problemStatement,
+      changed_files: session.changedFiles
+    };
+
+    vscode?.postMessage({ 
+      type: 'updateSession', 
+      frontmatter, 
+      content 
+    });
+  }, [session, problemStatement, goals, approach, keyDecisions, notes]);
+
+  const debouncedSave = React.useCallback((value: string, setter: (v: string) => void) => {
+    setter(value);
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      handleSave();
+    }, 500);
+  }, [handleSave]);
+
+  const handleEndSession = () => {
+    // Send message to extension to show native confirmation dialog
+    vscode?.postMessage({ type: 'stopSession' });
+  };
+
+  if (minimized) {
+    return (
+      <div style={{
+        width: 40,
+        borderLeft: '1px solid var(--vscode-panel-border)',
+        background: 'var(--vscode-sideBar-background)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '12px 0'
+      }}>
+        <button
+          onClick={onToggleMinimize}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--vscode-foreground)',
+            cursor: 'pointer',
+            fontSize: 16,
+            padding: 8,
+            transform: 'rotate(180deg)',
+            writingMode: 'vertical-rl'
+          }}
+          title="Expand session panel"
+        >
+          ◀
+        </button>
+        <div style={{
+          writingMode: 'vertical-rl',
+          fontSize: 11,
+          opacity: 0.7,
+          marginTop: 16
+        }}>
+          Active Session
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      width: 300,
+      borderLeft: '1px solid var(--vscode-panel-border)',
+      background: 'var(--vscode-sideBar-background)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        padding: 12,
+        borderBottom: '1px solid var(--vscode-panel-border)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{ fontWeight: 600, fontSize: 13 }}>Active Session</div>
+        <button
+          onClick={onToggleMinimize}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--vscode-foreground)',
+            cursor: 'pointer',
+            fontSize: 16,
+            padding: 4
+          }}
+          title="Minimize session panel"
+        >
+          ▶
+        </button>
+      </div>
+
+      <div style={{
+        flex: 1,
+        overflow: 'auto',
+        padding: 12
+      }}>
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Session ID</label>
+          <div style={{ 
+            fontSize: 11, 
+            opacity: 0.7, 
+            padding: '4px 8px', 
+            background: 'var(--vscode-input-background)',
+            borderRadius: 3 
+          }}>
+            {session.sessionId}
+          </div>
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Started</label>
+          <div style={{ 
+            fontSize: 11, 
+            opacity: 0.7,
+            padding: '4px 8px',
+            background: 'var(--vscode-input-background)',
+            borderRadius: 3
+          }}>
+            {new Date(session.startTime).toLocaleString()}
+          </div>
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Problem Statement</label>
+          <textarea
+            className="form-textarea"
+            value={problemStatement}
+            onChange={(e) => debouncedSave(e.target.value, setProblemStatement)}
+            style={{ minHeight: 60, fontSize: 12 }}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Goals</label>
+          <textarea
+            className="form-textarea"
+            value={goals}
+            onChange={(e) => debouncedSave(e.target.value, setGoals)}
+            placeholder="What are you trying to accomplish?"
+            style={{ minHeight: 80, fontSize: 12 }}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Approach</label>
+          <textarea
+            className="form-textarea"
+            value={approach}
+            onChange={(e) => debouncedSave(e.target.value, setApproach)}
+            placeholder="How will you approach this?"
+            style={{ minHeight: 80, fontSize: 12 }}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Key Decisions</label>
+          <textarea
+            className="form-textarea"
+            value={keyDecisions}
+            onChange={(e) => debouncedSave(e.target.value, setKeyDecisions)}
+            placeholder="Track important decisions made"
+            style={{ minHeight: 80, fontSize: 12 }}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>Notes</label>
+          <textarea
+            className="form-textarea"
+            value={notes}
+            onChange={(e) => debouncedSave(e.target.value, setNotes)}
+            placeholder="Additional context or concerns"
+            style={{ minHeight: 80, fontSize: 12 }}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 12 }}>
+          <label className="form-label" style={{ fontSize: 11, marginBottom: 4 }}>
+            Changed Files ({session.changedFiles.length})
+          </label>
+          <div style={{
+            maxHeight: 120,
+            overflow: 'auto',
+            fontSize: 10,
+            opacity: 0.7,
+            background: 'var(--vscode-input-background)',
+            borderRadius: 3,
+            padding: 6
+          }}>
+            {session.changedFiles.length === 0 ? (
+              <div style={{ fontStyle: 'italic' }}>No files changed yet</div>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                {session.changedFiles.map((file, i) => (
+                  <li key={i} style={{ marginBottom: 2 }}>{file}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        padding: 12,
+        borderTop: '1px solid var(--vscode-panel-border)',
+        display: 'flex',
+        gap: 8
+      }}>
+        <button
+          onClick={handleSave}
+          className="btn btn-primary"
+          style={{ flex: 1, fontSize: 12 }}
+        >
+          Save Session
+        </button>
+        <button
+          onClick={handleEndSession}
+          className="btn btn-secondary"
+          style={{ flex: 1, fontSize: 12 }}
+        >
+          End Session
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { StartSessionCommand } from './commands/StartSessionCommand';
 import { DistillSessionCommand } from './commands/DistillSessionCommand';
 import { BuildStoryCommand } from './commands/BuildStoryCommand';
 import { ForgeStudioPanel } from './panels/ForgeStudioPanel';
@@ -13,11 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
     // Create output channel for displaying prompts
     outputChannel = vscode.window.createOutputChannel('Forge');
     context.subscriptions.push(outputChannel);
-
-    // Register the Start Session command
-    const startSessionCommand = vscode.commands.registerCommand('forge.startSession', async () => {
-        await StartSessionCommand.execute(outputChannel);
-    });
 
     // Register the Distill Session command
     const distillSessionCommand = vscode.commands.registerCommand(
@@ -35,7 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
-    context.subscriptions.push(startSessionCommand);
     context.subscriptions.push(distillSessionCommand);
     context.subscriptions.push(buildStoryCommand);
 

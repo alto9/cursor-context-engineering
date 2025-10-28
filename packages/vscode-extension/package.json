@@ -24,10 +24,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "forge.startSession",
-        "title": "Forge: Start Design Session"
-      },
-      {
         "command": "forge.distillSession",
         "title": "Forge: Distill Session into Stories and Tasks"
       },
@@ -42,11 +38,6 @@
     ],
     "menus": {
       "explorer/context": [
-        {
-          "when": "explorerResourceIsFolder && resourceFilename == sessions",
-          "command": "forge.startSession",
-          "group": "forge@1"
-        },
         {
           "when": "resourceExtname == .md && resourcePath =~ /.*\\.session\\.md$/",
           "command": "forge.distillSession",

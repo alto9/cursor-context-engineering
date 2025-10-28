@@ -77,18 +77,37 @@ code --install-extension packages/vscode-extension/forge-0.1.0.vsix
 ```
 
 Then use the Command Palette (`Cmd/Ctrl+Shift+P`) to access Forge commands:
-- `Forge: Start Design Session` - Begin a new design session with a problem statement
-- `Forge: Distill Session into Stories and Tasks` - Convert a completed session into actionable work items
-- `Forge: Build Story Implementation` - Generate implementation prompt for a specific story
-- `Forge: Open Forge Studio` - Open the visual interface for managing Forge files
+- `Forge: Open Forge Studio` - Open the visual interface for managing Forge files and sessions
+- `Forge: Distill Session into Stories and Tasks` - Convert a completed session into actionable work items (also available via right-click on .session.md files)
+- `Forge: Build Story Implementation` - Generate implementation prompt for a specific story (also available via right-click on .story.md files)
 
 **Forge Studio Features:**
-- **Dashboard** - View session status and counts of all Forge objects
-- **Sessions** - Manage active and completed design sessions
-- **Features/Specs/Models/Actors/Contexts** - Create, edit, and organize all Forge file types
-- **Folder Management** - Create nested folders, navigate hierarchies
-- **File Creation** - Create new files with proper templates (requires active session)
-- **Context Menus** - Right-click folders to create subfolders
+
+**Session Management:**
+- Start new design sessions with problem statements
+- Persistent session panel for real-time editing
+- Auto-tracked file changes during sessions
+- Document goals, approach, key decisions, and notes
+- Auto-save with 500ms debounce
+- Resume sessions across Studio reopens (filesystem is source of truth)
+- End sessions and distill into stories
+
+**File Management:**
+- **Dashboard** - View session status and counts of all Forge objects (sessions, features, specs, models, actors, contexts, stories, tasks)
+- **Sessions Page** - Create, view, and manage all design sessions
+- **Category Pages** - Browse and edit Features, Specs, Models, Actors, and Contexts
+- **Folder Navigation** - Tree view with expand/collapse, nested folder support
+- **File Creation** - Create new files with proper templates and frontmatter (requires active session)
+- **File Editing** - Edit frontmatter metadata and content (requires active session)
+- **Gherkin Editor** - Structured visual editor for feature files with Background, Rules, and Scenarios
+- **Read-Only Mode** - View files without active session, edit when session is active
+
+**UI Features:**
+- Three-panel layout (navigation sidebar, main content, session panel)
+- Split view for browsing (folder tree + content)
+- Real-time updates when files change on disk
+- Automatic theme integration with VSCode
+- Minimizable session panel
 
 ### Using the MCP Server
 

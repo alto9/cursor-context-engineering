@@ -66,8 +66,12 @@ export class ForgeStudioPanel {
                     await this._createSession(message.problemStatement);
                     break;
                 }
+                case 'updateSession': {
+                    await this._updateSession(message.frontmatter, message.content);
+                    break;
+                }
                 case 'stopSession': {
-                    await this._stopSession();
+                    await this._stopSessionWithConfirmation();
                     break;
                 }
                 case 'distillSession': {
@@ -728,6 +732,11 @@ ${problemStatement}
 
         const relativePath = path.relative(this._projectUri.fsPath, uri.fsPath);
         
+        // Exclude session files from tracking
+        if (relativePath.includes('.session.md')) {
+            return;
+        }
+        
         if (!this._activeSession.changedFiles.includes(relativePath)) {
             this._activeSession.changedFiles.push(relativePath);
             
@@ -763,6 +772,72 @@ ${problemStatement}
             await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(text, 'utf-8'));
         } catch (error) {
             console.error('Failed to update session file:', error);
+        }
+    }
+
+    private async _updateSession(frontmatter: any, content: string) {
+        if (!this._activeSession) {
+            return;
+        }
+
+        const sessionFile = vscode.Uri.joinPath(
+            this._projectUri,
+            'ai',
+            'sessions',
+            `${this._activeSession.sessionId}.session.md`
+        );
+
+        try {
+            // Update the frontmatter with editable fields
+            const updatedFrontmatter = {
+                ...frontmatter,
+                // Preserve system-managed fields from active session
+                session_id: this._activeSession.sessionId,
+                start_time: this._activeSession.startTime,
+                changed_files: this._activeSession.changedFiles,
+                status: 'active'
+            };
+
+            const text = FileParser.stringifyFrontmatter(updatedFrontmatter, content);
+            await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(text, 'utf-8'));
+
+            // Update in-memory session state with new problem statement if changed
+            if (frontmatter.problem_statement !== this._activeSession.problemStatement) {
+                this._activeSession.problemStatement = frontmatter.problem_statement;
+            }
+
+            // Notify webview of successful save
+            this._panel.webview.postMessage({ 
+                type: 'sessionUpdated', 
+                data: { success: true, session: this._activeSession }
+            });
+
+            vscode.window.showInformationMessage('Session saved successfully');
+        } catch (error) {
+            console.error('Failed to update session:', error);
+            this._panel.webview.postMessage({ 
+                type: 'sessionUpdated', 
+                data: { success: false, error: String(error) }
+            });
+            vscode.window.showErrorMessage(`Failed to save session: ${error}`);
+        }
+    }
+
+    private async _stopSessionWithConfirmation() {
+        if (!this._activeSession) {
+            return;
+        }
+
+        // Show native VSCode confirmation dialog
+        const confirmed = await vscode.window.showWarningMessage(
+            `Are you sure you want to end the design session "${this._activeSession.sessionId}"?`,
+            { modal: true },
+            'End Session',
+            'Cancel'
+        );
+
+        if (confirmed === 'End Session') {
+            await this._stopSession();
         }
     }
 
