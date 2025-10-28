@@ -22,7 +22,7 @@ The Developer is a software engineer who uses Forge to manage context engineerin
 - Create technical specifications with Mermaid diagrams
 - Design data models and system architecture
 - Write context guidance for technical areas
-- Distill design sessions into minimal implementation stories
+- Generate command files from design sessions to create minimal implementation stories
 - Implement code changes based on stories
 
 ## Skills
@@ -37,7 +37,7 @@ The Developer is a software engineer who uses Forge to manage context engineerin
 The Developer uses Forge in a session-driven workflow:
 1. Starts design sessions for specific problem areas
 2. Creates and modifies features, specs, models, and contexts
-3. Distills sessions into focused implementation stories
+3. Creates command files from sessions that generate focused implementation stories
 4. Implements stories with complete context from linked files
 
 ## Pain Points

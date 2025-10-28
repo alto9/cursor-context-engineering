@@ -183,13 +183,14 @@ This precise change information should guide your story creation - focus on impl
 
 1. **Keep Stories MINIMAL** - Each story should take < 30 minutes to implement
 2. **Break Down Large Changes** - If a change is complex, create multiple small stories
-3. **Use Proper Linkages** - Link stories to feature_id, spec_id, and model_id from changed files
-4. **Be Specific** - Include exact file paths, clear objectives, and acceptance criteria
-5. **Add Context** - Each story should have enough information to be implemented independently
-6. **Order Matters** - Set dependencies and order stories logically
-7. **Follow Schemas** - All files must adhere to schemas from Step 2
+3. **Use Proper Linkages** - Link stories/tasks to feature_id, spec_id, and model_id from changed files
+4. **Link to Session** - ALL stories and tasks MUST include session_id: "${sessionId}" in their frontmatter
+5. **Be Specific** - Include exact file paths, clear objectives, and acceptance criteria
+6. **Add Context** - Each story should have enough information to be implemented independently
+7. **Order Matters** - Set dependencies and order stories logically
+8. **Follow Schemas** - All files must adhere to schemas from Step 2
 
-STEP 6: Verify completeness
+STEP 6: Verify completeness and create files
 
 Ensure that:
 - Every changed file is accounted for in at least one story or task
@@ -197,8 +198,9 @@ Ensure that:
 - Dependencies between stories are identified
 - The collection of stories fully implements the session goals
 - Stories are small enough to be completed quickly
+- ALL stories and tasks link back to session_id: "${sessionId}"
 
-The goal is to create actionable, well-defined stories and tasks that can be implemented with complete context.`;
+Now create all the story and task files in ai/tickets/${sessionId}/ following the schemas and requirements above.`;
 
         return prompt;
     }

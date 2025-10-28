@@ -159,34 +159,57 @@ Feature: Session Details Editing
     And the frontmatter and content sections should be properly updated
 ```
 
-## Feature: Session Distillation
+## Feature: Create Stories Command
 
 ```gherkin
-Feature: Distill Session into Stories
+Feature: Create Stories Command from Session
   As a developer
-  I want to convert my design session into implementation stories
-  So that I can execute the work incrementally
+  I want to generate a Cursor command file from my design session
+  So that I can execute it to create implementation stories and tasks
 
-  Scenario: Distill completed session
+  Scenario: Create command for completed session
     Given I have a completed design session with status: "completed"
     When I view the session in the Sessions list
-    Then I should see a "Distill" button for completed sessions
-    And when I click it, a distillation prompt should be generated
-    And the prompt should be shown in the Forge output panel
-    And I should be instructed to copy it to the Cursor Agent
+    Then I should see a "Create Stories Command" button for completed sessions without command_file
+    And when I click it, a Cursor command file should be created
+    And the command file should be placed in .cursor/commands/create-stories-{session-id}.md
+    And the session should be updated with command_file path
+    And the session status should change to "awaiting_implementation"
 
-  Scenario: Distill from Studio sessions page
+  Scenario: Create command from Studio sessions page
     Given I am viewing a completed session
-    When I click the "Distill" button
+    When I click the "Create Stories Command" button
     Then the system should call PromptGenerator.generateDistillSessionPrompt
+    And the system should call CommandFileWriter.writeCommandFile
+    And the prompt should be written as a markdown file
     And the prompt should include all changed file contents
     And the prompt should include session context and documentation
-    And the prompt should instruct the agent to create stories and tasks
-    And stories should be placed in ai/tickets/<session-id>/
+    And the prompt should instruct the agent to create stories and tasks in ai/tickets/<session-id>/
+    And all stories and tasks should include session_id: "{session-id}" in their frontmatter
+    And I should see a success message with the command file path
 
-  Scenario: Cannot distill active sessions
+  Scenario: View session with command file created
+    Given I have a session with status: "awaiting_implementation"
+    And the session has a command_file path
+    When I view it in the Sessions list
+    Then I should see "✓ Command Created" badge
+    And I should see the command file path displayed
+    And I should not see the "Create Stories Command" button
+
+  Scenario: Cannot create command for active sessions
     Given I have an active session
     When I view it in the Sessions list
-    Then I should not see a "Distill" button
-    And I should complete the session before distilling
+    Then I should not see a "Create Stories Command" button
+    And I should complete the session before creating the command
+
+  Scenario: Execute the command file
+    Given I have created a stories command for a session
+    When I open the command file in .cursor/commands/
+    And I execute it using Cursor's command system
+    Then the agent should read the session file
+    And the agent should analyze the changed files
+    And the agent should create story files for code changes
+    And the agent should create task files for non-code work
+    And all stories and tasks should link to session_id
+    And all files should be placed in ai/tickets/{session-id}/
 ```

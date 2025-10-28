@@ -1800,15 +1800,31 @@ function SessionsPage({ sessions, activeSession, showNewSessionForm, onShowNewSe
                   <div style={{ fontSize: 11, opacity: 0.6 }}>
                     Status: {session.frontmatter?.status} | Files: {session.frontmatter?.changed_files?.length || 0}
                   </div>
+                  {session.frontmatter?.command_file && (
+                    <div style={{ fontSize: 11, opacity: 0.7, marginTop: 4, color: 'var(--vscode-textLink-foreground)' }}>
+                      Command: {session.frontmatter.command_file}
+                    </div>
+                  )}
                 </div>
-                {session.frontmatter?.status === 'completed' && (
+                {session.frontmatter?.status === 'completed' && !session.frontmatter?.command_file && (
                   <button 
                     className="btn btn-primary"
                     style={{ fontSize: 12 }}
                     onClick={() => onDistillSession(session.sessionId)}
                   >
-                    Distill
+                    Create Stories Command
                   </button>
+                )}
+                {session.frontmatter?.status === 'awaiting_implementation' && session.frontmatter?.command_file && (
+                  <div style={{ 
+                    fontSize: 11, 
+                    padding: '4px 8px', 
+                    background: 'var(--vscode-inputValidation-infoBackground)',
+                    border: '1px solid var(--vscode-inputValidation-infoBorder)',
+                    borderRadius: 3
+                  }}>
+                    ✓ Command Created
+                  </div>
                 )}
               </div>
             </div>

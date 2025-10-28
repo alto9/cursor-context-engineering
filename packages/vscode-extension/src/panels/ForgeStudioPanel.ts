@@ -3,6 +3,7 @@ import * as path from 'path';
 import { FileParser } from '../utils/FileParser';
 import { PromptGenerator } from '../utils/PromptGenerator';
 import { GitUtils } from '../utils/GitUtils';
+import { CommandFileWriter } from '../utils/CommandFileWriter';
 
 interface ActiveSession {
     sessionId: string;
@@ -895,25 +896,45 @@ ${problemStatement}
         );
 
         try {
+            // Generate the distill prompt
             const prompt = await PromptGenerator.generateDistillSessionPrompt(sessionFile);
 
-            this._output.clear();
-            this._output.appendLine('='.repeat(80));
-            this._output.appendLine('FORGE: Distill Session into Stories and Tasks');
-            this._output.appendLine('='.repeat(80));
-            this._output.appendLine('');
-            this._output.appendLine('Copy the prompt below and paste it into your Cursor Agent window:');
-            this._output.appendLine('');
-            this._output.appendLine('-'.repeat(80));
-            this._output.appendLine(prompt);
-            this._output.appendLine('-'.repeat(80));
-            this._output.show(true);
+            // Write the prompt to a Cursor command file
+            const commandFilePath = await CommandFileWriter.writeCommandFile(
+                this._projectUri.fsPath,
+                sessionId,
+                prompt
+            );
+
+            // Update the session file with command_file path and status
+            const sessionContent = await FileParser.readFile(sessionFile.fsPath);
+            const sessionData = FileParser.parseFrontmatter(sessionContent);
+            
+            sessionData.frontmatter.command_file = commandFilePath;
+            sessionData.frontmatter.status = 'awaiting_implementation';
+            
+            const updatedContent = FileParser.stringifyFrontmatter(
+                sessionData.frontmatter, 
+                sessionData.content
+            );
+            await vscode.workspace.fs.writeFile(sessionFile, Buffer.from(updatedContent, 'utf-8'));
+
+            // Notify the webview that the session has been updated
+            this._panel.webview.postMessage({ 
+                type: 'sessionDistilled',
+                sessionId,
+                commandFilePath 
+            });
+
+            // Refresh the sessions list
+            const sessions = await this._listSessions();
+            this._panel.webview.postMessage({ type: 'sessions', data: sessions });
 
             vscode.window.showInformationMessage(
-                'Distill session prompt generated! Check the Forge output panel.'
+                `Stories command created at ${commandFilePath}. You can now execute it in Cursor.`
             );
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to generate distill prompt: ${error}`);
+            vscode.window.showErrorMessage(`Failed to create stories command: ${error}`);
         }
     }
 

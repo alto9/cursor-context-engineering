@@ -16,7 +16,7 @@ Background: Forge Context Engineering System
   When they use Forge
   Then they should have a session-driven workflow
   And they should be able to organize features, specs, models, and contexts
-  And they should be able to distill sessions into minimal implementation stories
+  And they should be able to generate command files that create minimal implementation stories
 ```
 
 ## Rules
@@ -26,7 +26,7 @@ Rule: Session-Driven Workflow
   Given a developer using Forge
   When they start a design session
   Then all file changes should be tracked
-  And they should be able to distill the session into stories and tasks
+  And they should be able to create a command file that generates stories and tasks
   And stories should be minimal and focused (< 30 minutes implementation)
 
 Rule: Nestable Organization
@@ -38,7 +38,7 @@ Rule: Nestable Organization
 
 Rule: Minimal Story Size
   Given a design session with multiple changes
-  When distilling into implementation stories
+  When creating implementation stories from a session
   Then each story should be minimal and focused
   And complex changes should be broken into multiple stories
   And each story should have clear acceptance criteria

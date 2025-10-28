@@ -88,8 +88,9 @@ Feature: Quick Start Instructions
       | 1 | Start a design session from the Sessions page |
       | 2 | Design your features, specs, and models during the session |
       | 3 | Forge tracks all changes automatically |
-      | 4 | Stop the session and distill it into actionable stories and tasks |
-      | 5 | Build each story to implement your changes |
+      | 4 | Stop the session and create a stories command file |
+      | 5 | Execute the command to generate actionable stories and tasks |
+      | 6 | Build each story to implement your changes |
     And the instructions should be clear and concise
 ```
 

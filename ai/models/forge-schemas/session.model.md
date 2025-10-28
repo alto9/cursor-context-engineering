@@ -23,10 +23,11 @@ Session files are stored in `ai/sessions/` with naming convention: `{session-id}
 | session_id | string | Yes | Unique identifier (kebab-case, auto-generated from problem statement) |
 | start_time | ISO8601 | Yes | When the session was started (auto-captured) |
 | end_time | ISO8601 | No | When the session was ended (null for active sessions) |
-| status | enum | Yes | Current status: "active" or "completed" |
+| status | enum | Yes | Current status: "active", "completed", or "awaiting_implementation" |
 | problem_statement | string | Yes | Description of the problem being solved |
 | changed_files | string[] | Yes | Array of relative file paths modified during session |
 | start_commit | string | No | Git commit hash at session start (if git repo) |
+| command_file | string | No | Relative path to Cursor command file in .cursor/commands/ |
 
 ### Content Sections
 
@@ -57,7 +58,8 @@ The markdown content following frontmatter includes these sections:
 ## Status Values
 
 - `active`: Session is currently running. Only one active session allowed per project.
-- `completed`: Session has been finished and can be distilled into stories.
+- `completed`: Session has been finished and is ready to have stories/tasks created.
+- `awaiting_implementation`: Session has been distilled and a command file has been created with stories/tasks ready for implementation.
 
 ## Session Lifecycle
 
@@ -129,18 +131,21 @@ The markdown content following frontmatter includes these sections:
 6. Active session is cleared from memory
 7. File editing becomes read-only until a new session starts
 
-### Distilling a Session
+### Distilling a Session (Creating Command File)
 
 1. User views completed session in Sessions list
-2. User clicks "Distill" button (only visible for completed sessions)
+2. User clicks "Create Stories Command" button (only visible for completed sessions without command_file)
 3. System calls `PromptGenerator.generateDistillSessionPrompt(sessionFile)`
 4. Prompt is generated with:
    - Session metadata and context
    - All changed file contents
-   - Instructions to create stories and tasks
-5. Prompt is displayed in Forge output panel
-6. User copies prompt to Cursor Agent
-7. Agent creates stories in `ai/tickets/{session-id}/`
+   - Instructions to create stories and tasks with session_id linkages
+5. System writes prompt as markdown file to `.cursor/commands/create-stories-{session-id}.md`
+6. System updates session file with:
+   - `command_file: .cursor/commands/create-stories-{session-id}.md`
+   - `status: awaiting_implementation`
+7. User can now execute the Cursor command which will create stories/tasks in `ai/tickets/{session-id}/`
+8. All created stories and tasks will link back to the session via `session_id` field
 
 ## Relationships
 
@@ -152,11 +157,12 @@ The markdown content following frontmatter includes these sections:
 
 1. **session_id**: Must be unique, kebab-case, auto-generated from problem statement
 2. **start_time**: Must be valid ISO8601 datetime
-3. **end_time**: Must be null for active sessions, must be after start_time for completed sessions
-4. **status**: Must be "active" or "completed"
+3. **end_time**: Must be null for active sessions, must be after start_time for completed/awaiting_implementation sessions
+4. **status**: Must be "active", "completed", or "awaiting_implementation"
 5. **problem_statement**: Cannot be empty
 6. **changed_files**: Must be array of strings (relative paths from project root)
-7. **Only one session with status="active" allowed per project**
+7. **command_file**: Must be relative path to markdown file in .cursor/commands/ if present
+8. **Only one session with status="active" allowed per project**
 
 ## Session File Example
 

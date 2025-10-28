@@ -37,7 +37,7 @@ graph TD
 - Performs file system operations (read, write, watch)
 - Manages active session state (loaded from disk)
 - Tracks file changes during active sessions
-- Generates distillation prompts
+- Generates and writes Cursor command files for session distillation
 
 **Key Methods:**
 - `render()`: Creates and displays the webview panel
@@ -91,7 +91,7 @@ Communication between webview and extension uses `postMessage` with typed messag
 | `createSession` | `problemStatement: string` | Create new session |
 | `updateSession` | `frontmatter: any, content: string` | Update active session |
 | `stopSession` | - | End active session |
-| `distillSession` | `sessionId: string` | Generate distillation prompt |
+| `distillSession` | `sessionId: string` | Create stories command file |
 | `getFolderTree` | `category: string` | Get folder hierarchy |
 | `getFolderContents` | `folderPath: string, category: string` | Get files in folder |
 | `getFileContent` | `filePath: string` | Read file content |
@@ -112,6 +112,7 @@ Communication between webview and extension uses `postMessage` with typed messag
 | `sessionCreated` | `ActiveSession` | New session created |
 | `sessionStopped` | - | Session ended |
 | `sessionUpdated` | `{ success: boolean }` | Session save result |
+| `sessionDistilled` | `{ sessionId, commandFilePath }` | Command file created |
 | `folderTree` | `FolderNode[], category: string` | Folder hierarchy |
 | `folderContents` | `FileItem[]` | Files in folder |
 | `fileContent` | `{ path, frontmatter, content }` | File data |
@@ -440,7 +441,8 @@ webpack --mode production --devtool hidden-source-map
 - Edit files, verify tracking works
 - Close and reopen, verify session resumes
 - End session, verify completion
-- Distill session, verify prompt generated
+- Create stories command, verify command file created in .cursor/commands/
+- Verify session status changes to awaiting_implementation
 
 ## Deployment
 
